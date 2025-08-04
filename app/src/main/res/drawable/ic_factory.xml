@@ -1,0 +1,31 @@
+<!-- app/src/main/res/drawable/ic_factory.xml -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <path
+      android:pathData="M22,10l-2,0l0,-2l-2,0l0,2l-2,0l0,-2l-2,0l0,2l-2,0l0,-2l-2,0l0,2l-2,0l0,-2l-2,0l0,12l18,0l0,-10z"
+      android:fillColor="#718096"/>
+  <path
+      android:pathData="M14,12l2,0l0,2l-2,0z"
+      android:fillColor="#718096"/>
+  <path
+      android:pathData="M14,16l2,0l0,2l-2,0z"
+      android:fillColor="#718096"/>
+  <path
+      android:pathData="M10,12l2,0l0,2l-2,0z"
+      android:fillColor="#718096"/>
+  <path
+      android:pathData="M10,16l2,0l0,2l-2,0z"
+      android:fillColor="#718096"/>
+  <path
+      android:pathData="M6,12l2,0l0,2l-2,0z"
+      android:fillColor="#718096"/>
+  <path
+      android:pathData="M6,16l2,0l0,2l-2,0z"
+      android:fillColor="#718096"/>
+  <path
+      android:pathData="M2,22l20,0l0,-2l-20,0z"
+      android:fillColor="#718096"/>
+</vector>

@@ -1,0 +1,1477 @@
+[
+  {
+    "id": 26,
+    "title": "Challenge Scenario 26: Illness",
+    "description": "Life is much harder or different than average.",
+    "startingCharacter": {
+      "firstName": "Jordan",
+      "lastName": "Taylor",
+      "gender": "MALE",
+      "age": 0,
+      "health": 43,
+      "happiness": 53,
+      "smarts": 66,
+      "looks": 89,
+      "money": 426,
+      "reputation": 5,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 2026,
+        "title": "Event 2026: Crisis",
+        "description": "This is a major event in your life. Scenario #2026 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -4,
+                "happiness": 1,
+                "smarts": 3,
+                "looks": 0,
+                "money": 2144,
+                "reputation": -3
+              },
+              "nextEventId": 2027,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 2,
+                "happiness": -2,
+                "smarts": 0,
+                "looks": 0,
+                "money": -156,
+                "reputation": 2
+              },
+              "nextEventId": 2028,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 27,
+    "title": "Challenge Scenario 27: Extreme Poverty",
+    "description": "Life is much harder or different than average.",
+    "startingCharacter": {
+      "firstName": "Taylor",
+      "lastName": "Morgan",
+      "gender": "FEMALE",
+      "age": 0,
+      "health": 60,
+      "happiness": 70,
+      "smarts": 90,
+      "looks": 53,
+      "money": 478,
+      "reputation": -8,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 2027,
+        "title": "Event 2027: Life Change",
+        "description": "This is a major event in your life. Scenario #2027 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -2,
+                "happiness": 1,
+                "smarts": 3,
+                "looks": -2,
+                "money": 2298,
+                "reputation": -3
+              },
+              "nextEventId": 2028,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": 1,
+                "smarts": 0,
+                "looks": 0,
+                "money": -9,
+                "reputation": 1
+              },
+              "nextEventId": 2029,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 28,
+    "title": "Challenge Scenario 28: Illness",
+    "description": "Life is much harder or different than average.",
+    "startingCharacter": {
+      "firstName": "Morgan",
+      "lastName": "Taylor",
+      "gender": "OTHER",
+      "age": 0,
+      "health": 30,
+      "happiness": 67,
+      "smarts": 76,
+      "looks": 64,
+      "money": 445,
+      "reputation": -6,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 2028,
+        "title": "Event 2028: Big Decision",
+        "description": "This is a major event in your life. Scenario #2028 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": 7,
+                "smarts": -2,
+                "looks": 0,
+                "money": 832,
+                "reputation": 4
+              },
+              "nextEventId": 2029,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 2,
+                "happiness": 0,
+                "smarts": 0,
+                "looks": 0,
+                "money": 849,
+                "reputation": 1
+              },
+              "nextEventId": 2030,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 29,
+    "title": "Challenge Scenario 29: Prodigy",
+    "description": "Life is much harder or different than average.",
+    "startingCharacter": {
+      "firstName": "Riley",
+      "lastName": "Peyton",
+      "gender": "MALE",
+      "age": 0,
+      "health": 59,
+      "happiness": 45,
+      "smarts": 82,
+      "looks": 84,
+      "money": 102,
+      "reputation": 2,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 2029,
+        "title": "Event 2029: Opportunity",
+        "description": "This is a major event in your life. Scenario #2029 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -4,
+                "happiness": 9,
+                "smarts": -1,
+                "looks": -2,
+                "money": 1857,
+                "reputation": 4
+              },
+              "nextEventId": 2030,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 2,
+                "happiness": -1,
+                "smarts": 0,
+                "looks": 0,
+                "money": -453,
+                "reputation": 0
+              },
+              "nextEventId": 2031,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 30,
+    "title": "Challenge Scenario 30: Prodigy",
+    "description": "Life is much harder or different than average.",
+    "startingCharacter": {
+      "firstName": "Drew",
+      "lastName": "Drew",
+      "gender": "FEMALE",
+      "age": 0,
+      "health": 60,
+      "happiness": 31,
+      "smarts": 81,
+      "looks": 47,
+      "money": 259,
+      "reputation": -8,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 2030,
+        "title": "Event 2030: Crisis",
+        "description": "This is a major event in your life. Scenario #2030 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -1,
+                "happiness": -4,
+                "smarts": -1,
+                "looks": 1,
+                "money": 482,
+                "reputation": 1
+              },
+              "nextEventId": 2031,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": 1,
+                "smarts": 0,
+                "looks": 0,
+                "money": 945,
+                "reputation": 1
+              },
+              "nextEventId": 2032,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 31,
+    "title": "Challenge Scenario 31: Illness",
+    "description": "Life is much harder or different than average.",
+    "startingCharacter": {
+      "firstName": "Peyton",
+      "lastName": "Sam",
+      "gender": "MALE",
+      "age": 0,
+      "health": 32,
+      "happiness": 80,
+      "smarts": 69,
+      "looks": 72,
+      "money": 95,
+      "reputation": 2,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 2031,
+        "title": "Event 2031: Big Decision",
+        "description": "This is a major event in your life. Scenario #2031 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -1,
+                "happiness": 6,
+                "smarts": 3,
+                "looks": 2,
+                "money": 328,
+                "reputation": -2
+              },
+              "nextEventId": 2032,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": -1,
+                "smarts": 0,
+                "looks": 0,
+                "money": 203,
+                "reputation": -1
+              },
+              "nextEventId": 2033,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 32,
+    "title": "Challenge Scenario 32: Prodigy",
+    "description": "Life is much harder or different than average.",
+    "startingCharacter": {
+      "firstName": "Riley",
+      "lastName": "Peyton",
+      "gender": "OTHER",
+      "age": 0,
+      "health": 56,
+      "happiness": 34,
+      "smarts": 66,
+      "looks": 74,
+      "money": 172,
+      "reputation": 6,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 2032,
+        "title": "Event 2032: Crisis",
+        "description": "This is a major event in your life. Scenario #2032 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": 5,
+                "smarts": 1,
+                "looks": 1,
+                "money": -737,
+                "reputation": 5
+              },
+              "nextEventId": 2033,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 2,
+                "happiness": -2,
+                "smarts": 0,
+                "looks": 0,
+                "money": 431,
+                "reputation": 0
+              },
+              "nextEventId": 2034,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 33,
+    "title": "Challenge Scenario 33: Illness",
+    "description": "Life is much harder or different than average.",
+    "startingCharacter": {
+      "firstName": "Jordan",
+      "lastName": "Riley",
+      "gender": "OTHER",
+      "age": 0,
+      "health": 52,
+      "happiness": 23,
+      "smarts": 66,
+      "looks": 52,
+      "money": 252,
+      "reputation": 3,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 2033,
+        "title": "Event 2033: Opportunity",
+        "description": "This is a major event in your life. Scenario #2033 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -2,
+                "happiness": -2,
+                "smarts": -1,
+                "looks": 1,
+                "money": 1184,
+                "reputation": 4
+              },
+              "nextEventId": 2034,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": 2,
+                "smarts": 0,
+                "looks": 0,
+                "money": 216,
+                "reputation": -1
+              },
+              "nextEventId": 2035,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 34,
+    "title": "Challenge Scenario 34: Illness",
+    "description": "Life is much harder or different than average.",
+    "startingCharacter": {
+      "firstName": "Casey",
+      "lastName": "Peyton",
+      "gender": "MALE",
+      "age": 0,
+      "health": 50,
+      "happiness": 77,
+      "smarts": 76,
+      "looks": 48,
+      "money": 86,
+      "reputation": 1,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 2034,
+        "title": "Event 2034: Big Decision",
+        "description": "This is a major event in your life. Scenario #2034 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -2,
+                "happiness": 7,
+                "smarts": -2,
+                "looks": 1,
+                "money": -346,
+                "reputation": 2
+              },
+              "nextEventId": 2035,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": -1,
+                "happiness": 1,
+                "smarts": 0,
+                "looks": 0,
+                "money": 983,
+                "reputation": 1
+              },
+              "nextEventId": 2036,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 35,
+    "title": "Challenge Scenario 35: Extreme Poverty",
+    "description": "Life is much harder or different than average.",
+    "startingCharacter": {
+      "firstName": "Bailey",
+      "lastName": "Taylor",
+      "gender": "OTHER",
+      "age": 0,
+      "health": 45,
+      "happiness": 74,
+      "smarts": 66,
+      "looks": 77,
+      "money": 292,
+      "reputation": 2,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 2035,
+        "title": "Event 2035: Opportunity",
+        "description": "This is a major event in your life. Scenario #2035 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": 4,
+                "happiness": 7,
+                "smarts": 1,
+                "looks": 2,
+                "money": 1520,
+                "reputation": 0
+              },
+              "nextEventId": 2036,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 0,
+                "happiness": 0,
+                "smarts": 0,
+                "looks": 0,
+                "money": 21,
+                "reputation": -1
+              },
+              "nextEventId": 2037,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 36,
+    "title": "Challenge Scenario 36: Extreme Poverty",
+    "description": "Life is much harder or different than average.",
+    "startingCharacter": {
+      "firstName": "Drew",
+      "lastName": "Peyton",
+      "gender": "OTHER",
+      "age": 0,
+      "health": 45,
+      "happiness": 79,
+      "smarts": 71,
+      "looks": 45,
+      "money": 223,
+      "reputation": -2,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 2036,
+        "title": "Event 2036: Crisis",
+        "description": "This is a major event in your life. Scenario #2036 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -5,
+                "happiness": 2,
+                "smarts": 2,
+                "looks": 0,
+                "money": 2468,
+                "reputation": 1
+              },
+              "nextEventId": 2037,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": -1,
+                "smarts": 0,
+                "looks": 0,
+                "money": 631,
+                "reputation": 2
+              },
+              "nextEventId": 2038,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 37,
+    "title": "Challenge Scenario 37: Illness",
+    "description": "Life is much harder or different than average.",
+    "startingCharacter": {
+      "firstName": "Peyton",
+      "lastName": "Peyton",
+      "gender": "FEMALE",
+      "age": 0,
+      "health": 43,
+      "happiness": 75,
+      "smarts": 64,
+      "looks": 34,
+      "money": 357,
+      "reputation": -5,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 2037,
+        "title": "Event 2037: Crisis",
+        "description": "This is a major event in your life. Scenario #2037 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -2,
+                "happiness": 7,
+                "smarts": 0,
+                "looks": 1,
+                "money": 1191,
+                "reputation": -2
+              },
+              "nextEventId": 2038,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": -2,
+                "smarts": 0,
+                "looks": 0,
+                "money": 728,
+                "reputation": 1
+              },
+              "nextEventId": 2039,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 38,
+    "title": "Challenge Scenario 38: Prodigy",
+    "description": "Life is much harder or different than average.",
+    "startingCharacter": {
+      "firstName": "Sam",
+      "lastName": "Riley",
+      "gender": "OTHER",
+      "age": 0,
+      "health": 39,
+      "happiness": 63,
+      "smarts": 91,
+      "looks": 52,
+      "money": 250,
+      "reputation": -6,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 2038,
+        "title": "Event 2038: Opportunity",
+        "description": "This is a major event in your life. Scenario #2038 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": 4,
+                "happiness": 9,
+                "smarts": 0,
+                "looks": -1,
+                "money": 1774,
+                "reputation": 4
+              },
+              "nextEventId": 2039,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": -1,
+                "happiness": -1,
+                "smarts": 0,
+                "looks": 0,
+                "money": 906,
+                "reputation": 0
+              },
+              "nextEventId": 2040,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 39,
+    "title": "Challenge Scenario 39: Prodigy",
+    "description": "Life is much harder or different than average.",
+    "startingCharacter": {
+      "firstName": "Taylor",
+      "lastName": "Bailey",
+      "gender": "OTHER",
+      "age": 0,
+      "health": 52,
+      "happiness": 39,
+      "smarts": 65,
+      "looks": 66,
+      "money": 360,
+      "reputation": -3,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 2039,
+        "title": "Event 2039: Surprise",
+        "description": "This is a major event in your life. Scenario #2039 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -4,
+                "happiness": -3,
+                "smarts": 3,
+                "looks": -1,
+                "money": 2428,
+                "reputation": 3
+              },
+              "nextEventId": 2040,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 0,
+                "happiness": 0,
+                "smarts": 0,
+                "looks": 0,
+                "money": 277,
+                "reputation": -1
+              },
+              "nextEventId": 2041,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 40,
+    "title": "Challenge Scenario 40: Prodigy",
+    "description": "Life is much harder or different than average.",
+    "startingCharacter": {
+      "firstName": "Bailey",
+      "lastName": "Peyton",
+      "gender": "MALE",
+      "age": 0,
+      "health": 51,
+      "happiness": 20,
+      "smarts": 100,
+      "looks": 71,
+      "money": 412,
+      "reputation": 8,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 2040,
+        "title": "Event 2040: Surprise",
+        "description": "This is a major event in your life. Scenario #2040 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -2,
+                "happiness": 4,
+                "smarts": -1,
+                "looks": -2,
+                "money": -222,
+                "reputation": 1
+              },
+              "nextEventId": 2041,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 0,
+                "happiness": 1,
+                "smarts": 0,
+                "looks": 0,
+                "money": -405,
+                "reputation": 2
+              },
+              "nextEventId": 2042,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 41,
+    "title": "Challenge Scenario 41: Illness",
+    "description": "Life is much harder or different than average.",
+    "startingCharacter": {
+      "firstName": "Jordan",
+      "lastName": "Bailey",
+      "gender": "MALE",
+      "age": 0,
+      "health": 60,
+      "happiness": 33,
+      "smarts": 82,
+      "looks": 57,
+      "money": 198,
+      "reputation": 5,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 2041,
+        "title": "Event 2041: Life Change",
+        "description": "This is a major event in your life. Scenario #2041 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": 4,
+                "happiness": -5,
+                "smarts": 0,
+                "looks": 0,
+                "money": 1343,
+                "reputation": 2
+              },
+              "nextEventId": 2042,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 0,
+                "happiness": -1,
+                "smarts": 0,
+                "looks": 0,
+                "money": 878,
+                "reputation": 1
+              },
+              "nextEventId": 2043,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 42,
+    "title": "Challenge Scenario 42: Prodigy",
+    "description": "Life is much harder or different than average.",
+    "startingCharacter": {
+      "firstName": "Drew",
+      "lastName": "Taylor",
+      "gender": "FEMALE",
+      "age": 0,
+      "health": 37,
+      "happiness": 47,
+      "smarts": 72,
+      "looks": 63,
+      "money": 323,
+      "reputation": -8,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 2042,
+        "title": "Event 2042: Crisis",
+        "description": "This is a major event in your life. Scenario #2042 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -3,
+                "happiness": 9,
+                "smarts": 1,
+                "looks": -2,
+                "money": -327,
+                "reputation": -3
+              },
+              "nextEventId": 2043,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 0,
+                "happiness": -2,
+                "smarts": 0,
+                "looks": 0,
+                "money": -66,
+                "reputation": 2
+              },
+              "nextEventId": 2044,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 43,
+    "title": "Challenge Scenario 43: Prodigy",
+    "description": "Life is much harder or different than average.",
+    "startingCharacter": {
+      "firstName": "Morgan",
+      "lastName": "Morgan",
+      "gender": "OTHER",
+      "age": 0,
+      "health": 56,
+      "happiness": 76,
+      "smarts": 71,
+      "looks": 31,
+      "money": 20,
+      "reputation": 2,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 2043,
+        "title": "Event 2043: Crisis",
+        "description": "This is a major event in your life. Scenario #2043 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -4,
+                "happiness": 2,
+                "smarts": -1,
+                "looks": -2,
+                "money": 1062,
+                "reputation": 1
+              },
+              "nextEventId": 2044,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 2,
+                "happiness": -1,
+                "smarts": 0,
+                "looks": 0,
+                "money": 575,
+                "reputation": 1
+              },
+              "nextEventId": 2045,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 44,
+    "title": "Challenge Scenario 44: Prodigy",
+    "description": "Life is much harder or different than average.",
+    "startingCharacter": {
+      "firstName": "Taylor",
+      "lastName": "Casey",
+      "gender": "OTHER",
+      "age": 0,
+      "health": 34,
+      "happiness": 62,
+      "smarts": 75,
+      "looks": 30,
+      "money": 194,
+      "reputation": -4,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 2044,
+        "title": "Event 2044: Surprise",
+        "description": "This is a major event in your life. Scenario #2044 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -3,
+                "happiness": 0,
+                "smarts": 3,
+                "looks": 0,
+                "money": 354,
+                "reputation": 1
+              },
+              "nextEventId": 2045,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 2,
+                "happiness": 0,
+                "smarts": 0,
+                "looks": 0,
+                "money": 183,
+                "reputation": -1
+              },
+              "nextEventId": 2046,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 45,
+    "title": "Challenge Scenario 45: Prodigy",
+    "description": "Life is much harder or different than average.",
+    "startingCharacter": {
+      "firstName": "Sam",
+      "lastName": "Drew",
+      "gender": "MALE",
+      "age": 0,
+      "health": 41,
+      "happiness": 30,
+      "smarts": 84,
+      "looks": 89,
+      "money": 402,
+      "reputation": 4,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 2045,
+        "title": "Event 2045: Crisis",
+        "description": "This is a major event in your life. Scenario #2045 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": 4,
+                "happiness": -4,
+                "smarts": 3,
+                "looks": 0,
+                "money": -559,
+                "reputation": -3
+              },
+              "nextEventId": 2046,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": -1,
+                "happiness": -2,
+                "smarts": 0,
+                "looks": 0,
+                "money": 402,
+                "reputation": 2
+              },
+              "nextEventId": 2047,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 46,
+    "title": "Challenge Scenario 46: Illness",
+    "description": "Life is much harder or different than average.",
+    "startingCharacter": {
+      "firstName": "Peyton",
+      "lastName": "Alex",
+      "gender": "OTHER",
+      "age": 0,
+      "health": 56,
+      "happiness": 71,
+      "smarts": 100,
+      "looks": 31,
+      "money": 294,
+      "reputation": 4,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 2046,
+        "title": "Event 2046: Big Decision",
+        "description": "This is a major event in your life. Scenario #2046 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": 7,
+                "smarts": 2,
+                "looks": -2,
+                "money": 2015,
+                "reputation": -1
+              },
+              "nextEventId": 2047,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 2,
+                "happiness": -2,
+                "smarts": 0,
+                "looks": 0,
+                "money": -26,
+                "reputation": 2
+              },
+              "nextEventId": 2048,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 47,
+    "title": "Challenge Scenario 47: Illness",
+    "description": "Life is much harder or different than average.",
+    "startingCharacter": {
+      "firstName": "Alex",
+      "lastName": "Peyton",
+      "gender": "MALE",
+      "age": 0,
+      "health": 56,
+      "happiness": 31,
+      "smarts": 64,
+      "looks": 64,
+      "money": 472,
+      "reputation": -7,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 2047,
+        "title": "Event 2047: Surprise",
+        "description": "This is a major event in your life. Scenario #2047 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -1,
+                "happiness": 3,
+                "smarts": -2,
+                "looks": 2,
+                "money": -22,
+                "reputation": -1
+              },
+              "nextEventId": 2048,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 2,
+                "happiness": 1,
+                "smarts": 0,
+                "looks": 0,
+                "money": 112,
+                "reputation": 2
+              },
+              "nextEventId": 2049,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 48,
+    "title": "Challenge Scenario 48: Prodigy",
+    "description": "Life is much harder or different than average.",
+    "startingCharacter": {
+      "firstName": "Casey",
+      "lastName": "Jordan",
+      "gender": "FEMALE",
+      "age": 0,
+      "health": 45,
+      "happiness": 72,
+      "smarts": 94,
+      "looks": 42,
+      "money": 173,
+      "reputation": -6,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 2048,
+        "title": "Event 2048: Crisis",
+        "description": "This is a major event in your life. Scenario #2048 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": 4,
+                "happiness": 9,
+                "smarts": 3,
+                "looks": -1,
+                "money": 1407,
+                "reputation": 5
+              },
+              "nextEventId": 2049,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 2,
+                "happiness": 1,
+                "smarts": 0,
+                "looks": 0,
+                "money": 785,
+                "reputation": 2
+              },
+              "nextEventId": 2050,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 49,
+    "title": "Challenge Scenario 49: Prodigy",
+    "description": "Life is much harder or different than average.",
+    "startingCharacter": {
+      "firstName": "Morgan",
+      "lastName": "Riley",
+      "gender": "OTHER",
+      "age": 0,
+      "health": 31,
+      "happiness": 78,
+      "smarts": 85,
+      "looks": 82,
+      "money": 78,
+      "reputation": 8,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 2049,
+        "title": "Event 2049: Crisis",
+        "description": "This is a major event in your life. Scenario #2049 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -3,
+                "happiness": 9,
+                "smarts": -1,
+                "looks": -1,
+                "money": 2394,
+                "reputation": -1
+              },
+              "nextEventId": 2050,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": -1,
+                "happiness": -1,
+                "smarts": 0,
+                "looks": 0,
+                "money": 637,
+                "reputation": 0
+              },
+              "nextEventId": 2051,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 50,
+    "title": "Challenge Scenario 50: Illness",
+    "description": "Life is much harder or different than average.",
+    "startingCharacter": {
+      "firstName": "Casey",
+      "lastName": "Alex",
+      "gender": "MALE",
+      "age": 0,
+      "health": 46,
+      "happiness": 77,
+      "smarts": 81,
+      "looks": 69,
+      "money": 308,
+      "reputation": 1,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 2050,
+        "title": "Event 2050: Opportunity",
+        "description": "This is a major event in your life. Scenario #2050 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -5,
+                "happiness": -1,
+                "smarts": 2,
+                "looks": -1,
+                "money": 1426,
+                "reputation": -1
+              },
+              "nextEventId": 2051,
+              "unlockAchievementId": 42
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 2,
+                "happiness": 2,
+                "smarts": 0,
+                "looks": 0,
+                "money": 267,
+                "reputation": -1
+              },
+              "nextEventId": 2052,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

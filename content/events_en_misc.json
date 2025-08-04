@@ -1,0 +1,3702 @@
+[
+  {
+    "id": 701,
+    "title": "Event 701: Life Change",
+    "description": "This is a major event in your life. Scenario #701 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -2,
+            "happiness": 0,
+            "smarts": 3,
+            "looks": -1,
+            "money": 274,
+            "reputation": 5
+          },
+          "nextEventId": 702,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": 1,
+            "smarts": 0,
+            "looks": 0,
+            "money": 551,
+            "reputation": -1
+          },
+          "nextEventId": 703,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 702,
+    "title": "Event 702: Surprise",
+    "description": "This is a major event in your life. Scenario #702 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": 3,
+            "smarts": 0,
+            "looks": -1,
+            "money": 1530,
+            "reputation": -1
+          },
+          "nextEventId": 703,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": -1,
+            "smarts": 0,
+            "looks": 0,
+            "money": 918,
+            "reputation": 1
+          },
+          "nextEventId": 704,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 703,
+    "title": "Event 703: Crisis",
+    "description": "This is a major event in your life. Scenario #703 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": -4,
+            "smarts": 4,
+            "looks": 1,
+            "money": -292,
+            "reputation": 2
+          },
+          "nextEventId": 704,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": -2,
+            "smarts": 0,
+            "looks": 0,
+            "money": -342,
+            "reputation": -1
+          },
+          "nextEventId": 705,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 704,
+    "title": "Event 704: Crisis",
+    "description": "This is a major event in your life. Scenario #704 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 5,
+            "happiness": 1,
+            "smarts": -2,
+            "looks": -1,
+            "money": -401,
+            "reputation": 5
+          },
+          "nextEventId": 705,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": 0,
+            "smarts": 0,
+            "looks": 0,
+            "money": 619,
+            "reputation": -1
+          },
+          "nextEventId": 706,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 705,
+    "title": "Event 705: Life Change",
+    "description": "This is a major event in your life. Scenario #705 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -3,
+            "happiness": 6,
+            "smarts": -2,
+            "looks": -2,
+            "money": 1242,
+            "reputation": 3
+          },
+          "nextEventId": 706,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": -106,
+            "reputation": 0
+          },
+          "nextEventId": 707,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 706,
+    "title": "Event 706: Big Decision",
+    "description": "This is a major event in your life. Scenario #706 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -2,
+            "happiness": 9,
+            "smarts": -1,
+            "looks": -2,
+            "money": 2671,
+            "reputation": -2
+          },
+          "nextEventId": 707,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": -1,
+            "smarts": 0,
+            "looks": 0,
+            "money": 740,
+            "reputation": 1
+          },
+          "nextEventId": 708,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 707,
+    "title": "Event 707: Big Decision",
+    "description": "This is a major event in your life. Scenario #707 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": 5,
+            "smarts": 3,
+            "looks": -1,
+            "money": 743,
+            "reputation": 5
+          },
+          "nextEventId": 708,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 726,
+            "reputation": 0
+          },
+          "nextEventId": 709,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 708,
+    "title": "Event 708: Surprise",
+    "description": "This is a major event in your life. Scenario #708 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -2,
+            "happiness": 0,
+            "smarts": 0,
+            "looks": -1,
+            "money": 597,
+            "reputation": 0
+          },
+          "nextEventId": 709,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": -2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 526,
+            "reputation": 1
+          },
+          "nextEventId": 710,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 709,
+    "title": "Event 709: Life Change",
+    "description": "This is a major event in your life. Scenario #709 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": 1,
+            "smarts": 0,
+            "looks": -1,
+            "money": -952,
+            "reputation": 0
+          },
+          "nextEventId": 710,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": 0,
+            "smarts": 0,
+            "looks": 0,
+            "money": 699,
+            "reputation": 1
+          },
+          "nextEventId": 711,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 710,
+    "title": "Event 710: Surprise",
+    "description": "This is a major event in your life. Scenario #710 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 5,
+            "happiness": 3,
+            "smarts": -2,
+            "looks": -2,
+            "money": 2748,
+            "reputation": -1
+          },
+          "nextEventId": 711,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": 0,
+            "smarts": 0,
+            "looks": 0,
+            "money": -201,
+            "reputation": 0
+          },
+          "nextEventId": 712,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 711,
+    "title": "Event 711: Opportunity",
+    "description": "This is a major event in your life. Scenario #711 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 3,
+            "happiness": -1,
+            "smarts": -1,
+            "looks": 2,
+            "money": 2897,
+            "reputation": 4
+          },
+          "nextEventId": 712,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": -2,
+            "smarts": 0,
+            "looks": 0,
+            "money": -58,
+            "reputation": 1
+          },
+          "nextEventId": 713,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 712,
+    "title": "Event 712: Opportunity",
+    "description": "This is a major event in your life. Scenario #712 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -4,
+            "happiness": 2,
+            "smarts": -1,
+            "looks": -2,
+            "money": -157,
+            "reputation": 2
+          },
+          "nextEventId": 713,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": 1,
+            "smarts": 0,
+            "looks": 0,
+            "money": 75,
+            "reputation": 0
+          },
+          "nextEventId": 714,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 713,
+    "title": "Event 713: Surprise",
+    "description": "This is a major event in your life. Scenario #713 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 3,
+            "happiness": 10,
+            "smarts": 3,
+            "looks": -1,
+            "money": 1429,
+            "reputation": 3
+          },
+          "nextEventId": 714,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": -2,
+            "smarts": 0,
+            "looks": 0,
+            "money": -145,
+            "reputation": -1
+          },
+          "nextEventId": 715,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 714,
+    "title": "Event 714: Life Change",
+    "description": "This is a major event in your life. Scenario #714 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -4,
+            "happiness": -1,
+            "smarts": 0,
+            "looks": 1,
+            "money": 1474,
+            "reputation": 1
+          },
+          "nextEventId": 715,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": -2,
+            "smarts": 0,
+            "looks": 0,
+            "money": -439,
+            "reputation": 1
+          },
+          "nextEventId": 716,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 715,
+    "title": "Event 715: Surprise",
+    "description": "This is a major event in your life. Scenario #715 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 5,
+            "happiness": 4,
+            "smarts": 1,
+            "looks": 0,
+            "money": -177,
+            "reputation": 5
+          },
+          "nextEventId": 716,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": 0,
+            "smarts": 0,
+            "looks": 0,
+            "money": 889,
+            "reputation": 1
+          },
+          "nextEventId": 717,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 716,
+    "title": "Event 716: Opportunity",
+    "description": "This is a major event in your life. Scenario #716 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -4,
+            "happiness": 3,
+            "smarts": 1,
+            "looks": 2,
+            "money": 1636,
+            "reputation": 2
+          },
+          "nextEventId": 717,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": -1,
+            "smarts": 0,
+            "looks": 0,
+            "money": 379,
+            "reputation": -1
+          },
+          "nextEventId": 718,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 717,
+    "title": "Event 717: Surprise",
+    "description": "This is a major event in your life. Scenario #717 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 5,
+            "happiness": 4,
+            "smarts": -1,
+            "looks": -1,
+            "money": 1796,
+            "reputation": 0
+          },
+          "nextEventId": 718,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": 1,
+            "smarts": 0,
+            "looks": 0,
+            "money": 182,
+            "reputation": 0
+          },
+          "nextEventId": 719,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 718,
+    "title": "Event 718: Crisis",
+    "description": "This is a major event in your life. Scenario #718 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 5,
+            "happiness": -1,
+            "smarts": 1,
+            "looks": -1,
+            "money": -515,
+            "reputation": 1
+          },
+          "nextEventId": 719,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": -1,
+            "smarts": 0,
+            "looks": 0,
+            "money": 285,
+            "reputation": 1
+          },
+          "nextEventId": 720,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 719,
+    "title": "Event 719: Crisis",
+    "description": "This is a major event in your life. Scenario #719 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": 1,
+            "smarts": 3,
+            "looks": -2,
+            "money": 1607,
+            "reputation": 3
+          },
+          "nextEventId": 720,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": -70,
+            "reputation": 1
+          },
+          "nextEventId": 721,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 720,
+    "title": "Event 720: Surprise",
+    "description": "This is a major event in your life. Scenario #720 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": 0,
+            "smarts": 0,
+            "looks": -1,
+            "money": 2136,
+            "reputation": 3
+          },
+          "nextEventId": 721,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": -463,
+            "reputation": -1
+          },
+          "nextEventId": 722,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 721,
+    "title": "Event 721: Big Decision",
+    "description": "This is a major event in your life. Scenario #721 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": -4,
+            "smarts": 3,
+            "looks": -1,
+            "money": 2197,
+            "reputation": 2
+          },
+          "nextEventId": 722,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": -2,
+            "smarts": 0,
+            "looks": 0,
+            "money": -405,
+            "reputation": 0
+          },
+          "nextEventId": 723,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 722,
+    "title": "Event 722: Big Decision",
+    "description": "This is a major event in your life. Scenario #722 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 5,
+            "happiness": 6,
+            "smarts": 1,
+            "looks": 0,
+            "money": 1523,
+            "reputation": -2
+          },
+          "nextEventId": 723,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": -2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 498,
+            "reputation": 0
+          },
+          "nextEventId": 724,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 723,
+    "title": "Event 723: Crisis",
+    "description": "This is a major event in your life. Scenario #723 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": 6,
+            "smarts": 4,
+            "looks": 2,
+            "money": 362,
+            "reputation": 2
+          },
+          "nextEventId": 724,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": -2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 458,
+            "reputation": 2
+          },
+          "nextEventId": 725,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 724,
+    "title": "Event 724: Opportunity",
+    "description": "This is a major event in your life. Scenario #724 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": -2,
+            "smarts": 1,
+            "looks": -1,
+            "money": 1517,
+            "reputation": 4
+          },
+          "nextEventId": 725,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": 0,
+            "smarts": 0,
+            "looks": 0,
+            "money": -332,
+            "reputation": -1
+          },
+          "nextEventId": 726,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 725,
+    "title": "Event 725: Surprise",
+    "description": "This is a major event in your life. Scenario #725 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -2,
+            "happiness": 5,
+            "smarts": 1,
+            "looks": -1,
+            "money": 2149,
+            "reputation": -3
+          },
+          "nextEventId": 726,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 253,
+            "reputation": -1
+          },
+          "nextEventId": 727,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 726,
+    "title": "Event 726: Surprise",
+    "description": "This is a major event in your life. Scenario #726 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -3,
+            "happiness": 10,
+            "smarts": 0,
+            "looks": -1,
+            "money": 469,
+            "reputation": -3
+          },
+          "nextEventId": 727,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": -2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 355,
+            "reputation": -1
+          },
+          "nextEventId": 728,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 727,
+    "title": "Event 727: Opportunity",
+    "description": "This is a major event in your life. Scenario #727 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -3,
+            "happiness": 0,
+            "smarts": 0,
+            "looks": -1,
+            "money": -302,
+            "reputation": -3
+          },
+          "nextEventId": 728,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": 1,
+            "smarts": 0,
+            "looks": 0,
+            "money": 140,
+            "reputation": 0
+          },
+          "nextEventId": 729,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 728,
+    "title": "Event 728: Big Decision",
+    "description": "This is a major event in your life. Scenario #728 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -4,
+            "happiness": -2,
+            "smarts": 4,
+            "looks": -2,
+            "money": -217,
+            "reputation": 0
+          },
+          "nextEventId": 729,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 608,
+            "reputation": 0
+          },
+          "nextEventId": 730,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 729,
+    "title": "Event 729: Big Decision",
+    "description": "This is a major event in your life. Scenario #729 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": 0,
+            "smarts": -2,
+            "looks": -2,
+            "money": 2016,
+            "reputation": 3
+          },
+          "nextEventId": 730,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 325,
+            "reputation": 2
+          },
+          "nextEventId": 731,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 730,
+    "title": "Event 730: Opportunity",
+    "description": "This is a major event in your life. Scenario #730 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 3,
+            "happiness": -2,
+            "smarts": -1,
+            "looks": -2,
+            "money": 2367,
+            "reputation": 1
+          },
+          "nextEventId": 731,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": 1,
+            "smarts": 0,
+            "looks": 0,
+            "money": -108,
+            "reputation": 1
+          },
+          "nextEventId": 732,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 731,
+    "title": "Event 731: Opportunity",
+    "description": "This is a major event in your life. Scenario #731 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -5,
+            "happiness": 7,
+            "smarts": -2,
+            "looks": -2,
+            "money": 2564,
+            "reputation": 5
+          },
+          "nextEventId": 732,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 451,
+            "reputation": -1
+          },
+          "nextEventId": 733,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 732,
+    "title": "Event 732: Opportunity",
+    "description": "This is a major event in your life. Scenario #732 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -3,
+            "happiness": -4,
+            "smarts": 0,
+            "looks": 0,
+            "money": 74,
+            "reputation": 3
+          },
+          "nextEventId": 733,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": 0,
+            "smarts": 0,
+            "looks": 0,
+            "money": -281,
+            "reputation": 1
+          },
+          "nextEventId": 734,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 733,
+    "title": "Event 733: Life Change",
+    "description": "This is a major event in your life. Scenario #733 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 3,
+            "happiness": 9,
+            "smarts": -1,
+            "looks": 0,
+            "money": 2692,
+            "reputation": 4
+          },
+          "nextEventId": 734,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": -1,
+            "smarts": 0,
+            "looks": 0,
+            "money": -413,
+            "reputation": -1
+          },
+          "nextEventId": 735,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 734,
+    "title": "Event 734: Life Change",
+    "description": "This is a major event in your life. Scenario #734 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 5,
+            "happiness": 5,
+            "smarts": 0,
+            "looks": 1,
+            "money": -179,
+            "reputation": 0
+          },
+          "nextEventId": 735,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": 1,
+            "smarts": 0,
+            "looks": 0,
+            "money": 721,
+            "reputation": 1
+          },
+          "nextEventId": 736,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 735,
+    "title": "Event 735: Opportunity",
+    "description": "This is a major event in your life. Scenario #735 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": 0,
+            "smarts": -2,
+            "looks": 0,
+            "money": 2115,
+            "reputation": 0
+          },
+          "nextEventId": 736,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 325,
+            "reputation": -1
+          },
+          "nextEventId": 737,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 736,
+    "title": "Event 736: Crisis",
+    "description": "This is a major event in your life. Scenario #736 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": -5,
+            "smarts": 1,
+            "looks": 0,
+            "money": 2348,
+            "reputation": 1
+          },
+          "nextEventId": 737,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": -2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 498,
+            "reputation": -1
+          },
+          "nextEventId": 738,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 737,
+    "title": "Event 737: Surprise",
+    "description": "This is a major event in your life. Scenario #737 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -4,
+            "happiness": 7,
+            "smarts": -1,
+            "looks": -1,
+            "money": 552,
+            "reputation": 2
+          },
+          "nextEventId": 738,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 599,
+            "reputation": -1
+          },
+          "nextEventId": 739,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 738,
+    "title": "Event 738: Life Change",
+    "description": "This is a major event in your life. Scenario #738 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": 0,
+            "smarts": -2,
+            "looks": 2,
+            "money": -319,
+            "reputation": 0
+          },
+          "nextEventId": 739,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": -2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 363,
+            "reputation": 1
+          },
+          "nextEventId": 740,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 739,
+    "title": "Event 739: Opportunity",
+    "description": "This is a major event in your life. Scenario #739 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -4,
+            "happiness": 1,
+            "smarts": 2,
+            "looks": 0,
+            "money": 1856,
+            "reputation": 3
+          },
+          "nextEventId": 740,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": -1,
+            "smarts": 0,
+            "looks": 0,
+            "money": -6,
+            "reputation": 1
+          },
+          "nextEventId": 741,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 740,
+    "title": "Event 740: Life Change",
+    "description": "This is a major event in your life. Scenario #740 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 3,
+            "happiness": -3,
+            "smarts": -1,
+            "looks": 0,
+            "money": 2568,
+            "reputation": 5
+          },
+          "nextEventId": 741,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": 1,
+            "smarts": 0,
+            "looks": 0,
+            "money": 837,
+            "reputation": 0
+          },
+          "nextEventId": 742,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 741,
+    "title": "Event 741: Life Change",
+    "description": "This is a major event in your life. Scenario #741 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": 9,
+            "smarts": -2,
+            "looks": 2,
+            "money": 390,
+            "reputation": -3
+          },
+          "nextEventId": 742,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 728,
+            "reputation": -1
+          },
+          "nextEventId": 743,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 742,
+    "title": "Event 742: Crisis",
+    "description": "This is a major event in your life. Scenario #742 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -2,
+            "happiness": -2,
+            "smarts": 1,
+            "looks": 0,
+            "money": 962,
+            "reputation": -2
+          },
+          "nextEventId": 743,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": 0,
+            "smarts": 0,
+            "looks": 0,
+            "money": -118,
+            "reputation": 1
+          },
+          "nextEventId": 744,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 743,
+    "title": "Event 743: Life Change",
+    "description": "This is a major event in your life. Scenario #743 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": -1,
+            "smarts": 2,
+            "looks": 0,
+            "money": 715,
+            "reputation": 4
+          },
+          "nextEventId": 744,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": 0,
+            "smarts": 0,
+            "looks": 0,
+            "money": -442,
+            "reputation": 0
+          },
+          "nextEventId": 745,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 744,
+    "title": "Event 744: Surprise",
+    "description": "This is a major event in your life. Scenario #744 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": -1,
+            "smarts": 2,
+            "looks": -2,
+            "money": 96,
+            "reputation": -1
+          },
+          "nextEventId": 745,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 358,
+            "reputation": 2
+          },
+          "nextEventId": 746,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 745,
+    "title": "Event 745: Life Change",
+    "description": "This is a major event in your life. Scenario #745 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": 5,
+            "smarts": 4,
+            "looks": 2,
+            "money": 1288,
+            "reputation": 2
+          },
+          "nextEventId": 746,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": 1,
+            "smarts": 0,
+            "looks": 0,
+            "money": 862,
+            "reputation": 2
+          },
+          "nextEventId": 747,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 746,
+    "title": "Event 746: Crisis",
+    "description": "This is a major event in your life. Scenario #746 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -2,
+            "happiness": -5,
+            "smarts": -2,
+            "looks": -1,
+            "money": 2110,
+            "reputation": 1
+          },
+          "nextEventId": 747,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": 1,
+            "smarts": 0,
+            "looks": 0,
+            "money": 491,
+            "reputation": 1
+          },
+          "nextEventId": 748,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 747,
+    "title": "Event 747: Life Change",
+    "description": "This is a major event in your life. Scenario #747 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -5,
+            "happiness": 9,
+            "smarts": 1,
+            "looks": 1,
+            "money": -294,
+            "reputation": 1
+          },
+          "nextEventId": 748,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": 1,
+            "smarts": 0,
+            "looks": 0,
+            "money": 995,
+            "reputation": 0
+          },
+          "nextEventId": 749,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 748,
+    "title": "Event 748: Life Change",
+    "description": "This is a major event in your life. Scenario #748 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -3,
+            "happiness": 4,
+            "smarts": -2,
+            "looks": 2,
+            "money": -359,
+            "reputation": -3
+          },
+          "nextEventId": 749,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": -288,
+            "reputation": 0
+          },
+          "nextEventId": 750,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 749,
+    "title": "Event 749: Crisis",
+    "description": "This is a major event in your life. Scenario #749 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 5,
+            "happiness": -3,
+            "smarts": 0,
+            "looks": 2,
+            "money": -838,
+            "reputation": 0
+          },
+          "nextEventId": 750,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": 0,
+            "smarts": 0,
+            "looks": 0,
+            "money": -92,
+            "reputation": 1
+          },
+          "nextEventId": 751,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 750,
+    "title": "Event 750: Crisis",
+    "description": "This is a major event in your life. Scenario #750 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": -5,
+            "smarts": -2,
+            "looks": 0,
+            "money": 1291,
+            "reputation": 3
+          },
+          "nextEventId": 751,
+          "unlockAchievementId": 16
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 631,
+            "reputation": 0
+          },
+          "nextEventId": 752,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 751,
+    "title": "Event 751: Life Change",
+    "description": "This is a major event in your life. Scenario #751 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 4,
+            "happiness": -1,
+            "smarts": 4,
+            "looks": 2,
+            "money": -343,
+            "reputation": -3
+          },
+          "nextEventId": 752,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": -2,
+            "smarts": 0,
+            "looks": 0,
+            "money": -227,
+            "reputation": 2
+          },
+          "nextEventId": 753,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 752,
+    "title": "Event 752: Opportunity",
+    "description": "This is a major event in your life. Scenario #752 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": 10,
+            "smarts": 4,
+            "looks": -2,
+            "money": -986,
+            "reputation": -2
+          },
+          "nextEventId": 753,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 29,
+            "reputation": 0
+          },
+          "nextEventId": 754,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 753,
+    "title": "Event 753: Surprise",
+    "description": "This is a major event in your life. Scenario #753 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -4,
+            "happiness": 9,
+            "smarts": 0,
+            "looks": 2,
+            "money": 1128,
+            "reputation": -1
+          },
+          "nextEventId": 754,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": -2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 158,
+            "reputation": -1
+          },
+          "nextEventId": 755,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 754,
+    "title": "Event 754: Big Decision",
+    "description": "This is a major event in your life. Scenario #754 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 4,
+            "happiness": -1,
+            "smarts": 3,
+            "looks": 0,
+            "money": 1297,
+            "reputation": 1
+          },
+          "nextEventId": 755,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 666,
+            "reputation": -1
+          },
+          "nextEventId": 756,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 755,
+    "title": "Event 755: Crisis",
+    "description": "This is a major event in your life. Scenario #755 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -3,
+            "happiness": 7,
+            "smarts": 0,
+            "looks": 0,
+            "money": -158,
+            "reputation": 3
+          },
+          "nextEventId": 756,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": -1,
+            "smarts": 0,
+            "looks": 0,
+            "money": 433,
+            "reputation": 1
+          },
+          "nextEventId": 757,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 756,
+    "title": "Event 756: Life Change",
+    "description": "This is a major event in your life. Scenario #756 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 5,
+            "happiness": 6,
+            "smarts": 2,
+            "looks": 2,
+            "money": 2635,
+            "reputation": 5
+          },
+          "nextEventId": 757,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": 0,
+            "smarts": 0,
+            "looks": 0,
+            "money": 807,
+            "reputation": -1
+          },
+          "nextEventId": 758,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 757,
+    "title": "Event 757: Life Change",
+    "description": "This is a major event in your life. Scenario #757 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 4,
+            "happiness": 9,
+            "smarts": -1,
+            "looks": -2,
+            "money": 908,
+            "reputation": 4
+          },
+          "nextEventId": 758,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": 0,
+            "smarts": 0,
+            "looks": 0,
+            "money": -486,
+            "reputation": 0
+          },
+          "nextEventId": 759,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 758,
+    "title": "Event 758: Crisis",
+    "description": "This is a major event in your life. Scenario #758 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 3,
+            "happiness": 3,
+            "smarts": 0,
+            "looks": -2,
+            "money": 71,
+            "reputation": 5
+          },
+          "nextEventId": 759,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 233,
+            "reputation": 1
+          },
+          "nextEventId": 760,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 759,
+    "title": "Event 759: Surprise",
+    "description": "This is a major event in your life. Scenario #759 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 5,
+            "happiness": 4,
+            "smarts": 1,
+            "looks": 1,
+            "money": 987,
+            "reputation": 2
+          },
+          "nextEventId": 760,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 576,
+            "reputation": 1
+          },
+          "nextEventId": 761,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 760,
+    "title": "Event 760: Big Decision",
+    "description": "This is a major event in your life. Scenario #760 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -3,
+            "happiness": 3,
+            "smarts": 3,
+            "looks": 0,
+            "money": 1730,
+            "reputation": -3
+          },
+          "nextEventId": 761,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": -2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 448,
+            "reputation": 2
+          },
+          "nextEventId": 762,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 761,
+    "title": "Event 761: Crisis",
+    "description": "This is a major event in your life. Scenario #761 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": 5,
+            "smarts": 3,
+            "looks": 2,
+            "money": 1760,
+            "reputation": 5
+          },
+          "nextEventId": 762,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": -1,
+            "smarts": 0,
+            "looks": 0,
+            "money": -234,
+            "reputation": 0
+          },
+          "nextEventId": 763,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 762,
+    "title": "Event 762: Life Change",
+    "description": "This is a major event in your life. Scenario #762 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": 0,
+            "smarts": 1,
+            "looks": 1,
+            "money": 1368,
+            "reputation": 5
+          },
+          "nextEventId": 763,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": 1,
+            "smarts": 0,
+            "looks": 0,
+            "money": 360,
+            "reputation": 2
+          },
+          "nextEventId": 764,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 763,
+    "title": "Event 763: Surprise",
+    "description": "This is a major event in your life. Scenario #763 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": 8,
+            "smarts": 4,
+            "looks": -2,
+            "money": 1423,
+            "reputation": 4
+          },
+          "nextEventId": 764,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": 1,
+            "smarts": 0,
+            "looks": 0,
+            "money": 278,
+            "reputation": 1
+          },
+          "nextEventId": 765,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 764,
+    "title": "Event 764: Crisis",
+    "description": "This is a major event in your life. Scenario #764 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 3,
+            "happiness": -1,
+            "smarts": 3,
+            "looks": 1,
+            "money": 855,
+            "reputation": 5
+          },
+          "nextEventId": 765,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 112,
+            "reputation": 2
+          },
+          "nextEventId": 766,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 765,
+    "title": "Event 765: Big Decision",
+    "description": "This is a major event in your life. Scenario #765 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": 2,
+            "smarts": 2,
+            "looks": 1,
+            "money": 376,
+            "reputation": -2
+          },
+          "nextEventId": 766,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": -2,
+            "smarts": 0,
+            "looks": 0,
+            "money": -415,
+            "reputation": 0
+          },
+          "nextEventId": 767,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 766,
+    "title": "Event 766: Crisis",
+    "description": "This is a major event in your life. Scenario #766 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -5,
+            "happiness": -5,
+            "smarts": 4,
+            "looks": 1,
+            "money": 2512,
+            "reputation": 0
+          },
+          "nextEventId": 767,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": -23,
+            "reputation": 2
+          },
+          "nextEventId": 768,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 767,
+    "title": "Event 767: Opportunity",
+    "description": "This is a major event in your life. Scenario #767 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 3,
+            "happiness": -5,
+            "smarts": -2,
+            "looks": -1,
+            "money": 2293,
+            "reputation": 3
+          },
+          "nextEventId": 768,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": 1,
+            "smarts": 0,
+            "looks": 0,
+            "money": 579,
+            "reputation": 1
+          },
+          "nextEventId": 769,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 768,
+    "title": "Event 768: Life Change",
+    "description": "This is a major event in your life. Scenario #768 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": -3,
+            "smarts": 1,
+            "looks": -1,
+            "money": 1576,
+            "reputation": 4
+          },
+          "nextEventId": 769,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": 0,
+            "smarts": 0,
+            "looks": 0,
+            "money": -389,
+            "reputation": 0
+          },
+          "nextEventId": 770,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 769,
+    "title": "Event 769: Opportunity",
+    "description": "This is a major event in your life. Scenario #769 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 5,
+            "happiness": 6,
+            "smarts": 0,
+            "looks": -1,
+            "money": 2361,
+            "reputation": 3
+          },
+          "nextEventId": 770,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": -1,
+            "smarts": 0,
+            "looks": 0,
+            "money": 313,
+            "reputation": 1
+          },
+          "nextEventId": 771,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 770,
+    "title": "Event 770: Crisis",
+    "description": "This is a major event in your life. Scenario #770 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": 9,
+            "smarts": -1,
+            "looks": 0,
+            "money": 2166,
+            "reputation": 0
+          },
+          "nextEventId": 771,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": 0,
+            "smarts": 0,
+            "looks": 0,
+            "money": 646,
+            "reputation": 0
+          },
+          "nextEventId": 772,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 771,
+    "title": "Event 771: Crisis",
+    "description": "This is a major event in your life. Scenario #771 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -4,
+            "happiness": 7,
+            "smarts": 2,
+            "looks": 2,
+            "money": 2786,
+            "reputation": -1
+          },
+          "nextEventId": 772,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": -268,
+            "reputation": 2
+          },
+          "nextEventId": 773,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 772,
+    "title": "Event 772: Crisis",
+    "description": "This is a major event in your life. Scenario #772 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": 1,
+            "smarts": 3,
+            "looks": 2,
+            "money": 2047,
+            "reputation": -1
+          },
+          "nextEventId": 773,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": -43,
+            "reputation": 0
+          },
+          "nextEventId": 774,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 773,
+    "title": "Event 773: Big Decision",
+    "description": "This is a major event in your life. Scenario #773 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 3,
+            "happiness": 8,
+            "smarts": -1,
+            "looks": 1,
+            "money": -525,
+            "reputation": 1
+          },
+          "nextEventId": 774,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 885,
+            "reputation": 0
+          },
+          "nextEventId": 775,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 774,
+    "title": "Event 774: Life Change",
+    "description": "This is a major event in your life. Scenario #774 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -5,
+            "happiness": 10,
+            "smarts": -2,
+            "looks": 1,
+            "money": -989,
+            "reputation": 5
+          },
+          "nextEventId": 775,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 974,
+            "reputation": 2
+          },
+          "nextEventId": 776,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 775,
+    "title": "Event 775: Big Decision",
+    "description": "This is a major event in your life. Scenario #775 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": 2,
+            "smarts": 4,
+            "looks": -1,
+            "money": -533,
+            "reputation": 2
+          },
+          "nextEventId": 776,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": 1,
+            "smarts": 0,
+            "looks": 0,
+            "money": -310,
+            "reputation": 2
+          },
+          "nextEventId": 777,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 776,
+    "title": "Event 776: Crisis",
+    "description": "This is a major event in your life. Scenario #776 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 4,
+            "happiness": 5,
+            "smarts": 3,
+            "looks": 2,
+            "money": -843,
+            "reputation": 4
+          },
+          "nextEventId": 777,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": 0,
+            "smarts": 0,
+            "looks": 0,
+            "money": 469,
+            "reputation": 2
+          },
+          "nextEventId": 778,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 777,
+    "title": "Event 777: Surprise",
+    "description": "This is a major event in your life. Scenario #777 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -2,
+            "happiness": 8,
+            "smarts": 3,
+            "looks": 0,
+            "money": 1778,
+            "reputation": -2
+          },
+          "nextEventId": 778,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": -438,
+            "reputation": 0
+          },
+          "nextEventId": 779,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 778,
+    "title": "Event 778: Life Change",
+    "description": "This is a major event in your life. Scenario #778 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -2,
+            "happiness": 6,
+            "smarts": -1,
+            "looks": 0,
+            "money": 1987,
+            "reputation": 2
+          },
+          "nextEventId": 779,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": 1,
+            "smarts": 0,
+            "looks": 0,
+            "money": 0,
+            "reputation": -1
+          },
+          "nextEventId": 780,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 779,
+    "title": "Event 779: Crisis",
+    "description": "This is a major event in your life. Scenario #779 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 4,
+            "happiness": -1,
+            "smarts": 3,
+            "looks": 1,
+            "money": 1946,
+            "reputation": -1
+          },
+          "nextEventId": 780,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": 1,
+            "smarts": 0,
+            "looks": 0,
+            "money": 444,
+            "reputation": 2
+          },
+          "nextEventId": 781,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 780,
+    "title": "Event 780: Surprise",
+    "description": "This is a major event in your life. Scenario #780 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 4,
+            "happiness": -4,
+            "smarts": -2,
+            "looks": -2,
+            "money": 1672,
+            "reputation": 0
+          },
+          "nextEventId": 781,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": -2,
+            "smarts": 0,
+            "looks": 0,
+            "money": -426,
+            "reputation": 0
+          },
+          "nextEventId": 782,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 781,
+    "title": "Event 781: Life Change",
+    "description": "This is a major event in your life. Scenario #781 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 5,
+            "happiness": 9,
+            "smarts": -1,
+            "looks": 2,
+            "money": -115,
+            "reputation": 1
+          },
+          "nextEventId": 782,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": -1,
+            "smarts": 0,
+            "looks": 0,
+            "money": -434,
+            "reputation": 2
+          },
+          "nextEventId": 783,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 782,
+    "title": "Event 782: Big Decision",
+    "description": "This is a major event in your life. Scenario #782 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 4,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": -2,
+            "money": 1473,
+            "reputation": 2
+          },
+          "nextEventId": 783,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": -2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 292,
+            "reputation": -1
+          },
+          "nextEventId": 784,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 783,
+    "title": "Event 783: Life Change",
+    "description": "This is a major event in your life. Scenario #783 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": 0,
+            "smarts": -2,
+            "looks": -2,
+            "money": 495,
+            "reputation": 5
+          },
+          "nextEventId": 784,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": -2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 143,
+            "reputation": 1
+          },
+          "nextEventId": 785,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 784,
+    "title": "Event 784: Life Change",
+    "description": "This is a major event in your life. Scenario #784 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -2,
+            "happiness": 4,
+            "smarts": 4,
+            "looks": 0,
+            "money": 2937,
+            "reputation": 3
+          },
+          "nextEventId": 785,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": -230,
+            "reputation": 2
+          },
+          "nextEventId": 786,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 785,
+    "title": "Event 785: Opportunity",
+    "description": "This is a major event in your life. Scenario #785 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -2,
+            "happiness": 7,
+            "smarts": 3,
+            "looks": -2,
+            "money": -966,
+            "reputation": 0
+          },
+          "nextEventId": 786,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": -2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 372,
+            "reputation": -1
+          },
+          "nextEventId": 787,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 786,
+    "title": "Event 786: Crisis",
+    "description": "This is a major event in your life. Scenario #786 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -4,
+            "happiness": 4,
+            "smarts": -2,
+            "looks": 0,
+            "money": -997,
+            "reputation": -2
+          },
+          "nextEventId": 787,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 427,
+            "reputation": -1
+          },
+          "nextEventId": 788,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 787,
+    "title": "Event 787: Crisis",
+    "description": "This is a major event in your life. Scenario #787 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 5,
+            "happiness": 6,
+            "smarts": 3,
+            "looks": 0,
+            "money": 1206,
+            "reputation": 5
+          },
+          "nextEventId": 788,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": 1,
+            "smarts": 0,
+            "looks": 0,
+            "money": -393,
+            "reputation": 1
+          },
+          "nextEventId": 789,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 788,
+    "title": "Event 788: Crisis",
+    "description": "This is a major event in your life. Scenario #788 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -3,
+            "happiness": 9,
+            "smarts": -1,
+            "looks": 1,
+            "money": 1753,
+            "reputation": -3
+          },
+          "nextEventId": 789,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 797,
+            "reputation": 2
+          },
+          "nextEventId": 790,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 789,
+    "title": "Event 789: Surprise",
+    "description": "This is a major event in your life. Scenario #789 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -2,
+            "happiness": 10,
+            "smarts": 4,
+            "looks": -1,
+            "money": -946,
+            "reputation": -1
+          },
+          "nextEventId": 790,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": 0,
+            "smarts": 0,
+            "looks": 0,
+            "money": -256,
+            "reputation": 0
+          },
+          "nextEventId": 791,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 790,
+    "title": "Event 790: Big Decision",
+    "description": "This is a major event in your life. Scenario #790 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -3,
+            "happiness": 6,
+            "smarts": 3,
+            "looks": -2,
+            "money": 2886,
+            "reputation": 1
+          },
+          "nextEventId": 791,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": 0,
+            "smarts": 0,
+            "looks": 0,
+            "money": -133,
+            "reputation": 1
+          },
+          "nextEventId": 792,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 791,
+    "title": "Event 791: Life Change",
+    "description": "This is a major event in your life. Scenario #791 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -4,
+            "happiness": 1,
+            "smarts": 1,
+            "looks": 2,
+            "money": 132,
+            "reputation": 2
+          },
+          "nextEventId": 792,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": 0,
+            "smarts": 0,
+            "looks": 0,
+            "money": 468,
+            "reputation": -1
+          },
+          "nextEventId": 793,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 792,
+    "title": "Event 792: Surprise",
+    "description": "This is a major event in your life. Scenario #792 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 4,
+            "happiness": 2,
+            "smarts": 3,
+            "looks": 2,
+            "money": 160,
+            "reputation": 4
+          },
+          "nextEventId": 793,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 4,
+            "reputation": 1
+          },
+          "nextEventId": 794,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 793,
+    "title": "Event 793: Crisis",
+    "description": "This is a major event in your life. Scenario #793 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -2,
+            "happiness": 4,
+            "smarts": 4,
+            "looks": 1,
+            "money": -302,
+            "reputation": 4
+          },
+          "nextEventId": 794,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": -2,
+            "smarts": 0,
+            "looks": 0,
+            "money": -196,
+            "reputation": 2
+          },
+          "nextEventId": 795,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 794,
+    "title": "Event 794: Life Change",
+    "description": "This is a major event in your life. Scenario #794 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": 2,
+            "smarts": 3,
+            "looks": -2,
+            "money": 2528,
+            "reputation": -1
+          },
+          "nextEventId": 795,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": 2,
+            "smarts": 0,
+            "looks": 0,
+            "money": 154,
+            "reputation": 2
+          },
+          "nextEventId": 796,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 795,
+    "title": "Event 795: Big Decision",
+    "description": "This is a major event in your life. Scenario #795 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 3,
+            "happiness": 5,
+            "smarts": 4,
+            "looks": -1,
+            "money": 2627,
+            "reputation": -3
+          },
+          "nextEventId": 796,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": 1,
+            "smarts": 0,
+            "looks": 0,
+            "money": 206,
+            "reputation": 2
+          },
+          "nextEventId": 797,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 796,
+    "title": "Event 796: Big Decision",
+    "description": "This is a major event in your life. Scenario #796 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": 4,
+            "smarts": 4,
+            "looks": 2,
+            "money": -590,
+            "reputation": 1
+          },
+          "nextEventId": 797,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 0,
+            "happiness": 0,
+            "smarts": 0,
+            "looks": 0,
+            "money": 452,
+            "reputation": 2
+          },
+          "nextEventId": 798,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 797,
+    "title": "Event 797: Crisis",
+    "description": "This is a major event in your life. Scenario #797 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -2,
+            "happiness": -3,
+            "smarts": -1,
+            "looks": -2,
+            "money": 1998,
+            "reputation": 2
+          },
+          "nextEventId": 798,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": -1,
+            "smarts": 0,
+            "looks": 0,
+            "money": 732,
+            "reputation": 1
+          },
+          "nextEventId": 799,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 798,
+    "title": "Event 798: Big Decision",
+    "description": "This is a major event in your life. Scenario #798 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -5,
+            "happiness": 3,
+            "smarts": 2,
+            "looks": -2,
+            "money": -702,
+            "reputation": 3
+          },
+          "nextEventId": 799,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": 0,
+            "smarts": 0,
+            "looks": 0,
+            "money": 918,
+            "reputation": 0
+          },
+          "nextEventId": 800,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 799,
+    "title": "Event 799: Surprise",
+    "description": "This is a major event in your life. Scenario #799 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": 1,
+            "happiness": 6,
+            "smarts": 4,
+            "looks": -1,
+            "money": 2509,
+            "reputation": -2
+          },
+          "nextEventId": 800,
+          "unlockAchievementId": null
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": -1,
+            "happiness": 0,
+            "smarts": 0,
+            "looks": 0,
+            "money": 267,
+            "reputation": 1
+          },
+          "nextEventId": 801,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  },
+  {
+    "id": 800,
+    "title": "Event 800: Life Change",
+    "description": "This is a major event in your life. Scenario #800 unfolds.",
+    "choices": [
+      {
+        "text": "Go for it!",
+        "result": {
+          "statChanges": {
+            "health": -2,
+            "happiness": -2,
+            "smarts": 2,
+            "looks": -1,
+            "money": 1303,
+            "reputation": 4
+          },
+          "nextEventId": 801,
+          "unlockAchievementId": 17
+        }
+      },
+      {
+        "text": "Play it safe.",
+        "result": {
+          "statChanges": {
+            "health": 2,
+            "happiness": 0,
+            "smarts": 0,
+            "looks": 0,
+            "money": 644,
+            "reputation": 2
+          },
+          "nextEventId": 802,
+          "unlockAchievementId": null
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,13 @@
+<!-- app/src/main/res/drawable/ic_phd.xml -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <path
+      android:pathData="M12,2l-3,3v2H6v3h2v10c0,1.1 0.9,2 2,2h4c1.1,0 2,-0.9 2,-2L16,8h2L18,5l-3,-3h-3z"
+      android:fillColor="#38A169"/>
+  <path
+      android:pathData="M10,14h4v2h-4z"
+      android:fillColor="#38A169"/>
+</vector>

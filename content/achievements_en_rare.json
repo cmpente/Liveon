@@ -1,0 +1,352 @@
+[
+  {
+    "id": 51,
+    "name": "Rare Achievement 51: Millionaire",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_1.png"
+  },
+  {
+    "id": 52,
+    "name": "Rare Achievement 52: Millionaire",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_2.png"
+  },
+  {
+    "id": 53,
+    "name": "Rare Achievement 53: All Careers",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_3.png"
+  },
+  {
+    "id": 54,
+    "name": "Rare Achievement 54: Escaped Prison",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_4.png"
+  },
+  {
+    "id": 55,
+    "name": "Rare Achievement 55: Millionaire",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_5.png"
+  },
+  {
+    "id": 56,
+    "name": "Rare Achievement 56: Escaped Prison",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_6.png"
+  },
+  {
+    "id": 57,
+    "name": "Rare Achievement 57: Escaped Prison",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_7.png"
+  },
+  {
+    "id": 58,
+    "name": "Rare Achievement 58: Millionaire",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_8.png"
+  },
+  {
+    "id": 59,
+    "name": "Rare Achievement 59: Escaped Prison",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_9.png"
+  },
+  {
+    "id": 60,
+    "name": "Rare Achievement 60: Escaped Prison",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_10.png"
+  },
+  {
+    "id": 61,
+    "name": "Rare Achievement 61: All Careers",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_11.png"
+  },
+  {
+    "id": 62,
+    "name": "Rare Achievement 62: All Careers",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_12.png"
+  },
+  {
+    "id": 63,
+    "name": "Rare Achievement 63: All Careers",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_13.png"
+  },
+  {
+    "id": 64,
+    "name": "Rare Achievement 64: Millionaire",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_14.png"
+  },
+  {
+    "id": 65,
+    "name": "Rare Achievement 65: All Careers",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_15.png"
+  },
+  {
+    "id": 66,
+    "name": "Rare Achievement 66: Millionaire",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_16.png"
+  },
+  {
+    "id": 67,
+    "name": "Rare Achievement 67: Millionaire",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_17.png"
+  },
+  {
+    "id": 68,
+    "name": "Rare Achievement 68: All Careers",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_18.png"
+  },
+  {
+    "id": 69,
+    "name": "Rare Achievement 69: Millionaire",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_19.png"
+  },
+  {
+    "id": 70,
+    "name": "Rare Achievement 70: Escaped Prison",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_20.png"
+  },
+  {
+    "id": 71,
+    "name": "Rare Achievement 71: Escaped Prison",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_21.png"
+  },
+  {
+    "id": 72,
+    "name": "Rare Achievement 72: Millionaire",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_22.png"
+  },
+  {
+    "id": 73,
+    "name": "Rare Achievement 73: Millionaire",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_23.png"
+  },
+  {
+    "id": 74,
+    "name": "Rare Achievement 74: Millionaire",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_24.png"
+  },
+  {
+    "id": 75,
+    "name": "Rare Achievement 75: Millionaire",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_25.png"
+  },
+  {
+    "id": 76,
+    "name": "Rare Achievement 76: Escaped Prison",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_26.png"
+  },
+  {
+    "id": 77,
+    "name": "Rare Achievement 77: Escaped Prison",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_27.png"
+  },
+  {
+    "id": 78,
+    "name": "Rare Achievement 78: All Careers",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_28.png"
+  },
+  {
+    "id": 79,
+    "name": "Rare Achievement 79: Millionaire",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_29.png"
+  },
+  {
+    "id": 80,
+    "name": "Rare Achievement 80: All Careers",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_30.png"
+  },
+  {
+    "id": 81,
+    "name": "Rare Achievement 81: Escaped Prison",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_31.png"
+  },
+  {
+    "id": 82,
+    "name": "Rare Achievement 82: Escaped Prison",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_32.png"
+  },
+  {
+    "id": 83,
+    "name": "Rare Achievement 83: Millionaire",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_33.png"
+  },
+  {
+    "id": 84,
+    "name": "Rare Achievement 84: All Careers",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_34.png"
+  },
+  {
+    "id": 85,
+    "name": "Rare Achievement 85: All Careers",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_35.png"
+  },
+  {
+    "id": 86,
+    "name": "Rare Achievement 86: Millionaire",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_36.png"
+  },
+  {
+    "id": 87,
+    "name": "Rare Achievement 87: Escaped Prison",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_37.png"
+  },
+  {
+    "id": 88,
+    "name": "Rare Achievement 88: Escaped Prison",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_38.png"
+  },
+  {
+    "id": 89,
+    "name": "Rare Achievement 89: All Careers",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_39.png"
+  },
+  {
+    "id": 90,
+    "name": "Rare Achievement 90: All Careers",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_40.png"
+  },
+  {
+    "id": 91,
+    "name": "Rare Achievement 91: Escaped Prison",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_41.png"
+  },
+  {
+    "id": 92,
+    "name": "Rare Achievement 92: All Careers",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_42.png"
+  },
+  {
+    "id": 93,
+    "name": "Rare Achievement 93: All Careers",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_43.png"
+  },
+  {
+    "id": 94,
+    "name": "Rare Achievement 94: All Careers",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_44.png"
+  },
+  {
+    "id": 95,
+    "name": "Rare Achievement 95: Escaped Prison",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_45.png"
+  },
+  {
+    "id": 96,
+    "name": "Rare Achievement 96: Millionaire",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_46.png"
+  },
+  {
+    "id": 97,
+    "name": "Rare Achievement 97: All Careers",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_47.png"
+  },
+  {
+    "id": 98,
+    "name": "Rare Achievement 98: Millionaire",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_48.png"
+  },
+  {
+    "id": 99,
+    "name": "Rare Achievement 99: Millionaire",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_49.png"
+  },
+  {
+    "id": 100,
+    "name": "Rare Achievement 100: All Careers",
+    "description": "Unlock this rare feat.",
+    "type": "RARE_EVENT",
+    "icon": "icon_rare_50.png"
+  }
+]

@@ -1,0 +1,352 @@
+[
+  {
+    "id": 1,
+    "name": "Life Achievement 1: New Career",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_1.png"
+  },
+  {
+    "id": 2,
+    "name": "Life Achievement 2: Marriage",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_2.png"
+  },
+  {
+    "id": 3,
+    "name": "Life Achievement 3: Marriage",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_3.png"
+  },
+  {
+    "id": 4,
+    "name": "Life Achievement 4: Marriage",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_4.png"
+  },
+  {
+    "id": 5,
+    "name": "Life Achievement 5: New Career",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_5.png"
+  },
+  {
+    "id": 6,
+    "name": "Life Achievement 6: First Love",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_6.png"
+  },
+  {
+    "id": 7,
+    "name": "Life Achievement 7: New Career",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_7.png"
+  },
+  {
+    "id": 8,
+    "name": "Life Achievement 8: Graduate",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_8.png"
+  },
+  {
+    "id": 9,
+    "name": "Life Achievement 9: New Career",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_9.png"
+  },
+  {
+    "id": 10,
+    "name": "Life Achievement 10: First Love",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_10.png"
+  },
+  {
+    "id": 11,
+    "name": "Life Achievement 11: Marriage",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_11.png"
+  },
+  {
+    "id": 12,
+    "name": "Life Achievement 12: First Love",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_12.png"
+  },
+  {
+    "id": 13,
+    "name": "Life Achievement 13: Marriage",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_13.png"
+  },
+  {
+    "id": 14,
+    "name": "Life Achievement 14: New Career",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_14.png"
+  },
+  {
+    "id": 15,
+    "name": "Life Achievement 15: Marriage",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_15.png"
+  },
+  {
+    "id": 16,
+    "name": "Life Achievement 16: First Love",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_16.png"
+  },
+  {
+    "id": 17,
+    "name": "Life Achievement 17: Marriage",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_17.png"
+  },
+  {
+    "id": 18,
+    "name": "Life Achievement 18: Graduate",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_18.png"
+  },
+  {
+    "id": 19,
+    "name": "Life Achievement 19: Graduate",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_19.png"
+  },
+  {
+    "id": 20,
+    "name": "Life Achievement 20: Marriage",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_20.png"
+  },
+  {
+    "id": 21,
+    "name": "Life Achievement 21: New Career",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_21.png"
+  },
+  {
+    "id": 22,
+    "name": "Life Achievement 22: Graduate",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_22.png"
+  },
+  {
+    "id": 23,
+    "name": "Life Achievement 23: Graduate",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_23.png"
+  },
+  {
+    "id": 24,
+    "name": "Life Achievement 24: Marriage",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_24.png"
+  },
+  {
+    "id": 25,
+    "name": "Life Achievement 25: First Love",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_25.png"
+  },
+  {
+    "id": 26,
+    "name": "Life Achievement 26: Graduate",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_26.png"
+  },
+  {
+    "id": 27,
+    "name": "Life Achievement 27: First Love",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_27.png"
+  },
+  {
+    "id": 28,
+    "name": "Life Achievement 28: New Career",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_28.png"
+  },
+  {
+    "id": 29,
+    "name": "Life Achievement 29: First Love",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_29.png"
+  },
+  {
+    "id": 30,
+    "name": "Life Achievement 30: New Career",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_30.png"
+  },
+  {
+    "id": 31,
+    "name": "Life Achievement 31: New Career",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_31.png"
+  },
+  {
+    "id": 32,
+    "name": "Life Achievement 32: Marriage",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_32.png"
+  },
+  {
+    "id": 33,
+    "name": "Life Achievement 33: Graduate",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_33.png"
+  },
+  {
+    "id": 34,
+    "name": "Life Achievement 34: First Love",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_34.png"
+  },
+  {
+    "id": 35,
+    "name": "Life Achievement 35: New Career",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_35.png"
+  },
+  {
+    "id": 36,
+    "name": "Life Achievement 36: New Career",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_36.png"
+  },
+  {
+    "id": 37,
+    "name": "Life Achievement 37: New Career",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_37.png"
+  },
+  {
+    "id": 38,
+    "name": "Life Achievement 38: New Career",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_38.png"
+  },
+  {
+    "id": 39,
+    "name": "Life Achievement 39: Marriage",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_39.png"
+  },
+  {
+    "id": 40,
+    "name": "Life Achievement 40: Graduate",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_40.png"
+  },
+  {
+    "id": 41,
+    "name": "Life Achievement 41: First Love",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_41.png"
+  },
+  {
+    "id": 42,
+    "name": "Life Achievement 42: First Love",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_42.png"
+  },
+  {
+    "id": 43,
+    "name": "Life Achievement 43: First Love",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_43.png"
+  },
+  {
+    "id": 44,
+    "name": "Life Achievement 44: New Career",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_44.png"
+  },
+  {
+    "id": 45,
+    "name": "Life Achievement 45: First Love",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_45.png"
+  },
+  {
+    "id": 46,
+    "name": "Life Achievement 46: First Love",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_46.png"
+  },
+  {
+    "id": 47,
+    "name": "Life Achievement 47: New Career",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_47.png"
+  },
+  {
+    "id": 48,
+    "name": "Life Achievement 48: Marriage",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_48.png"
+  },
+  {
+    "id": 49,
+    "name": "Life Achievement 49: Graduate",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_49.png"
+  },
+  {
+    "id": 50,
+    "name": "Life Achievement 50: New Career",
+    "description": "Achieve a major life milestone.",
+    "type": "LIFESPAN",
+    "icon": "icon_life_50.png"
+  }
+]

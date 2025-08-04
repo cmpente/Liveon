@@ -1,0 +1,1477 @@
+[
+  {
+    "id": 1,
+    "title": "Classic Scenario 1: Ordinary Start",
+    "description": "Start life as an average child in an average place.",
+    "startingCharacter": {
+      "firstName": "Drew",
+      "lastName": "Bailey",
+      "gender": "OTHER",
+      "age": 0,
+      "health": 80,
+      "happiness": 80,
+      "smarts": 70,
+      "looks": 60,
+      "money": 0,
+      "reputation": 0,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 1001,
+        "title": "Event 1001: Surprise",
+        "description": "This is a major event in your life. Scenario #1001 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": 8,
+                "smarts": -1,
+                "looks": -2,
+                "money": 336,
+                "reputation": -3
+              },
+              "nextEventId": 1002,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": 1,
+                "smarts": 0,
+                "looks": 0,
+                "money": -254,
+                "reputation": 1
+              },
+              "nextEventId": 1003,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Classic Scenario 2: City Life",
+    "description": "Start life as an average child in an average place.",
+    "startingCharacter": {
+      "firstName": "Jordan",
+      "lastName": "Morgan",
+      "gender": "OTHER",
+      "age": 0,
+      "health": 80,
+      "happiness": 80,
+      "smarts": 70,
+      "looks": 60,
+      "money": 0,
+      "reputation": 0,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 1002,
+        "title": "Event 1002: Crisis",
+        "description": "This is a major event in your life. Scenario #1002 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -4,
+                "happiness": -5,
+                "smarts": -1,
+                "looks": -1,
+                "money": 218,
+                "reputation": 1
+              },
+              "nextEventId": 1003,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 0,
+                "happiness": 0,
+                "smarts": 0,
+                "looks": 0,
+                "money": -195,
+                "reputation": -1
+              },
+              "nextEventId": 1004,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Classic Scenario 3: City Life",
+    "description": "Start life as an average child in an average place.",
+    "startingCharacter": {
+      "firstName": "Casey",
+      "lastName": "Taylor",
+      "gender": "OTHER",
+      "age": 0,
+      "health": 80,
+      "happiness": 80,
+      "smarts": 70,
+      "looks": 60,
+      "money": 0,
+      "reputation": 0,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 1003,
+        "title": "Event 1003: Big Decision",
+        "description": "This is a major event in your life. Scenario #1003 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": 3,
+                "happiness": 0,
+                "smarts": -1,
+                "looks": 0,
+                "money": 1513,
+                "reputation": 0
+              },
+              "nextEventId": 1004,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 0,
+                "happiness": 2,
+                "smarts": 0,
+                "looks": 0,
+                "money": 674,
+                "reputation": 0
+              },
+              "nextEventId": 1005,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Classic Scenario 4: Ordinary Start",
+    "description": "Start life as an average child in an average place.",
+    "startingCharacter": {
+      "firstName": "Peyton",
+      "lastName": "Morgan",
+      "gender": "OTHER",
+      "age": 0,
+      "health": 80,
+      "happiness": 80,
+      "smarts": 70,
+      "looks": 60,
+      "money": 0,
+      "reputation": 0,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 1004,
+        "title": "Event 1004: Crisis",
+        "description": "This is a major event in your life. Scenario #1004 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -2,
+                "happiness": 0,
+                "smarts": 1,
+                "looks": 2,
+                "money": -730,
+                "reputation": -3
+              },
+              "nextEventId": 1005,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": -1,
+                "happiness": 2,
+                "smarts": 0,
+                "looks": 0,
+                "money": -72,
+                "reputation": -1
+              },
+              "nextEventId": 1006,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Classic Scenario 5: Humble Beginnings",
+    "description": "Start life as an average child in an average place.",
+    "startingCharacter": {
+      "firstName": "Alex",
+      "lastName": "Taylor",
+      "gender": "OTHER",
+      "age": 0,
+      "health": 80,
+      "happiness": 80,
+      "smarts": 70,
+      "looks": 60,
+      "money": 0,
+      "reputation": 0,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 1005,
+        "title": "Event 1005: Crisis",
+        "description": "This is a major event in your life. Scenario #1005 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": 0,
+                "happiness": 7,
+                "smarts": 4,
+                "looks": -1,
+                "money": -917,
+                "reputation": 4
+              },
+              "nextEventId": 1006,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": 2,
+                "smarts": 0,
+                "looks": 0,
+                "money": 6,
+                "reputation": -1
+              },
+              "nextEventId": 1007,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "title": "Classic Scenario 6: City Life",
+    "description": "Start life as an average child in an average place.",
+    "startingCharacter": {
+      "firstName": "Drew",
+      "lastName": "Peyton",
+      "gender": "MALE",
+      "age": 0,
+      "health": 80,
+      "happiness": 80,
+      "smarts": 70,
+      "looks": 60,
+      "money": 0,
+      "reputation": 0,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 1006,
+        "title": "Event 1006: Surprise",
+        "description": "This is a major event in your life. Scenario #1006 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": -2,
+                "smarts": 0,
+                "looks": 2,
+                "money": 1923,
+                "reputation": -3
+              },
+              "nextEventId": 1007,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": 0,
+                "smarts": 0,
+                "looks": 0,
+                "money": 845,
+                "reputation": 0
+              },
+              "nextEventId": 1008,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "title": "Classic Scenario 7: City Life",
+    "description": "Start life as an average child in an average place.",
+    "startingCharacter": {
+      "firstName": "Casey",
+      "lastName": "Peyton",
+      "gender": "FEMALE",
+      "age": 0,
+      "health": 80,
+      "happiness": 80,
+      "smarts": 70,
+      "looks": 60,
+      "money": 0,
+      "reputation": 0,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 1007,
+        "title": "Event 1007: Life Change",
+        "description": "This is a major event in your life. Scenario #1007 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": 3,
+                "smarts": -1,
+                "looks": 2,
+                "money": 1953,
+                "reputation": 4
+              },
+              "nextEventId": 1008,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": -1,
+                "happiness": 1,
+                "smarts": 0,
+                "looks": 0,
+                "money": -493,
+                "reputation": -1
+              },
+              "nextEventId": 1009,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "title": "Classic Scenario 8: Ordinary Start",
+    "description": "Start life as an average child in an average place.",
+    "startingCharacter": {
+      "firstName": "Sam",
+      "lastName": "Morgan",
+      "gender": "FEMALE",
+      "age": 0,
+      "health": 80,
+      "happiness": 80,
+      "smarts": 70,
+      "looks": 60,
+      "money": 0,
+      "reputation": 0,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 1008,
+        "title": "Event 1008: Life Change",
+        "description": "This is a major event in your life. Scenario #1008 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": 2,
+                "happiness": 1,
+                "smarts": 0,
+                "looks": -1,
+                "money": 2200,
+                "reputation": 2
+              },
+              "nextEventId": 1009,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": 2,
+                "smarts": 0,
+                "looks": 0,
+                "money": 150,
+                "reputation": 2
+              },
+              "nextEventId": 1010,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "title": "Classic Scenario 9: Ordinary Start",
+    "description": "Start life as an average child in an average place.",
+    "startingCharacter": {
+      "firstName": "Alex",
+      "lastName": "Jordan",
+      "gender": "OTHER",
+      "age": 0,
+      "health": 80,
+      "happiness": 80,
+      "smarts": 70,
+      "looks": 60,
+      "money": 0,
+      "reputation": 0,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 1009,
+        "title": "Event 1009: Opportunity",
+        "description": "This is a major event in your life. Scenario #1009 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -1,
+                "happiness": 4,
+                "smarts": 2,
+                "looks": -2,
+                "money": 2841,
+                "reputation": 1
+              },
+              "nextEventId": 1010,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": 2,
+                "smarts": 0,
+                "looks": 0,
+                "money": 595,
+                "reputation": 2
+              },
+              "nextEventId": 1011,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "title": "Classic Scenario 10: Ordinary Start",
+    "description": "Start life as an average child in an average place.",
+    "startingCharacter": {
+      "firstName": "Casey",
+      "lastName": "Riley",
+      "gender": "FEMALE",
+      "age": 0,
+      "health": 80,
+      "happiness": 80,
+      "smarts": 70,
+      "looks": 60,
+      "money": 0,
+      "reputation": 0,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 1010,
+        "title": "Event 1010: Surprise",
+        "description": "This is a major event in your life. Scenario #1010 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -4,
+                "happiness": 0,
+                "smarts": 1,
+                "looks": -2,
+                "money": 949,
+                "reputation": -2
+              },
+              "nextEventId": 1011,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 2,
+                "happiness": -1,
+                "smarts": 0,
+                "looks": 0,
+                "money": 339,
+                "reputation": 0
+              },
+              "nextEventId": 1012,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "title": "Classic Scenario 11: Ordinary Start",
+    "description": "Start life as an average child in an average place.",
+    "startingCharacter": {
+      "firstName": "Alex",
+      "lastName": "Casey",
+      "gender": "FEMALE",
+      "age": 0,
+      "health": 80,
+      "happiness": 80,
+      "smarts": 70,
+      "looks": 60,
+      "money": 0,
+      "reputation": 0,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 1011,
+        "title": "Event 1011: Opportunity",
+        "description": "This is a major event in your life. Scenario #1011 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -3,
+                "happiness": 7,
+                "smarts": -1,
+                "looks": -1,
+                "money": 1249,
+                "reputation": 4
+              },
+              "nextEventId": 1012,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 0,
+                "happiness": -1,
+                "smarts": 0,
+                "looks": 0,
+                "money": 674,
+                "reputation": 0
+              },
+              "nextEventId": 1013,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "title": "Classic Scenario 12: City Life",
+    "description": "Start life as an average child in an average place.",
+    "startingCharacter": {
+      "firstName": "Morgan",
+      "lastName": "Bailey",
+      "gender": "MALE",
+      "age": 0,
+      "health": 80,
+      "happiness": 80,
+      "smarts": 70,
+      "looks": 60,
+      "money": 0,
+      "reputation": 0,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 1012,
+        "title": "Event 1012: Life Change",
+        "description": "This is a major event in your life. Scenario #1012 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -5,
+                "happiness": -2,
+                "smarts": 4,
+                "looks": -1,
+                "money": 909,
+                "reputation": -2
+              },
+              "nextEventId": 1013,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 2,
+                "happiness": -1,
+                "smarts": 0,
+                "looks": 0,
+                "money": 637,
+                "reputation": -1
+              },
+              "nextEventId": 1014,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "title": "Classic Scenario 13: City Life",
+    "description": "Start life as an average child in an average place.",
+    "startingCharacter": {
+      "firstName": "Peyton",
+      "lastName": "Sam",
+      "gender": "MALE",
+      "age": 0,
+      "health": 80,
+      "happiness": 80,
+      "smarts": 70,
+      "looks": 60,
+      "money": 0,
+      "reputation": 0,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 1013,
+        "title": "Event 1013: Life Change",
+        "description": "This is a major event in your life. Scenario #1013 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": 0,
+                "happiness": 3,
+                "smarts": 0,
+                "looks": 1,
+                "money": 2708,
+                "reputation": 5
+              },
+              "nextEventId": 1014,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": -1,
+                "happiness": 2,
+                "smarts": 0,
+                "looks": 0,
+                "money": 988,
+                "reputation": -1
+              },
+              "nextEventId": 1015,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "title": "Classic Scenario 14: City Life",
+    "description": "Start life as an average child in an average place.",
+    "startingCharacter": {
+      "firstName": "Peyton",
+      "lastName": "Peyton",
+      "gender": "FEMALE",
+      "age": 0,
+      "health": 80,
+      "happiness": 80,
+      "smarts": 70,
+      "looks": 60,
+      "money": 0,
+      "reputation": 0,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 1014,
+        "title": "Event 1014: Big Decision",
+        "description": "This is a major event in your life. Scenario #1014 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": 3,
+                "happiness": 2,
+                "smarts": 0,
+                "looks": 1,
+                "money": -130,
+                "reputation": 4
+              },
+              "nextEventId": 1015,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 2,
+                "happiness": -1,
+                "smarts": 0,
+                "looks": 0,
+                "money": -398,
+                "reputation": 2
+              },
+              "nextEventId": 1016,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "title": "Classic Scenario 15: Ordinary Start",
+    "description": "Start life as an average child in an average place.",
+    "startingCharacter": {
+      "firstName": "Alex",
+      "lastName": "Sam",
+      "gender": "OTHER",
+      "age": 0,
+      "health": 80,
+      "happiness": 80,
+      "smarts": 70,
+      "looks": 60,
+      "money": 0,
+      "reputation": 0,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 1015,
+        "title": "Event 1015: Surprise",
+        "description": "This is a major event in your life. Scenario #1015 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": 10,
+                "smarts": -1,
+                "looks": 1,
+                "money": 1687,
+                "reputation": 2
+              },
+              "nextEventId": 1016,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": -1,
+                "smarts": 0,
+                "looks": 0,
+                "money": 759,
+                "reputation": -1
+              },
+              "nextEventId": 1017,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "title": "Classic Scenario 16: Ordinary Start",
+    "description": "Start life as an average child in an average place.",
+    "startingCharacter": {
+      "firstName": "Jordan",
+      "lastName": "Casey",
+      "gender": "OTHER",
+      "age": 0,
+      "health": 80,
+      "happiness": 80,
+      "smarts": 70,
+      "looks": 60,
+      "money": 0,
+      "reputation": 0,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 1016,
+        "title": "Event 1016: Opportunity",
+        "description": "This is a major event in your life. Scenario #1016 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -4,
+                "happiness": -5,
+                "smarts": 4,
+                "looks": 2,
+                "money": 2439,
+                "reputation": -3
+              },
+              "nextEventId": 1017,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 2,
+                "happiness": -1,
+                "smarts": 0,
+                "looks": 0,
+                "money": -386,
+                "reputation": 0
+              },
+              "nextEventId": 1018,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "title": "Classic Scenario 17: Humble Beginnings",
+    "description": "Start life as an average child in an average place.",
+    "startingCharacter": {
+      "firstName": "Taylor",
+      "lastName": "Sam",
+      "gender": "OTHER",
+      "age": 0,
+      "health": 80,
+      "happiness": 80,
+      "smarts": 70,
+      "looks": 60,
+      "money": 0,
+      "reputation": 0,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 1017,
+        "title": "Event 1017: Surprise",
+        "description": "This is a major event in your life. Scenario #1017 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -1,
+                "happiness": -2,
+                "smarts": 4,
+                "looks": 0,
+                "money": 2596,
+                "reputation": 0
+              },
+              "nextEventId": 1018,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": -1,
+                "smarts": 0,
+                "looks": 0,
+                "money": -39,
+                "reputation": 0
+              },
+              "nextEventId": 1019,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "title": "Classic Scenario 18: Ordinary Start",
+    "description": "Start life as an average child in an average place.",
+    "startingCharacter": {
+      "firstName": "Drew",
+      "lastName": "Taylor",
+      "gender": "FEMALE",
+      "age": 0,
+      "health": 80,
+      "happiness": 80,
+      "smarts": 70,
+      "looks": 60,
+      "money": 0,
+      "reputation": 0,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 1018,
+        "title": "Event 1018: Crisis",
+        "description": "This is a major event in your life. Scenario #1018 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": 2,
+                "happiness": 6,
+                "smarts": 3,
+                "looks": -1,
+                "money": -197,
+                "reputation": 2
+              },
+              "nextEventId": 1019,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": 2,
+                "smarts": 0,
+                "looks": 0,
+                "money": 528,
+                "reputation": 0
+              },
+              "nextEventId": 1020,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 19,
+    "title": "Classic Scenario 19: City Life",
+    "description": "Start life as an average child in an average place.",
+    "startingCharacter": {
+      "firstName": "Bailey",
+      "lastName": "Taylor",
+      "gender": "OTHER",
+      "age": 0,
+      "health": 80,
+      "happiness": 80,
+      "smarts": 70,
+      "looks": 60,
+      "money": 0,
+      "reputation": 0,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 1019,
+        "title": "Event 1019: Life Change",
+        "description": "This is a major event in your life. Scenario #1019 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": 8,
+                "smarts": 4,
+                "looks": 1,
+                "money": -17,
+                "reputation": 2
+              },
+              "nextEventId": 1020,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": -1,
+                "happiness": 2,
+                "smarts": 0,
+                "looks": 0,
+                "money": 455,
+                "reputation": -1
+              },
+              "nextEventId": 1021,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "title": "Classic Scenario 20: City Life",
+    "description": "Start life as an average child in an average place.",
+    "startingCharacter": {
+      "firstName": "Peyton",
+      "lastName": "Bailey",
+      "gender": "FEMALE",
+      "age": 0,
+      "health": 80,
+      "happiness": 80,
+      "smarts": 70,
+      "looks": 60,
+      "money": 0,
+      "reputation": 0,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 1020,
+        "title": "Event 1020: Surprise",
+        "description": "This is a major event in your life. Scenario #1020 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": 0,
+                "smarts": 4,
+                "looks": 1,
+                "money": 1654,
+                "reputation": 4
+              },
+              "nextEventId": 1021,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": 2,
+                "smarts": 0,
+                "looks": 0,
+                "money": -378,
+                "reputation": 2
+              },
+              "nextEventId": 1022,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 21,
+    "title": "Classic Scenario 21: City Life",
+    "description": "Start life as an average child in an average place.",
+    "startingCharacter": {
+      "firstName": "Alex",
+      "lastName": "Bailey",
+      "gender": "FEMALE",
+      "age": 0,
+      "health": 80,
+      "happiness": 80,
+      "smarts": 70,
+      "looks": 60,
+      "money": 0,
+      "reputation": 0,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 1021,
+        "title": "Event 1021: Big Decision",
+        "description": "This is a major event in your life. Scenario #1021 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -3,
+                "happiness": 7,
+                "smarts": -2,
+                "looks": -1,
+                "money": 2300,
+                "reputation": 1
+              },
+              "nextEventId": 1022,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 2,
+                "happiness": 1,
+                "smarts": 0,
+                "looks": 0,
+                "money": 128,
+                "reputation": 1
+              },
+              "nextEventId": 1023,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 22,
+    "title": "Classic Scenario 22: Humble Beginnings",
+    "description": "Start life as an average child in an average place.",
+    "startingCharacter": {
+      "firstName": "Sam",
+      "lastName": "Drew",
+      "gender": "FEMALE",
+      "age": 0,
+      "health": 80,
+      "happiness": 80,
+      "smarts": 70,
+      "looks": 60,
+      "money": 0,
+      "reputation": 0,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 1022,
+        "title": "Event 1022: Crisis",
+        "description": "This is a major event in your life. Scenario #1022 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -4,
+                "happiness": 3,
+                "smarts": 1,
+                "looks": -2,
+                "money": 2275,
+                "reputation": 5
+              },
+              "nextEventId": 1023,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": -1,
+                "happiness": -1,
+                "smarts": 0,
+                "looks": 0,
+                "money": -135,
+                "reputation": 2
+              },
+              "nextEventId": 1024,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 23,
+    "title": "Classic Scenario 23: City Life",
+    "description": "Start life as an average child in an average place.",
+    "startingCharacter": {
+      "firstName": "Sam",
+      "lastName": "Taylor",
+      "gender": "OTHER",
+      "age": 0,
+      "health": 80,
+      "happiness": 80,
+      "smarts": 70,
+      "looks": 60,
+      "money": 0,
+      "reputation": 0,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 1023,
+        "title": "Event 1023: Opportunity",
+        "description": "This is a major event in your life. Scenario #1023 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": 4,
+                "smarts": 1,
+                "looks": -1,
+                "money": 1278,
+                "reputation": 4
+              },
+              "nextEventId": 1024,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 2,
+                "happiness": 2,
+                "smarts": 0,
+                "looks": 0,
+                "money": -453,
+                "reputation": -1
+              },
+              "nextEventId": 1025,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 24,
+    "title": "Classic Scenario 24: Humble Beginnings",
+    "description": "Start life as an average child in an average place.",
+    "startingCharacter": {
+      "firstName": "Morgan",
+      "lastName": "Drew",
+      "gender": "MALE",
+      "age": 0,
+      "health": 80,
+      "happiness": 80,
+      "smarts": 70,
+      "looks": 60,
+      "money": 0,
+      "reputation": 0,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 1024,
+        "title": "Event 1024: Big Decision",
+        "description": "This is a major event in your life. Scenario #1024 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": 2,
+                "happiness": 2,
+                "smarts": 4,
+                "looks": -2,
+                "money": 401,
+                "reputation": 1
+              },
+              "nextEventId": 1025,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": 1,
+                "happiness": -1,
+                "smarts": 0,
+                "looks": 0,
+                "money": 790,
+                "reputation": 1
+              },
+              "nextEventId": 1026,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 25,
+    "title": "Classic Scenario 25: Ordinary Start",
+    "description": "Start life as an average child in an average place.",
+    "startingCharacter": {
+      "firstName": "Sam",
+      "lastName": "Casey",
+      "gender": "OTHER",
+      "age": 0,
+      "health": 80,
+      "happiness": 80,
+      "smarts": 70,
+      "looks": 60,
+      "money": 0,
+      "reputation": 0,
+      "isAlive": true,
+      "relationships": [],
+      "achievements": []
+    },
+    "events": [
+      {
+        "id": 1025,
+        "title": "Event 1025: Big Decision",
+        "description": "This is a major event in your life. Scenario #1025 unfolds.",
+        "choices": [
+          {
+            "text": "Go for it!",
+            "result": {
+              "statChanges": {
+                "health": -2,
+                "happiness": 8,
+                "smarts": 4,
+                "looks": 1,
+                "money": -770,
+                "reputation": 2
+              },
+              "nextEventId": 1026,
+              "unlockAchievementId": null
+            }
+          },
+          {
+            "text": "Play it safe.",
+            "result": {
+              "statChanges": {
+                "health": -1,
+                "happiness": 2,
+                "smarts": 0,
+                "looks": 0,
+                "money": -498,
+                "reputation": 2
+              },
+              "nextEventId": 1027,
+              "unlockAchievementId": null
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,58 @@
+[
+  {
+    "id": "first_step",
+    "name": "First Step",
+    "description": "Take your first step in life",
+    "category": "milestone",
+    "points": 10,
+    "isSecret": false
+  },
+  {
+    "id": "school_graduate",
+    "name": "Graduate",
+    "description": "Finish high school",
+    "category": "education",
+    "points": 50,
+    "isSecret": false
+  },
+  {
+    "id": "first_job",
+    "name": "Career Starter",
+    "description": "Get your first job",
+    "category": "career",
+    "points": 30,
+    "isSecret": false
+  },
+  {
+    "id": "marriage_bell",
+    "name": "Marriage Bell",
+    "description": "Get married",
+    "category": "social",
+    "points": 100,
+    "isSecret": false
+  },
+  {
+    "id": "millionaire",
+    "name": "Millionaire",
+    "description": "Earn your first million",
+    "category": "finance",
+    "points": 200,
+    "isSecret": false
+  },
+  {
+    "id": "world_traveler",
+    "name": "World Traveler",
+    "description": "Visit 10 different countries",
+    "category": "adventure",
+    "points": 150,
+    "isSecret": false
+  },
+  {
+    "id": "centenarian",
+    "name": "Centenarian",
+    "description": "Live to 100 years old",
+    "category": "life",
+    "points": 500,
+    "isSecret": false
+  }
+]

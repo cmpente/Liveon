@@ -1,0 +1,24 @@
+<!-- app/src/main/res/drawable/ic_music_off.xml -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <path
+      android:pathData="M9,18V5l12,-2v13"
+      android:strokeLineJoin="round"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="#718096"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M6,11a3,3 0,1 0,0 -6,3 3,0 0,0 0,6zM18,11a3,3 0,1 0,0 -6,3 3,0 0,0 0,6z"
+      android:fillColor="#718096"/>
+  <path
+      android:pathData="M23,23L1,1"
+      android:strokeLineJoin="round"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="#E53E3E"
+      android:strokeLineCap="round"/>
+</vector>

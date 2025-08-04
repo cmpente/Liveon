@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Scenario",
+  "type": "object",
+  "required": ["id", "title", "description", "startingCharacter", "events"],
+  "properties": {
+    "id": { "type": "integer" },
+    "title": { "type": "string" },
+    "description": { "type": "string" },
+    "startingCharacter": {
+      "type": "object",
+      "required": ["firstName", "lastName", "gender", "age", "health", "happiness", "smarts", "looks", "money", "reputation"],
+      "properties": {
+        "firstName": { "type": "string" },
+        "lastName": { "type": "string" },
+        "gender": { "type": "string" },
+        "age": { "type": "integer" },
+        "health": { "type": "integer" },
+        "happiness": { "type": "integer" },
+        "smarts": { "type": "integer" },
+        "looks": { "type": "integer" },
+        "money": { "type": "integer" },
+        "reputation": { "type": "integer" },
+        "isAlive": { "type": "boolean" },
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string" },
+              "name": { "type": "string" },
+              "level": { "type": "integer" }
+            }
+          }
+        },
+        "achievements": {
+          "type": "array",
+          "items": { "type": "integer" }
+        }
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": { "$ref": "event_schema.json" }
+    }
+  }
+}

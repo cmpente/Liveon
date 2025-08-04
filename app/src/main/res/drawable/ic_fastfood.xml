@@ -1,0 +1,25 @@
+<!-- app/src/main/res/drawable/ic_fastfood.xml -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <path
+      android:pathData="M18.07,8.23l-2.83,-2.83c-0.78,-0.78 -2.05,-0.78 -2.83,0L9.59,8.23c-0.78,0.78 -0.78,2.05 0,2.83 0.78,0.78 2.05,0.78 2.83,0L15.24,8.23c0.78,-0.78 0.78,-2.05 0,-2.83z"
+      android:fillColor="#718096"/>
+  <path
+      android:pathData="M11,19h2v2h-2z"
+      android:fillColor="#718096"/>
+  <path
+      android:pathData="M7,19h2v2L7,21z"
+      android:fillColor="#718096"/>
+  <path
+      android:pathData="M15,19h2v2h-2z"
+      android:fillColor="#718096"/>
+  <path
+      android:pathData="M6.34,14.95l1.41,1.41L9,15l1.41,1.41 1.41,-1.41L12,12l1.41,-1.41 -1.41,-1.41L12,9 10.59,7.59 9,9 7.59,7.59 6.17,9 7.59,10.41 6.17,11.83 7.59,13.24 6.17,14.66l0.17,0.29z"
+      android:fillColor="#718096"/>
+  <path
+      android:pathData="M20,9v2h2L22,9zM2,9v2h2L4,9zM17,2h-2v2h2zM7,2L5,2v2h2z"
+      android:fillColor="#718096"/>
+</vector>

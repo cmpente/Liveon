@@ -1,0 +1,98 @@
+[
+  {
+    "id": "default_life",
+    "name": "Ordinary Life",
+    "description": "Start with a normal life and make your own path. This scenario represents an average person's journey through life.",
+    "startingAge": 0,
+    "maxAge": 122,
+    "startingMoney": 1000,
+    "difficulty": "NORMAL",
+    "startingStats": {
+      "happiness": {"value": 50},
+      "health": {"value": 50},
+      "physicalHealth": {"value": 50},
+      "mentalHealth": {"value": 50},
+      "intelligence": {"value": 50},
+      "looks": {"value": 50},
+      "karma": {"value": 50},
+      "stress": {"value": 30},
+      "fame": {"value": 0},
+      "sexuality": {"value": 50},
+      "addictionRisk": {"value": 0},
+      "fertility": {"value": 50},
+      "finances": {"value": 50}
+    }
+  },
+  {
+    "id": "rich_kid",
+    "name": "Born to Wealth",
+    "description": "You were born into a wealthy family. Start with money and advantages, but face unique challenges.",
+    "startingAge": 0,
+    "maxAge": 122,
+    "startingMoney": 100000,
+    "difficulty": "EASY",
+    "startingStats": {
+      "happiness": {"value": 60},
+      "health": {"value": 60},
+      "physicalHealth": {"value": 60},
+      "mentalHealth": {"value": 40},
+      "intelligence": {"value": 55},
+      "looks": {"value": 60},
+      "karma": {"value": 30},
+      "stress": {"value": 40},
+      "fame": {"value": 20},
+      "sexuality": {"value": 50},
+      "addictionRisk": {"value": 30},
+      "fertility": {"value": 50},
+      "finances": {"value": 80}
+    }
+  },
+  {
+    "id": "orphan",
+    "name": "Orphan",
+    "description": "Start with nothing but your determination. Face hardships but build resilience.",
+    "startingAge": 0,
+    "maxAge": 122,
+    "startingMoney": 0,
+    "difficulty": "HARD",
+    "startingStats": {
+      "happiness": {"value": 30},
+      "health": {"value": 40},
+      "physicalHealth": {"value": 40},
+      "mentalHealth": {"value": 30},
+      "intelligence": {"value": 50},
+      "looks": {"value": 40},
+      "karma": {"value": 70},
+      "stress": {"value": 60},
+      "fame": {"value": 0},
+      "sexuality": {"value": 50},
+      "addictionRisk": {"value": 40},
+      "fertility": {"value": 50},
+      "finances": {"value": 20}
+    }
+  },
+  {
+    "id": "prodigy",
+    "name": "Gifted Child",
+    "description": "You have exceptional natural talents. Excel academically but may struggle socially.",
+    "startingAge": 0,
+    "maxAge": 122,
+    "startingMoney": 5000,
+    "difficulty": "NORMAL",
+    "startingStats": {
+      "happiness": {"value": 45},
+      "health": {"value": 50},
+      "physicalHealth": {"value": 40},
+      "mentalHealth": {"value": 60},
+      "intelligence": {"value": 80},
+      "looks": {"value": 45},
+      "karma": {"value": 50},
+      "stress": {"value": 50},
+      "fame": {"value": 10},
+      "sexuality": {"value": 50},
+      "addictionRisk": {"value": 20},
+      "fertility": {"value": 50},
+      "finances": {"value": 40}
+    }
+  }
+]

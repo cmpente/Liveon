@@ -1,0 +1,10 @@
+<!-- app/src/main/res/drawable/ic_university.xml -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <path
+      android:pathData="M12,7L4,7v12c0,1.1 0.9,2 2,2h12c1.1,0 2,-0.9 2,-2L20,7h-8zM18,19L6,19L6,9h12v10zM12,3L2,9l5,3.18L12,9l5,3.18L22,9 12,3z"
+      android:fillColor="#38A169"/>
+</vector>

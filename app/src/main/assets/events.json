@@ -1,0 +1,146 @@
+[
+  {
+    "id": "birth_01",
+    "title": "New Life Begins",
+    "description": "Congratulations! Welcome to the world. Your journey of life begins now.",
+    "type": "LIFE_MILESTONE",
+    "isMature": false,
+    "choices": [
+      {
+        "id": "birth_choice_1",
+        "description": "Begin your life adventure",
+        "outcomes": [
+          {
+            "description": "You take your first breath and cry loudly",
+            "statChanges": {
+              "health": 50,
+              "happiness": 20
+            },
+            "ageProgression": 1
+          }
+        ]
+      }
+    ],
+    "minAge": 0,
+    "maxAge": 0,
+    "probability": 1.0,
+    "isRepeatable": false,
+    "category": "life"
+  },
+  {
+    "id": "first_birthday_01",
+    "title": "First Birthday",
+    "description": "Happy 1st Birthday! You're growing up so fast.",
+    "type": "LIFE_MILESTONE",
+    "isMature": false,
+    "choices": [
+      {
+        "id": "birthday_choice_1",
+        "description": "Blow out the candles",
+        "outcomes": [
+          {
+            "description": "Everyone cheers as you blow out the candles",
+            "statChanges": {
+              "happiness": 15,
+              "health": 5
+            },
+            "ageProgression": 1
+          }
+        ]
+      }
+    ],
+    "minAge": 1,
+    "maxAge": 1,
+    "probability": 1.0,
+    "isRepeatable": false,
+    "category": "life"
+  },
+  {
+    "id": "school_start_01",
+    "title": "First Day of School",
+    "description": "It's your first day of elementary school. Are you excited or nervous?",
+    "type": "NEUTRAL",
+    "isMature": false,
+    "choices": [
+      {
+        "id": "school_choice_1",
+        "description": "Be confident and make friends",
+        "outcomes": [
+          {
+            "description": "You make new friends and feel great",
+            "statChanges": {
+              "happiness": 10,
+              "intelligence": 5,
+              "social": 15
+            },
+            "ageProgression": 1
+          }
+        ]
+      },
+      {
+        "id": "school_choice_2",
+        "description": "Be shy and stick to yourself",
+        "outcomes": [
+          {
+            "description": "You feel lonely but safe",
+            "statChanges": {
+              "happiness": -5,
+              "intelligence": 3,
+              "social": -10
+            },
+            "ageProgression": 1
+          }
+        ]
+      }
+    ],
+    "minAge": 5,
+    "maxAge": 6,
+    "probability": 0.8,
+    "isRepeatable": false,
+    "category": "education"
+  },
+  {
+    "id": "teen_rebellion_01",
+    "title": "Teenage Rebellion",
+    "description": "As a teenager, you're feeling rebellious. What do you do?",
+    "type": "NEUTRAL",
+    "isMature": true,
+    "choices": [
+      {
+        "id": "rebellion_choice_1",
+        "description": "Sneak out at night",
+        "outcomes": [
+          {
+            "description": "You have fun but get caught",
+            "statChanges": {
+              "happiness": 20,
+              "karma": -10,
+              "stress": -5
+            },
+            "ageProgression": 1
+          }
+        ]
+      },
+      {
+        "id": "rebellion_choice_2",
+        "description": "Stay home and study",
+        "outcomes": [
+          {
+            "description": "You're responsible but feel left out",
+            "statChanges": {
+              "happiness": -10,
+              "intelligence": 15,
+              "stress": 5
+            },
+            "ageProgression": 1
+          }
+        ]
+      }
+    ],
+    "minAge": 13,
+    "maxAge": 17,
+    "probability": 0.3,
+    "isRepeatable": false,
+    "category": "social"
+  }
+]

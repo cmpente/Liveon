@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AltLife</string>
+    <string name="settings">Settings</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="mature_content">Mature Content Mode</string>
+    <string name="life">Life</string>
+    <string name="assets">Assets</string>
+    <string name="career">Career</string>
+    <string name="achievements">Achievements</string>
+    <string name="pets">Pets</string>
+    <string name="crimes">Crimes</string>
+    <string name="saves">Saves</string>
+    <string name="save_current">Save Current Game</string>
+    <string name="load">Load</string>
+    <string name="delete">Delete</string>
+</resources>

@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Event",
+  "type": "object",
+  "required": ["id", "title", "description", "choices"],
+  "properties": {
+    "id": { "type": "integer" },
+    "title": { "type": "string" },
+    "description": { "type": "string" },
+    "choices": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["text", "result"],
+        "properties": {
+          "text": { "type": "string" },
+          "result": {
+            "type": "object",
+            "properties": {
+              "statChanges": {
+                "type": "object",
+                "properties": {
+                  "health": { "type": "integer" },
+                  "happiness": { "type": "integer" },
+                  "smarts": { "type": "integer" },
+                  "looks": { "type": "integer" },
+                  "money": { "type": "integer" },
+                  "reputation": { "type": "integer" }
+                },
+                "additionalProperties": false
+              },
+              "nextEventId": { "type": ["integer", "null"] },
+              "unlockAchievementId": { "type": ["integer", "null"] }
+            },
+            "required": ["statChanges"]
+          }
+        }
+      }
+    }
+  }
+}

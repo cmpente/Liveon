@@ -1,0 +1,43 @@
+<!-- app/src/main/res/drawable/ic_settings.xml -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <path
+      android:pathData="M12,15.5a3.5,3.5 0,1 0,0 -7,3.5 3.5,0 0,0 0,7zM12,16a4,4 0,1 1,0 -8,4 4,0 0,1 0,8z"
+      android:fillColor="#718096"/>
+  <path
+      android:pathData="M12,19.5a7.5,7.5 0,1 0,0 -15,7.5 7.5,0 0,0 0,15z"
+      android:fillColor="#00000000"
+      android:strokeColor="#718096"
+      android:strokeWidth="2"/>
+  <path
+      android:pathData="M12,9.5L12,6.5"
+      android:strokeLineJoin="round"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="#718096"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M15,12l3,0"
+      android:strokeLineJoin="round"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="#718096"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M12,14.5L12,17.5"
+      android:strokeLineJoin="round"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="#718096"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M9,12l-3,0"
+      android:strokeLineJoin="round"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="#718096"
+      android:strokeLineCap="round"/>
+</vector>

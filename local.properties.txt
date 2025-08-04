@@ -1,0 +1,52 @@
+## This file must *NOT* be checked into Version Control Systems,
+# as it contains information specific to your local configuration.
+#
+# Location of the SDK. This is only used by Gradle.
+# For customization when using a Version Control System, please read the
+# header note.
+#Sat Jul 26 03:28:29 CDT 2025
+"addictionRisk"={ "value"\: 5 },
+"category"="Social",
+"choices"=[
+"conditions"={ "minAge"\: "5" },
+"description"="Start your life as a popular high school senior with top grades and charisma.",
+"fame"={ "value"\: 10 },
+"fertility"={ "value"\: 50 },
+"finances"={ "value"\: 10 }
+"happiness"={ "value"\: 70 },
+"health"={ "value"\: 80 },
+"id"="sc_highschool_star",
+"intelligence"={ "value"\: 80 },
+"isSecret"=false
+"karma"={ "value"\: 60 },
+"looks"={ "value"\: 90 },
+"mentalHealth"={ "value"\: 70 },
+"name"="High School Star",
+"outcomes"=[
+"physicalHealth"={ "value"\: 80 },
+"points"=10,
+"sexuality"={ "value"\: 50 },
+"startingStats"={
+"statChanges"={ "happiness"\: -2 },
+"stress"={ "value"\: 20 },
+"title"="First Day of School",
+"traits"=["Charismatic", "Athletic"]
+"traitsGained"=[],
+"traitsLost"=[]
+"type"="NEUTRAL",
+Achievements=reward players for reaching milestones or completing challenges.  The schema for each achievement is\:
+Append=new achievement objects to `achievements.json`, ensuring each `id` is unique.  Achievements can be unlocked programmatically by calling `AchievementRepository.unlockAchievement(characterId, achievementId)` when the corresponding conditions are met.  As with events, you may localize achievements by providing translated versions in locale\u2011specific JSON files.
+At=runtime, the repositories in the data layer load and parse the JSON files using Kotlinx Serialization.  To add more content, simply edit or replace the JSON files under `app/src/main/assets`.  Because these files are externalized, new events and achievements can be added without recompiling the app.  For localization, maintain separate JSON files per language and choose which file to load based on the device locale.
+Each=entry in `events.json` represents a single in\u2011game event.  The schema is defined as follows\:
+Scenarios=define starting points for players with predefined stats and traits.  Each scenario entry has the following structure\:
+This=document describes the JSON schemas used by AltLife to define game data.  All JSON files should be placed in the `assets` directory of the `app` module so they can be loaded at runtime.  Developers and content creators can extend these files to add new events, scenarios or achievements without modifying code.  To localize text, provide separate JSON files per locale (e.g. `events_es_ES.json`) and load them based on the user's language preferences.
+To=add more events, append additional objects to the `events.json` array.  Ensure that each event has a unique `id`.  New condition keys can be introduced as long as they are handled in the event selection logic (e.g. `requiresTrait`, `maxAge`, `requiresCareer`).  To localize an event, create a separate language\u2011specific file (e.g. `events_fr_FR.json`) with the same structure but translated `title` and `description` fields.
+]=
+```=
+```json=
+sdk.dir=C:\Program Files\Eclipse Adoptium\jdk-17.0.16.8-hotspot
+{=
+|=`traits` | array of strings | \u2715 | List of traits to assign at the start. |
+|---|---|---|---|=
+}=
+},=
