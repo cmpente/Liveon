@@ -1,40 +1,30 @@
 package com.altlifegames.data.db
 
 import androidx.room.TypeConverter
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.builtins.MapSerializer
-import kotlinx.serialization.builtins.serializer
 
 class Converters {
-    
+
     @TypeConverter
     fun fromStringList(value: List<String>): String {
-        return Json.encodeToString(ListSerializer(String.serializer()), value)
+        return value.joinToString(",")
     }
-    
+
     @TypeConverter
     fun toStringList(value: String): List<String> {
-        return try {
-            Json.decodeFromString(ListSerializer(String.serializer()), value)
-        } catch (e: Exception) {
-            emptyList()
-        }
+        return if (value.isEmpty()) emptyList() else value.split(",")
     }
-    
+
     @TypeConverter
-    fun fromStringMap(value: Map<String, Int>): String {
-        return Json.encodeToString(MapSerializer(String.serializer(), Int.serializer()), value)
+    fun fromStringIntMap(value: Map<String, Int>): String {
+        return value.entries.joinToString(";") { "${it.key}=${it.value}" }
     }
-    
+
     @TypeConverter
-    fun toStringMap(value: String): Map<String, Int> {
-        return try {
-            Json.decodeFromString(MapSerializer(String.serializer(), Int.serializer()), value)
-        } catch (e: Exception) {
-            emptyMap()
+    fun toStringIntMap(value: String): Map<String, Int> {
+        if (value.isEmpty()) return emptyMap()
+        return value.split(";").associate {
+            val (key, value) = it.split("=")
+            key to value.toInt()
         }
     }
 }

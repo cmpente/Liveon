@@ -1,22 +1,24 @@
+// domain/src/main/java/com/altlifegames/domain/model/Scenario.kt
 package com.altlifegames.domain.model
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 data class Scenario(
-    val id: String = "",
-    val title: String = "",
-    val name: String = "",
-    val description: String = "",
-    val startingAge: Int = 0,
-    val maxAge: Int = 122,
-    val startingStats: Stats = Stats(),
-    val startingTraits: List<String> = emptyList(),
-    val startingMoney: Int = 0,
-    val difficulty: Difficulty = Difficulty.NORMAL,
-    val specialRules: Map<String, String> = emptyMap()
+    val id: String,
+    val title: String,
+    val description: String,
+    val choices: List<ScenarioChoice>,
+    val outcomes: List<ScenarioOutcome> = emptyList(),
+    val requiredLevel: Int = 1
 )
 
-enum class Difficulty {
-    EASY, NORMAL, HARD, EXTREME
-}
+data class ScenarioChoice(
+    val id: String,
+    val text: String,
+    val requirements: Map<String, Int> = emptyMap(),
+    val outcomes: List<ScenarioOutcome> = emptyList()
+)
+
+data class ScenarioOutcome(
+    val attribute: String,
+    val change: Int,
+    val condition: String? = null
+)

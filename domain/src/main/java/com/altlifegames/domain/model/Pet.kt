@@ -1,17 +1,9 @@
 package com.altlifegames.domain.model
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 data class Pet(
-    val id: Long = 0,
-    val name: String = "",
-    val petType: String = "",
-    val age: Int = 0,
-    val health: Stat = Stat(),
-    val happiness: Stat = Stat()
+    val id: String,
+    val name: String,
+    val type: String,
+    val happiness: Int,
+    val cost: Int
 )
-
-enum class PetType {
-    DOG, CAT, BIRD, FISH, RABBIT, REPTILE, EXOTIC
-}

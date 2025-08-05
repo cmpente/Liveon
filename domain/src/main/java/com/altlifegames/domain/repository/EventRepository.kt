@@ -1,9 +1,13 @@
 package com.altlifegames.domain.repository
 
 import com.altlifegames.domain.model.Event
+import kotlinx.coroutines.flow.Flow
 
 interface EventRepository {
-    suspend fun getRandomEventForAge(age: Int): Event?
-    suspend fun getEventDefinition(eventId: String): Event?
-    suspend fun loadEvents()
+    fun getActiveEvents(): Flow<List<Event>>
+    suspend fun addEvent(event: Event)
+    suspend fun removeEvent(eventId: String)
+    suspend fun getRandomEvents(): List<Event>
+    suspend fun getYearlyEvents(): List<Event>
+    suspend fun markEventAsShown(eventId: String)
 }

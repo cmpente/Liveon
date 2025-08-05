@@ -1,20 +1,22 @@
-package com.altlifegames.altlifealpha.di
+package com.altlifegames.altlife.di
 
-import com.altlifegames.data.repository.PetRepositoryImpl
-import com.altlifegames.domain.repository.PetRepository
-import dagger.Binds
+import android.content.Context
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class RepositoryModule {
-    
-    @Binds
+object DataModule {
+    // Keep minimal for now
+    /*
+    @Provides
     @Singleton
-    abstract fun bindPetRepository(
-        petRepositoryImpl: PetRepositoryImpl
-    ): PetRepository
+    fun provideDataStore(@ApplicationContext context: Context): Any {
+        return Any() // Placeholder
+    }
+    */
 }

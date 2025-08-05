@@ -1,11 +1,12 @@
 package com.altlifegames.domain.repository
 
-import com.altlifegames.domain.model.Character
-import com.altlifegames.domain.model.SaveSlot
+import com.altlifegames.domain.model.Save
+import kotlinx.coroutines.flow.Flow
 
 interface SaveRepository {
-    suspend fun saveGame(character: Character)
-    suspend fun loadGame(slotId: Long): Character?
-    suspend fun getSaveSlots(): List<SaveSlot>
-    suspend fun deleteSaveSlot(slotId: Long)
+    fun getAllSaves(): Flow<List<Save>>
+    suspend fun createSave(save: Save)
+    suspend fun loadSave(saveId: String): Save?
+    suspend fun deleteSave(saveId: String)
+    suspend fun updateSave(save: Save)
 }

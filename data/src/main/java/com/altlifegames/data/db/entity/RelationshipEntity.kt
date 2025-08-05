@@ -6,10 +6,8 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "relationships")
 data class RelationshipEntity(
     @PrimaryKey val id: String,
-    val characterId: Long,
-    val name: String,
+    val characterId: String,
+    val relatedCharacterId: String,
     val relationshipType: String,
-    val affection: Int,
-    val trust: Int,
-    val isRomantic: Boolean
+    val strength: Int
 )

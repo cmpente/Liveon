@@ -1,14 +1,11 @@
+// domain/src/main/java/com/altlifegames/domain/usecase/GetMatureContentStatusUseCase.kt
 package com.altlifegames.domain.usecase
 
-import com.altlifegames.domain.repository.SettingsRepository
 import javax.inject.Inject
-import com.altlifegames.domain.model.Character
-import com.altlifegames.domain.model.EventOutcome
 
-class GetMatureContentStatusUseCase @Inject constructor(
-    private val settingsRepository: SettingsRepository
-) {
-    suspend operator fun invoke(): Boolean {
-        return settingsRepository.isMatureContentEnabled()
+class GetMatureContentStatusUseCase @Inject constructor() {
+    operator fun invoke(): Boolean {
+        // Return default value - you can modify this to read from settings
+        return false
     }
 }

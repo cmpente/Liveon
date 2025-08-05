@@ -1,6 +1,6 @@
 plugins {
+    id("org.jetbrains.kotlin.jvm")
     id("com.android.library")
-    id("org.jetbrains.kotlin.android")
 }
 
 android {
@@ -24,6 +24,7 @@ android {
 
 dependencies {
     // Basic dependencies used across modules
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.10")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 }

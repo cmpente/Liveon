@@ -1,28 +1,28 @@
 package com.altlifegames.data.repository
 
-import com.altlifegames.data.db.AltLifeDatabase
 import com.altlifegames.domain.model.Character
 import com.altlifegames.domain.repository.CharacterRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
-class CharacterRepositoryImpl @Inject constructor(
-    private val database: AltLifeDatabase
-) : CharacterRepository {
-    
-    override suspend fun getCharacter(id: Long): Character? {
-        // You'll need to implement the mapping from entity to domain model
-        // This is a placeholder implementation
-        return null
+class CharacterRepositoryImpl @Inject constructor() : CharacterRepository {
+
+    private val characters = MutableStateFlow<Map<String, Character>>(emptyMap())
+
+    override fun getCharacter(characterId: String): Flow<Character?> {
+        return MutableStateFlow(characters.value[characterId])
     }
-    
+
     override suspend fun updateCharacter(character: Character) {
-        // You'll need to implement the mapping from domain model to entity
-        // This is a placeholder implementation
+        val currentCharacters = characters.value.toMutableMap()
+        currentCharacters[character.id] = character
+        characters.value = currentCharacters
     }
-    
-    override suspend fun createCharacter(character: Character): Character {
-        // You'll need to implement the mapping from domain model to entity
-        // This is a placeholder implementation
-        return character
+
+    override suspend fun deleteCharacter(characterId: String) {
+        val currentCharacters = characters.value.toMutableMap()
+        currentCharacters.remove(characterId)
+        characters.value = currentCharacters
     }
 }

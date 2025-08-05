@@ -1,9 +1,10 @@
 package com.altlifegames.domain.repository
 
 import com.altlifegames.domain.model.Character
+import kotlinx.coroutines.flow.Flow
 
 interface CharacterRepository {
-    suspend fun getCharacter(id: Long): Character?
+    fun getCharacter(characterId: String): Flow<Character?>
     suspend fun updateCharacter(character: Character)
-    suspend fun createCharacter(character: Character): Character
+    suspend fun deleteCharacter(characterId: String)
 }

@@ -9,12 +9,15 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UnlockedAchievementDao {
-    @Query("SELECT * FROM unlocked_achievements WHERE characterId = :characterId")
-    fun getUnlockedAchievementsForCharacter(characterId: Long): Flow<List<UnlockedAchievementEntity>>
+    @Query("SELECT * FROM unlocked_achievements")
+    fun getAllUnlockedAchievements(): Flow<List<UnlockedAchievementEntity>>
+
+    @Query("SELECT * FROM unlocked_achievements WHERE achievementId = :achievementId")
+    suspend fun isAchievementUnlocked(achievementId: String): UnlockedAchievementEntity?
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(achievement: UnlockedAchievementEntity): Long
+    suspend fun unlockAchievement(achievement: UnlockedAchievementEntity)
 
-    @Query("DELETE FROM unlocked_achievements WHERE characterId = :characterId AND achievementId = :achievementId")
-    suspend fun deleteByAchievementId(characterId: Long, achievementId: String)
+    @Query("DELETE FROM unlocked_achievements WHERE achievementId = :achievementId")
+    suspend fun removeAchievement(achievementId: String)
 }

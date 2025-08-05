@@ -5,8 +5,9 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "save_slots")
 data class SaveSlotEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
-    val timestamp: Long = 0
-    // Add other fields as needed
+    @PrimaryKey val id: String,
+    val characterName: String,
+    val age: Int,
+    val lastPlayed: Long,
+    val scenarioId: String
 )

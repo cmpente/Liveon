@@ -1,38 +1,44 @@
 package com.altlifegames.data.repository
 
-import com.altlifegames.data.db.dao.SaveSlotDao
-import com.altlifegames.data.db.entity.SaveSlotEntity
-import com.altlifegames.domain.model.Character
-import com.altlifegames.domain.model.SaveSlot
+import com.altlifegames.domain.model.Save
 import com.altlifegames.domain.repository.SaveRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
-class SaveRepositoryImpl @Inject constructor(
-    private val saveSlotDao: SaveSlotDao
-) : SaveRepository {
-    
-    override suspend fun saveGame(character: Character) {
-        val saveSlot = SaveSlotEntity(
-            id = 0,
-            timestamp = System.currentTimeMillis()
-            // Map character data to entity fields as needed
-        )
-        saveSlotDao.insert(saveSlot)
+class SaveRepositoryImpl @Inject constructor() : SaveRepository {
+
+    private val saves = MutableStateFlow<List<Save>>(emptyList())
+
+    override fun getAllSaves(): Flow<List<Save>> {
+        return saves
     }
-    
-    override suspend fun loadGame(slotId: Long): Character? {
-        val saveSlotEntity = saveSlotDao.getById(slotId)
-        // Convert SaveSlotEntity to Character
-        return null // Implement actual conversion logic
+
+    override suspend fun createSave(save: Save) {
+        val currentSaves = saves.value.toMutableList()
+        currentSaves.add(save)
+        saves.value = currentSaves
     }
-    
-    override suspend fun getSaveSlots(): List<SaveSlot> {
-        val entities = saveSlotDao.getAllSlots()
-        // Convert List<SaveSlotEntity> to List<SaveSlot>
-        return emptyList() // Implement actual conversion logic
+
+    override suspend fun loadSave(saveId: String): Save? {
+        return saves.value.find { it.id == saveId }
     }
-    
-    override suspend fun deleteSaveSlot(slotId: Long) {
-        saveSlotDao.delete(slotId)
+
+    override suspend fun deleteSave(saveId: String) {
+        val currentSaves = saves.value.toMutableList()
+        val index = currentSaves.indexOfFirst { it.id == saveId }
+        if (index != -1) {
+            currentSaves.removeAt(index)
+            saves.value = currentSaves
+        }
+    }
+
+    override suspend fun updateSave(save: Save) {
+        val currentSaves = saves.value.toMutableList()
+        val index = currentSaves.indexOfFirst { it.id == save.id }
+        if (index != -1) {
+            currentSaves[index] = save
+            saves.value = currentSaves
+        }
     }
 }

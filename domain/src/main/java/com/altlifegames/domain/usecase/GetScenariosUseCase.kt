@@ -2,12 +2,13 @@ package com.altlifegames.domain.usecase
 
 import com.altlifegames.domain.model.Scenario
 import com.altlifegames.domain.repository.ScenarioRepository
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
-import com.altlifegames.domain.model.Character
-import com.altlifegames.domain.model.EventOutcome
 
-class GetScenarioUseCase @Inject constructor(private val repository: ScenarioRepository) {
-    suspend operator fun invoke(id: String): Scenario? {
-        return repository.getScenario(id)
+class GetScenariosUseCase @Inject constructor(
+    private val scenarioRepository: ScenarioRepository
+) {
+    operator fun invoke(): Flow<List<Scenario>> {
+        return scenarioRepository.getScenarios()
     }
 }

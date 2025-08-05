@@ -1,15 +1,10 @@
 package com.altlifegames.domain.repository
 
+import com.altlifegames.domain.model.Settings
+import kotlinx.coroutines.flow.Flow
+
 interface SettingsRepository {
-    suspend fun isSoundEnabled(): Boolean
-    suspend fun isMusicEnabled(): Boolean
-    suspend fun isNotificationsEnabled(): Boolean
-    suspend fun isDarkTheme(): Boolean
-    suspend fun isMatureContentEnabled(): Boolean
-    
-    suspend fun setSoundEnabled(enabled: Boolean)
-    suspend fun setMusicEnabled(enabled: Boolean)
-    suspend fun setNotificationsEnabled(enabled: Boolean)
-    suspend fun setDarkTheme(enabled: Boolean)
-    suspend fun setMatureContentEnabled(enabled: Boolean)
+    fun getSettings(): Flow<Settings>
+    suspend fun updateSettings(settings: Settings)
+    suspend fun resetToDefaults()
 }

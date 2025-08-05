@@ -1,63 +1,127 @@
-package com.altlifegames.altlife.viewmodel
+// app/src/main/java/com/altlifegames/altlife/ui/viewmodel/GameViewModel.kt
+package com.altlifegames.altlife.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.altlifegames.domain.model.CharacterStats
+import com.altlifegames.domain.model.GameEvent
+import com.altlifegames.domain.usecase.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// For now, let's create a simple Character data class
-data class Character(
-    val id: Long = 0L,
-    val firstName: String = "",
-    val lastName: String = "",
-    val age: Int = 0,
-    val health: Int = 50,
-    val happiness: Int = 50,
-    val intelligence: Int = 50,
-    val money: Int = 1000
-)
-
 @HiltViewModel
-class GameViewModel @Inject constructor() : ViewModel() {
-    
-    private val _currentCharacter = MutableStateFlow<Character?>(null)
-    val currentCharacter: StateFlow<Character?> = _currentCharacter
-    
+class GameViewModel @Inject constructor(
+    private val advanceYearUseCase: AdvanceYearUseCase,
+    private val getAvailableEventsUseCase: GetAvailableEventsUseCase,
+    private val applyChoiceOutcomesUseCase: ApplyChoiceOutcomesUseCase,
+    private val updateStatsUseCase: UpdateStatsUseCase,
+    private val loadGameUseCase: LoadGameUseCase,
+    private val saveGameUseCase: SaveGameUseCase,
+    private val getSaveSlotsUseCase: GetSaveSlotsUseCase,
+    private val deleteSaveUseCase: DeleteSaveUseCase,
+    private val getMatureContentStatusUseCase: GetMatureContentStatusUseCase,
+    private val toggleMatureContentUseCase: ToggleMatureContentUseCase,
+    private val getCrimeStatsUseCase: GetCrimeStatsUseCase,
+    private val getCrimesUseCase: GetCrimesUseCase,
+    private val recordCrimeUseCase: RecordCrimeUseCase,
+    private val clearCriminalRecordUseCase: ClearCriminalRecordUseCase,
+    private val adoptPetUseCase: AdoptPetUseCase,
+    private val removePetUseCase: RemovePetUseCase
+) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(GameUiState())
+    val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
+
     init {
-        createNewCharacter()
+        loadGame()
     }
-    
-    fun createNewCharacter() {
-        // Simple character creation for now
-        val newCharacter = Character(
-            id = System.currentTimeMillis(),
-            firstName = "Alex",
-            lastName = "Adams",
-            age = 0,
-            health = 75,
-            happiness = 60,
-            intelligence = 55,
-            money = 1000
-        )
-        _currentCharacter.value = newCharacter
-    }
-    
-    fun advanceYear() {
+
+    private fun loadGame() {
         viewModelScope.launch {
-            _currentCharacter.value?.let { character ->
-                // Apply stat changes for aging
-                val updatedCharacter = character.copy(
-                    age = character.age + 1,
-                    health = (character.health - 2).coerceAtLeast(0),
-                    happiness = (character.happiness + (0..10).random() - 5).coerceIn(0, 100),
-                    intelligence = (character.intelligence + 1).coerceAtMost(100),
-                    money = character.money + 1000 // Yearly income
+            try {
+                _uiState.value = _uiState.value.copy(isLoading = true)
+                // Load initial game state
+                val initialStats = CharacterStats(
+                    health = 100,
+                    happiness = 50,
+                    intelligence = 20,
+                    money = 1000,
+                    social = 30,
+                    age = 18
                 )
-                _currentCharacter.value = updatedCharacter
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    playerStats = initialStats
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    error = e.message,
+                    isLoading = false
+                )
             }
         }
+    }
+
+    fun ageUp() {
+        viewModelScope.launch {
+            try {
+                val currentStats = _uiState.value.playerStats
+                if (currentStats != null) {
+                    // Get available events - using try-catch for now since repos aren't implemented
+                    val events = try {
+                        // getAvailableEventsUseCase() // Commented out until repo implemented
+                        emptyList<GameEvent>()
+                    } catch (e: Exception) {
+                        emptyList()
+                    }
+
+                    _uiState.value = _uiState.value.copy(
+                        playerStats = advanceYearUseCase(currentStats), // This returns CharacterStats
+                        showEventDialog = events.isNotEmpty(),
+                        activeEvents = events.ifEmpty {
+                            listOf(
+                                GameEvent(
+                                    id = "default_event",
+                                    title = "Another Year Passes",
+                                    description = "Time flies! You are now ${currentStats.age + 1} years old.",
+                                    choices = emptyList()
+                                )
+                            )
+                        }
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(error = e.message)
+            }
+        }
+    }
+
+    fun makeChoice(eventId: String, choiceId: String) {
+        viewModelScope.launch {
+            try {
+                // Apply choice outcomes using your use case
+                // This would involve finding the event, choice, and applying outcomes
+                _uiState.value = _uiState.value.copy(showEventDialog = false)
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(error = e.message)
+            }
+        }
+    }
+
+    fun dismissEvent(eventId: String) {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(
+                showEventDialog = false,
+                activeEvents = emptyList()
+            )
+        }
+    }
+
+    fun clearError() {
+        _uiState.value = _uiState.value.copy(error = null)
     }
 }

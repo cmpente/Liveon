@@ -1,13 +1,12 @@
+// domain/src/main/java/com/altlifegames/domain/usecase/CalculateInheritanceUseCase.kt
 package com.altlifegames.domain.usecase
 
 import com.altlifegames.domain.model.Character
-import com.altlifegames.domain.model.EventOutcome
 import javax.inject.Inject
 
 class CalculateInheritanceUseCase @Inject constructor() {
-    // Simplified version
-    operator fun invoke(character: Character, deceasedCharacter: Character): Character {
-        // Placeholder implementation
-        return character
+    operator fun invoke(character: Character, estateValue: Int): Int {
+        // Simple calculation - you can make this more complex
+        return (estateValue * 0.5).toInt()
     }
 }

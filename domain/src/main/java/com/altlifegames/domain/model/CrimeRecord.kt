@@ -2,8 +2,9 @@ package com.altlifegames.domain.model
 
 data class CrimeRecord(
     val id: String,
-    val crimeType: CrimeType,
-    val severity: Int,
-    val outcome: CrimeOutcome,
-    val sentenceYears: Int
+    val characterId: String,
+    val crimeType: String,
+    val description: String,
+    val penalty: Int,
+    val timestamp: Long
 )

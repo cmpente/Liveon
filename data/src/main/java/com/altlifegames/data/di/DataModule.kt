@@ -1,48 +1,70 @@
 package com.altlifegames.data.di
 
-import android.content.Context
-import androidx.room.Room
-import com.altlifegames.data.db.AltLifeDatabase
-import com.altlifegames.data.db.dao.*
+import com.altlifegames.data.repository.*
+import com.altlifegames.domain.repository.*
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object DataModule {
-    
-    @Provides
+abstract class DataModule {
+
+    @Binds
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): AltLifeDatabase {
-        return Room.databaseBuilder(
-            context,
-            AltLifeDatabase::class.java,
-            "altlife_database"
-        ).build()
-    }
-    
-    @Provides
-    fun provideCharacterDao(database: AltLifeDatabase): CharacterDao = database.characterDao()
-    
-    @Provides
-    fun provideAssetDao(database: AltLifeDatabase): AssetDao = database.assetDao()
-    
-    @Provides
-    fun provideCareerDao(database: AltLifeDatabase): CareerDao = database.careerDao()
-    
-    @Provides
-    fun provideCrimeDao(database: AltLifeDatabase): CrimeDao = database.crimeDao()
-    
-    @Provides
-    fun providePetDao(database: AltLifeDatabase): PetDao = database.petDao()
-    
-    @Provides
-    fun provideUnlockedAchievementDao(database: AltLifeDatabase): UnlockedAchievementDao = database.unlockedAchievementDao()
-    
-    @Provides
-    fun provideSaveSlotDao(database: AltLifeDatabase): SaveSlotDao = database.saveSlotDao()
+    abstract fun bindAssetRepository(impl: AssetRepositoryImpl): AssetRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCareerRepository(impl: CareerRepositoryImpl): CareerRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCharacterRepository(impl: CharacterRepositoryImpl): CharacterRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindClubRepository(impl: ClubRepositoryImpl): ClubRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCrimeRepository(impl: CrimeRepositoryImpl): CrimeRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindEducationRepository(impl: EducationRepositoryImpl): EducationRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindEventRepository(impl: EventRepositoryImpl): EventRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindGameRepository(impl: GameRepositoryImpl): GameRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAchievementRepository(impl: AchievementRepositoryImpl): AchievementRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindPetRepository(impl: PetRepositoryImpl): PetRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindRelationshipRepository(impl: RelationshipRepositoryImpl): RelationshipRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSaveRepository(impl: SaveRepositoryImpl): SaveRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindScenarioRepository(impl: ScenarioRepositoryImpl): ScenarioRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSettingsRepository(impl: SettingsRepositoryImpl): SettingsRepository
 }

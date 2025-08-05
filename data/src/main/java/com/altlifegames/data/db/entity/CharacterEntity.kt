@@ -5,18 +5,14 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "characters")
 data class CharacterEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0L,
+    @PrimaryKey val id: String,
     val name: String,
-    val gender: String,
-    val nationality: String,
-    val age: Int = 0,
-    val alive: Boolean = true,
-    val statsJson: String = "{}",
-    val traitsJson: String = "[]",
-    val careerJson: String? = null,
-    val assetsJson: String = "[]",
-    val achievementsJson: String = "[]",
-    val eventHistoryJson: String = "[]",
-    val lastModified: Long = System.currentTimeMillis()
+    val age: Int,
+    val health: Int,
+    val happiness: Int,
+    val intelligence: Int,
+    val money: Int,
+    val social: Int,
+    val scenarioId: String,
+    val lastPlayed: Long
 )

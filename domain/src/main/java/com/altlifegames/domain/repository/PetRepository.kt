@@ -1,12 +1,12 @@
 package com.altlifegames.domain.repository
 
 import com.altlifegames.domain.model.Pet
+import kotlinx.coroutines.flow.Flow
 
 interface PetRepository {
-    fun getRandomPet(): Pet
-    fun getPetByType(petType: String): Pet?
-    fun getAllPets(): List<Pet>
-    fun getPetById(id: Long): Pet?
-    fun getPets(): List<Pet>
-    fun removePet(petId: Long): Boolean  // Add this method
+    fun getPets(): Flow<List<Pet>>
+    suspend fun addPet(pet: Pet)
+    suspend fun removePet(petId: String)
+    suspend fun updatePet(pet: Pet)
+    suspend fun getPetById(petId: String): Pet?
 }

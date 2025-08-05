@@ -1,10 +1,12 @@
 package com.altlifegames.domain.repository
 
-import com.altlifegames.domain.model.Character
-import com.altlifegames.domain.model.EducationOption
+import com.altlifegames.domain.model.Education
+import kotlinx.coroutines.flow.Flow
 
 interface EducationRepository {
-    suspend fun getAvailableEducation(character: Character): List<EducationOption>
-    suspend fun enrollInEducation(character: Character, education: EducationOption): Character
-    suspend fun completeEducation(character: Character, education: EducationOption): Character
+    fun getAvailableEducation(): Flow<List<Education>>
+    fun getAllEducationOptions(): List<Education>
+    suspend fun getEducationById(id: String): Education?
+    suspend fun enrollInEducation(education: Education)
+    suspend fun completeEducation(educationId: String)
 }
