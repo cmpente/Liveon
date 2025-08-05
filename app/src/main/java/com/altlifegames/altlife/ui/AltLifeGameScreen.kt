@@ -1,9 +1,6 @@
-// app/src/main/java/com/altlifegames/altlife/MainActivity.kt
-package com.altlifegames.altlife
+// app/src/main/java/com/altlifegames/altlife/ui/AltLifeGameScreen.kt
+package com.altlifegames.altlife.ui
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -16,24 +13,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.altlifegames.altlife.R
 import com.altlifegames.altlife.ui.viewmodel.GameViewModel
 import com.altlifegames.altlife.ui.viewmodel.GameUiState
 import com.altlifegames.domain.model.GameEvent
-import com.altlifegames.domain.model.CharacterStats
-import dagger.hilt.android.AndroidEntryPoint
-import com.altlifegames.altlife.R
-
-@AndroidEntryPoint
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            MaterialTheme {
-                AltLifeGameScreen()
-            }
-        }
-    }
-}
 
 @Composable
 fun AltLifeGameScreen(viewModel: GameViewModel = hiltViewModel()) {
@@ -67,18 +50,53 @@ fun AltLifeGameScreen(viewModel: GameViewModel = hiltViewModel()) {
                 modifier = Modifier.padding(bottom = 24.dp)
             )
 
-            // Life Log Section
-            LifeLogSection()
+            // Empty Life Log Section (placeholder for now)
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_info),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Life Log",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "Your life story will appear here...",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
             // Main Action Buttons
-            MainActionButtons(viewModel = viewModel, uiState = uiState)
+            MainActionButtons(
+                viewModel = viewModel,
+                uiState = uiState
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
 
             // Game Systems Menu
-            GameSystemsMenu()
+            GameSystemsMenu(viewModel = viewModel)
 
             Spacer(modifier = Modifier.height(32.dp))
         }
@@ -107,58 +125,10 @@ fun AltLifeGameScreen(viewModel: GameViewModel = hiltViewModel()) {
 }
 
 @Composable
-fun IconWithFallback(iconResId: Int, contentDescription: String, modifier: Modifier = Modifier) {
-    // Simple approach - just use the icon directly
-    // If it fails, Compose will show a missing resource error at compile time
-    Icon(
-        painter = painterResource(id = iconResId),
-        contentDescription = contentDescription,
-        modifier = modifier
-    )
-}
-
-@Composable
-fun LifeLogSection() {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_info),
-                    contentDescription = "Info",
-                    modifier = Modifier.size(24.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Life Log",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Text(
-                text = "Your life story will appear here...",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-        }
-    }
-}
-
-@Composable
-fun MainActionButtons(viewModel: GameViewModel, uiState: GameUiState) {
+fun MainActionButtons(
+    viewModel: GameViewModel,
+    uiState: GameUiState
+) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -180,18 +150,16 @@ fun MainActionButtons(viewModel: GameViewModel, uiState: GameUiState) {
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             } else {
-                Icon(
+                Image(
                     painter = painterResource(id = R.drawable.ic_continue),
-                    contentDescription = "Continue",
-                    modifier = Modifier.size(24.dp),
-                    tint = MaterialTheme.colorScheme.onPrimary
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "Age Up One Year",
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onPrimary
+                    fontWeight = FontWeight.Medium
                 )
             }
         }
@@ -205,9 +173,9 @@ fun MainActionButtons(viewModel: GameViewModel, uiState: GameUiState) {
                 modifier = Modifier.weight(1f)
                     .height(50.dp)
             ) {
-                Icon(
+                Image(
                     painter = painterResource(id = R.drawable.ic_business),
-                    contentDescription = "Business",
+                    contentDescription = null,
                     modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
@@ -219,9 +187,9 @@ fun MainActionButtons(viewModel: GameViewModel, uiState: GameUiState) {
                 modifier = Modifier.weight(1f)
                     .height(50.dp)
             ) {
-                Icon(
+                Image(
                     painter = painterResource(id = R.drawable.ic_relationship),
-                    contentDescription = "Relationships",
+                    contentDescription = null,
                     modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
@@ -232,7 +200,7 @@ fun MainActionButtons(viewModel: GameViewModel, uiState: GameUiState) {
 }
 
 @Composable
-fun GameSystemsMenu() {
+fun GameSystemsMenu(viewModel: GameViewModel) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -244,11 +212,10 @@ fun GameSystemsMenu() {
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
+                Image(
                     painter = painterResource(id = R.drawable.ic_settings),
-                    contentDescription = "Settings",
-                    modifier = Modifier.size(24.dp),
-                    tint = MaterialTheme.colorScheme.secondary
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
@@ -262,25 +229,25 @@ fun GameSystemsMenu() {
             Spacer(modifier = Modifier.height(12.dp))
 
             val menuItems = listOf(
-                MenuItemData(
+                MenuItem(
                     iconResId = R.drawable.ic_law,
                     title = "Crime Records",
                     description = "View criminal history"
                 ) { /* TODO: Open crime system */ },
 
-                MenuItemData(
+                MenuItem(
                     iconResId = R.drawable.ic_band,
                     title = "Pet Management",
                     description = "Adopt and care for pets"
                 ) { /* TODO: Open pet system */ },
 
-                MenuItemData(
+                MenuItem(
                     iconResId = R.drawable.ic_save,
                     title = "Save Game",
                     description = "Manage game saves"
                 ) { /* TODO: Implement save functionality */ },
 
-                MenuItemData(
+                MenuItem(
                     iconResId = R.drawable.ic_settings,
                     title = "Settings",
                     description = "Game preferences"
@@ -300,7 +267,7 @@ fun GameSystemsMenu() {
     }
 }
 
-data class MenuItemData(
+data class MenuItem(
     val iconResId: Int,
     val title: String,
     val description: String,
@@ -308,7 +275,7 @@ data class MenuItemData(
 )
 
 @Composable
-fun MenuItemRow(item: MenuItemData) {
+fun MenuItemRow(item: MenuItem) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -316,11 +283,10 @@ fun MenuItemRow(item: MenuItemData) {
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
+        Image(
             painter = painterResource(id = item.iconResId),
             contentDescription = null,
-            modifier = Modifier.size(28.dp),
-            tint = MaterialTheme.colorScheme.onSurface
+            modifier = Modifier.size(28.dp)
         )
 
         Spacer(modifier = Modifier.width(16.dp))
@@ -341,18 +307,17 @@ fun MenuItemRow(item: MenuItemData) {
             )
         }
 
-        Icon(
-            painter = painterResource(id = R.drawable.ic_continue),
-            contentDescription = "Navigate",
-            modifier = Modifier.size(20.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
+        Text(
+            text = ">",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
 
 @Composable
 fun CharacterStatsBottom(
-    stats: CharacterStats?,
+    stats: com.altlifegames.domain.model.CharacterStats?,
     modifier: Modifier = Modifier
 ) {
     if (stats == null) return
@@ -369,11 +334,10 @@ fun CharacterStatsBottom(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
+                Image(
                     painter = painterResource(id = R.drawable.ic_person),
-                    contentDescription = "Person",
-                    modifier = Modifier.size(24.dp),
-                    tint = MaterialTheme.colorScheme.primary
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
@@ -454,11 +418,10 @@ fun StatBarRow(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
+        Image(
             painter = painterResource(id = iconResId),
             contentDescription = null,
-            modifier = Modifier.size(20.dp),
-            tint = color
+            modifier = Modifier.size(20.dp)
         )
 
         Spacer(modifier = Modifier.width(8.dp))

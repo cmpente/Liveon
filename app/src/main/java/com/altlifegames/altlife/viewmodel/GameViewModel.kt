@@ -73,7 +73,7 @@ class GameViewModel @Inject constructor(
                 if (currentStats != null) {
                     // Get available events - using try-catch for now since repos aren't implemented
                     val events = try {
-                        // getAvailableEventsUseCase() // Commented out until repo implemented
+                         getAvailableEventsUseCase()
                         emptyList<GameEvent>()
                     } catch (e: Exception) {
                         emptyList()
@@ -124,4 +124,9 @@ class GameViewModel @Inject constructor(
     fun clearError() {
         _uiState.value = _uiState.value.copy(error = null)
     }
+}
+
+fun saveGame() {
+    // Placeholder for future save functionality
+    // TODO: Implement actual save logic
 }

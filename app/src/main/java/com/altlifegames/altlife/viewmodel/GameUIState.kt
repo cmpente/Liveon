@@ -9,6 +9,5 @@ data class GameUiState(
     val error: String? = null,
     val playerStats: CharacterStats? = null,
     val showEventDialog: Boolean = false,
-    val activeEvents: List<GameEvent> = emptyList(),
-    val gameSaves: List<String> = emptyList() // Simplified for now
+    val activeEvents: List<GameEvent> = emptyList()
 )
