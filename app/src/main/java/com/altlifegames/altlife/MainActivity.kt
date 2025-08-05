@@ -49,7 +49,8 @@ fun AltLifeGameScreen(viewModel: GameViewModel = hiltViewModel()) {
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
-                .padding(16.dp),
+                .padding(16.dp)
+                .padding(bottom = 120.dp), // Space for stats at bottom
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Header
@@ -83,7 +84,7 @@ fun AltLifeGameScreen(viewModel: GameViewModel = hiltViewModel()) {
             Spacer(modifier = Modifier.height(32.dp))
         }
 
-        // Character Stats at Bottom
+        // Character Stats at Bottom (minimized)
         CharacterStatsBottom(
             stats = uiState.playerStats,
             modifier = Modifier
@@ -104,17 +105,6 @@ fun AltLifeGameScreen(viewModel: GameViewModel = hiltViewModel()) {
             )
         }
     }
-}
-
-@Composable
-fun IconWithFallback(iconResId: Int, contentDescription: String, modifier: Modifier = Modifier) {
-    // Simple approach - just use the icon directly
-    // If it fails, Compose will show a missing resource error at compile time
-    Icon(
-        painter = painterResource(id = iconResId),
-        contentDescription = contentDescription,
-        modifier = modifier
-    )
 }
 
 @Composable
@@ -363,7 +353,7 @@ fun CharacterStatsBottom(
         shape = MaterialTheme.shapes.large
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(12.dp) // Reduced padding
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -372,83 +362,77 @@ fun CharacterStatsBottom(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_person),
                     contentDescription = "Person",
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(20.dp), // Smaller icon
                     tint = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Character Stats",
-                    style = MaterialTheme.typography.titleMedium,
+                    text = "Stats",
+                    style = MaterialTheme.typography.titleSmall, // Smaller text
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(8.dp)) // Reduced spacing
 
-            StatBarRow(
+            // Compact stat bars
+            CompactStatRow(
                 label = "Age",
-                value = stats.age.toFloat(),
-                maxValue = 100f,
-                iconResId = R.drawable.ic_person,
-                isPercentage = false
+                value = stats.age,
+                maxValue = 100,
+                iconResId = R.drawable.ic_person
             )
 
-            StatBarRow(
+            CompactStatRow(
                 label = "Health",
-                value = stats.health.toFloat(),
-                maxValue = 100f,
-                iconResId = R.drawable.ic_health,
-                color = Color(0xFF4CAF50)
+                value = stats.health,
+                maxValue = 100,
+                iconResId = R.drawable.ic_health
             )
 
-            StatBarRow(
-                label = "Happiness",
-                value = stats.happiness.toFloat(),
-                maxValue = 100f,
-                iconResId = R.drawable.ic_happiness,
-                color = Color(0xFFFF9800)
+            CompactStatRow(
+                label = "Happy",
+                value = stats.happiness,
+                maxValue = 100,
+                iconResId = R.drawable.ic_happiness
             )
 
-            StatBarRow(
-                label = "Intelligence",
-                value = stats.intelligence.toFloat(),
-                maxValue = 100f,
-                iconResId = R.drawable.ic_smarts,
-                color = Color(0xFF2196F3)
+            CompactStatRow(
+                label = "Smart",
+                value = stats.intelligence,
+                maxValue = 100,
+                iconResId = R.drawable.ic_smarts
             )
 
-            StatBarRow(
+            CompactStatRow(
                 label = "Money",
-                value = stats.money.toFloat(),
-                maxValue = 10000f,
+                value = stats.money,
+                maxValue = 10000,
                 iconResId = R.drawable.ic_money,
-                color = Color(0xFF9C27B0),
-                isPercentage = false
+                isCurrency = true
             )
 
-            StatBarRow(
+            CompactStatRow(
                 label = "Social",
-                value = stats.social.toFloat(),
-                maxValue = 100f,
-                iconResId = R.drawable.ic_relationship,
-                color = Color(0xFFF44336)
+                value = stats.social,
+                maxValue = 100,
+                iconResId = R.drawable.ic_relationship
             )
         }
     }
 }
 
 @Composable
-fun StatBarRow(
+fun CompactStatRow(
     label: String,
-    value: Float,
-    maxValue: Float,
+    value: Int,
+    maxValue: Int,
     iconResId: Int,
-    color: Color = MaterialTheme.colorScheme.primary,
-    isPercentage: Boolean = true
+    isCurrency: Boolean = false
 ) {
-    val percentage = (value / maxValue).coerceIn(0f, 1f)
-    val displayValue = if (isPercentage) "${value.toInt()}/100" else "$${value.toInt()}"
+    val percentage = (value.toFloat() / maxValue.toFloat()).coerceIn(0f, 1f)
+    val displayValue = if (isCurrency) "$$value" else "$value/$maxValue"
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -457,44 +441,40 @@ fun StatBarRow(
         Icon(
             painter = painterResource(id = iconResId),
             contentDescription = null,
-            modifier = Modifier.size(20.dp),
-            tint = color
+            modifier = Modifier.size(16.dp), // Even smaller icons
+            tint = MaterialTheme.colorScheme.onSurface
         )
 
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(6.dp))
 
-        Column(
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.width(40.dp) // Fixed width for labels
+        )
+
+        Spacer(modifier = Modifier.width(4.dp))
+
+        LinearProgressIndicator(
+            progress = { percentage },
             modifier = Modifier.weight(1f)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = displayValue,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+                .height(6.dp), // Thinner progress bar
+            color = MaterialTheme.colorScheme.primary,
+            trackColor = MaterialTheme.colorScheme.surfaceVariant
+        )
 
-            Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.width(6.dp))
 
-            LinearProgressIndicator(
-                progress = { percentage },
-                modifier = Modifier.fillMaxWidth()
-                    .height(8.dp),
-                color = color,
-                trackColor = MaterialTheme.colorScheme.surfaceVariant
-            )
-        }
+        Text(
+            text = displayValue,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.width(50.dp) // Fixed width for values
+        )
     }
 
-    Spacer(modifier = Modifier.height(12.dp))
+    Spacer(modifier = Modifier.height(4.dp)) // Minimal spacing between rows
 }
 
 @Composable
