@@ -5,7 +5,7 @@
     <string name="last_name_hint">Last Name</string>
     <string name="gender_label">Gender</string>
     <string name="create_character_button">Create Character</string>
-    <string name="app_name">AltLife</string>
+    <string name="app_name">Liveon</string>
     <string name="fragment_game_title">Home Fragment</string>
     <string name="home_title">Home</string>
     <string name="welcome_message">Welcome,</string>

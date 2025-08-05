@@ -1,7 +1,7 @@
-package com.altlifegames.core.repository
+package com.liveongames.core.repository
 
-import com.altlifegames.core.data.CharacterDao
-import com.altlifegames.core.model.Character
+import com.liveongames.core.data.CharacterDao
+import com.liveongames.core.model.Character
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

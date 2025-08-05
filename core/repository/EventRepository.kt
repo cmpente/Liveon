@@ -1,7 +1,7 @@
-package com.altlifegames.core.repository
+package com.liveongames.core.repository
 
-import com.altlifegames.core.data.EventDao
-import com.altlifegames.core.model.Event
+import com.liveongames.core.data.EventDao
+import com.liveongames.core.model.Event
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

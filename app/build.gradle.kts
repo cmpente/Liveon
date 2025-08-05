@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.altlifegames.altlife"
+    namespace = "com.liveongames.liveon"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.altlifegames.altlife"
+        applicationId = "com.liveongames.liveon"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

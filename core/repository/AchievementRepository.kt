@@ -1,7 +1,7 @@
-package com.altlifegames.core.repository
+package com.liveongames.core.repository
 
-import com.altlifegames.core.data.AchievementDao
-import com.altlifegames.core.model.Achievement
+import com.liveongames.core.data.AchievementDao
+import com.liveongames.core.model.Achievement
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

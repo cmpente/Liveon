@@ -1,6 +1,6 @@
-# AltLife – Rewrite Your Fate
+# liveon – Rewrite Your Fate
 
-AltLife is a life simulator for Android inspired by BitLife and similar titles.  It is built entirely in Kotlin using Jetpack Compose (Material 3), MVVM architecture and Hilt dependency injection.  AltLife aims to surpass competitors by offering deep stats, generational play, a vast event pool, and a professional user experience.
+liveon is a life simulator for Android inspired by BitLife and similar titles.  It is built entirely in Kotlin using Jetpack Compose (Material 3), MVVM architecture and Hilt dependency injection.  liveon aims to surpass competitors by offering deep stats, generational play, a vast event pool, and a professional user experience.
 
 ## Features
 
@@ -26,7 +26,7 @@ AltLife is a life simulator for Android inspired by BitLife and similar titles. 
 This project is organized as a multi‑module Gradle build:
 
 ```
-altlife/
+liveon/
 ├── app/        # Android application with Compose UI and Hilt modules
 ├── data/       # Room database, DAOs and repository implementations
 ├── domain/     # Pure Kotlin module containing models, repositories and use cases
@@ -46,7 +46,7 @@ altlife/
 
 ### Architecture
 
-AltLife follows Clean Architecture principles with distinct layers:
+liveon follows Clean Architecture principles with distinct layers:
 
 * **Domain** – Business logic and use cases operate on plain models without Android dependencies.
 * **Data** – Repositories interact with Room and JSON to persist and retrieve data, mapping between entities and domain models.
@@ -56,10 +56,10 @@ AltLife follows Clean Architecture principles with distinct layers:
 ## Building & Running
 
 1. Ensure you have Android Studio Flamingo (or later) with Kotlin 1.9 and Compose support.
-2. Clone the repository and open the `altlife` directory in Android Studio.
+2. Clone the repository and open the `liveon` directory in Android Studio.
 3. Sync Gradle.  The project uses Kotlin DSL build scripts and requires the Hilt plugin.
 4. Create an Android device or emulator running API 24 or higher.
-5. Run the **AltLife** configuration.  You can explore character creation, events, assets, careers and achievements.
+5. Run the **liveon** configuration.  You can explore character creation, events, assets, careers and achievements.
 
 > **Note:** This project intentionally omits the `local.properties` file because that file contains a machine‑specific `sdk.dir` property.  When opening the project on your machine, Android Studio will prompt you to specify the location of your Android SDK.  Either set the `ANDROID_HOME` environment variable or create a `local.properties` file in the project root with a line like `sdk.dir=C\:\\Users\\yourname\\AppData\\Local\\Android\\Sdk` (on Windows) or `sdk.dir=/home/yourname/Android/Sdk` (on Linux/macOS).
 
@@ -68,12 +68,12 @@ AltLife follows Clean Architecture principles with distinct layers:
 * **Adding events and achievements:** Edit the JSON files under `app/src/main/assets`.  The schemas are documented in [`json_schemas.md`](json_schemas.md).  New content can be added without changing code.
 * **Localization:** Provide translated versions of the JSON files and string resources (e.g. `events_es_ES.json`, `strings_fr.xml`) and load them based on the device locale.
 * **New traits and stats:** Extend the `Stats` and `Trait` data classes in the domain module and update `ApplyEventUseCase` and UI accordingly.
-* **UI customization:** Modify Compose theme definitions in `AltLifeTheme.kt` and `Type.kt` or replace fonts with those specified in the branding guide.
+* **UI customization:** Modify Compose theme definitions in `liveonTheme.kt` and `Type.kt` or replace fonts with those specified in the branding guide.
 
 ## License
 
-This project is developed by AltLife Games.  All original code and assets are provided under the MIT License.  Third‑party libraries are used under their respective licenses.  See individual library documentation for details.
+This project is developed by liveon Games.  All original code and assets are provided under the MIT License.  Third‑party libraries are used under their respective licenses.  See individual library documentation for details.
 
 ## Acknowledgements
 
-Thanks to the open‑source community and life simulation games that inspired AltLife.  This project builds upon established patterns while introducing unique features like generational play, an advanced economy, AI‑generated events and an open scenario builder.
+Thanks to the open‑source community and life simulation games that inspired liveon.  This project builds upon established patterns while introducing unique features like generational play, an advanced economy, AI‑generated events and an open scenario builder.

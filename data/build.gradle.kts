@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.altlifegames.data"
+    namespace = "com.liveongames.data"
     compileSdk = 34
 
     defaultConfig {

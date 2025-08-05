@@ -1,6 +1,6 @@
-# AltLife Expansion & Future Ideas
+# liveon Expansion & Future Ideas
 
-This document lists ideas for downloadable content (DLC), expansions and future updates to extend AltLife after its initial release.
+This document lists ideas for downloadable content (DLC), expansions and future updates to extend liveon after its initial release.
 
 ## Content Packs
 

@@ -1,7 +1,7 @@
-package com.altlifegames.core.repository
+package com.liveongames.core.repository
 
-import com.altlifegames.core.data.ScenarioDao
-import com.altlifegames.core.model.Scenario
+import com.liveongames.core.data.ScenarioDao
+import com.liveongames.core.model.Scenario
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

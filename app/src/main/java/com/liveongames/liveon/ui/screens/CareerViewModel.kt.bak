@@ -1,0 +1,62 @@
+package com.liveongames.liveon.ui.screens
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.liveongames.domain.model.Career
+import com.liveongames.domain.repository.CareerRepository
+import com.liveongames.domain.repository.CharacterRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class CareerViewModel @Inject constructor(
+    private val careerRepository: CareerRepository,
+    private val characterRepository: CharacterRepository
+) : ViewModel() {
+    private val _availableCareers = MutableStateFlow<List<Career>>(emptyList())
+    val availableCareers: StateFlow<List<Career>> = _availableCareers.asStateFlow()
+
+    private val _currentCareer = MutableStateFlow<Career?>(null)
+    val currentCareer: StateFlow<Career?> = _currentCareer.asStateFlow()
+
+    private var characterId: Long? = null
+
+    init {
+        // Load available careers
+        careerRepository.getAvailableCareers().onEach { list ->
+            _availableCareers.value = list
+        }.launchIn(viewModelScope)
+        // Observe current character
+        characterRepository.getCurrentCharacter().onEach { character ->
+            character?.let { c ->
+                characterId = c.id
+                careerRepository.getCurrentCareer(c.id).onEach { career ->
+                    _currentCareer.value = career
+                }.launchIn(viewModelScope)
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    fun applyForCareer(career: Career) {
+        val id = characterId ?: return
+        viewModelScope.launch {
+            careerRepository.applyForCareer(id, career)
+        }
+    }
+
+    fun promote() {
+        val id = characterId ?: return
+        viewModelScope.launch { careerRepository.promote(id) }
+    }
+
+    fun demote() {
+        val id = characterId ?: return
+        viewModelScope.launch { careerRepository.demote(id) }
+    }
+}

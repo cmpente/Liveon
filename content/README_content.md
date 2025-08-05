@@ -1,4 +1,4 @@
-# AltLife Content & Localization
+# liveon Content & Localization
 
 ## Adding New Content
 - Place your JSON content files in the `/assets/` directory (e.g., `events_en.json`).

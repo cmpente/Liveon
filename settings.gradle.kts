@@ -14,7 +14,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "AltLifeAlpha"
+rootProject.name = "liveonAlpha"
 include(":app")
 include(":data")
 include(":domain")

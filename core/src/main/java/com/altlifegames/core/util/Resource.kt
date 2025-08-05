@@ -1,4 +1,4 @@
-package com.altlifegames.core.util
+package com.liveongames.core.util
 
 /**
  * A sealed class representing the state of a resource provided by repositories.
