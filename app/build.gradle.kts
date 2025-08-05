@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
-    alias(libs.plugins.ksp)
+    alias(libs.plugins.ksp)  // This is good!
 }
 
 android {
@@ -42,6 +42,7 @@ android {
         compose = true
         viewBinding = true
     }
+}
 
 dependencies {
     implementation(project(":domain"))
@@ -70,4 +71,5 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-}}
+    ksp(libs.room.compiler)
+}

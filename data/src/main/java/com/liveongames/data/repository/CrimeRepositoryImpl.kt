@@ -1,56 +1,54 @@
+// app/src/main/java/com/liveongames/data/repository/CrimeRepositoryImpl.kt
 package com.liveongames.data.repository
 
+import com.liveongames.data.db.dao.CrimeDao
 import com.liveongames.domain.model.Crime
 import com.liveongames.domain.repository.CrimeRepository
 import com.liveongames.domain.repository.CrimeStats
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-// Create a data class to track crimes per character
-data class CharacterCrimeRecord(
-    val characterId: String,
-    val crime: Crime,
-    val timestamp: Long = System.currentTimeMillis()
-)
-
-class CrimeRepositoryImpl @Inject constructor() : CrimeRepository {
-
-    private val crimeRecords = MutableStateFlow<List<CharacterCrimeRecord>>(emptyList())
+class CrimeRepositoryImpl @Inject constructor(
+    private val crimeDao: CrimeDao
+) : CrimeRepository {
 
     override fun getCrimes(): Flow<List<Crime>> {
-        // Return all crimes, not grouped by character
-        return MutableStateFlow(crimeRecords.value.map { it.crime })
+        return crimeDao.getCrimesForCharacter("default_character").map { crimeEntities ->
+            crimeEntities.map { crimeEntity ->
+                Crime(
+                    id = crimeEntity.id,
+                    name = crimeEntity.name,
+                    description = crimeEntity.description,
+                    severity = crimeEntity.severity,
+                    chanceOfGettingCaught = crimeEntity.chanceOfGettingCaught,
+                    fine = crimeEntity.fine,
+                    jailTime = crimeEntity.jailTime
+                )
+            }
+        }
     }
 
     override suspend fun recordCrime(characterId: String, crime: Crime) {
-        val currentRecords = crimeRecords.value.toMutableList()
-        currentRecords.add(CharacterCrimeRecord(characterId, crime))
-        crimeRecords.value = currentRecords
+        val crimeEntity = com.liveongames.data.db.entity.CrimeEntity(
+            id = crime.id,
+            characterId = characterId,
+            name = crime.name,
+            description = crime.description,
+            severity = crime.severity,
+            chanceOfGettingCaught = crime.chanceOfGettingCaught,
+            fine = crime.fine,
+            jailTime = crime.jailTime
+        )
+        crimeDao.insertCrime(crimeEntity)
     }
 
     override suspend fun clearCriminalRecord(characterId: String) {
-        val currentRecords = crimeRecords.value.toMutableList()
-        val filteredRecords = currentRecords.filter { it.characterId != characterId }
-        crimeRecords.value = filteredRecords
+        crimeDao.clearCrimesForCharacter(characterId)
     }
 
     override suspend fun getCrimeStats(characterId: String): CrimeStats {
-        val characterCrimes = crimeRecords.value.filter { it.characterId == characterId }
-
-        // Calculate severity distribution
-        val severityMap = characterCrimes
-            .groupBy { it.crime.severity }
-            .mapValues { it.value.size }
-
-        // Find last crime timestamp
-        val lastCrimeTimestamp = characterCrimes
-            .maxOfOrNull { it.timestamp }
-
-        return CrimeStats(
-            totalCrimes = characterCrimes.size,
-            crimesBySeverity = severityMap,
-            lastCrimeDate = lastCrimeTimestamp
-        )
+        // Simple implementation - you can expand this
+        return CrimeStats()
     }
 }

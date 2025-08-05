@@ -1,3 +1,4 @@
+// app/src/main/java/com/liveongames/data/db/dao/PetDao.kt
 package com.liveongames.data.db.dao
 
 import androidx.room.Dao
@@ -14,9 +15,6 @@ interface PetDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPet(pet: PetEntity)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPets(pets: List<PetEntity>)
 
     @Query("DELETE FROM pets WHERE id = :petId")
     suspend fun removePet(petId: String)

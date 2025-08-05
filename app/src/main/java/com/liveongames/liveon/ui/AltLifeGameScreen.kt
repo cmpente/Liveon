@@ -37,7 +37,7 @@ fun liveongamescreen(viewModel: GameViewModel = hiltViewModel()) {
         ) {
             // Header
             Text(
-                text = "liveon Alpha",
+                text = "Liveon",
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold

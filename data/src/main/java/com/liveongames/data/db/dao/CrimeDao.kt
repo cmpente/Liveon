@@ -1,3 +1,4 @@
+// app/src/main/java/com/liveongames/data/db/dao/CrimeDao.kt
 package com.liveongames.data.db.dao
 
 import androidx.room.Dao
@@ -14,9 +15,6 @@ interface CrimeDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCrime(crime: CrimeEntity)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCrimes(crimes: List<CrimeEntity>)
 
     @Query("DELETE FROM crimes WHERE characterId = :characterId")
     suspend fun clearCrimesForCharacter(characterId: String)
