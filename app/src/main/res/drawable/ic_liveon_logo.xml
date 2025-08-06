@@ -1,0 +1,42 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="128dp"
+    android:height="128dp"
+    android:viewportWidth="128"
+    android:viewportHeight="128">
+
+    <!-- Infinity Symbol (based on Verdana Bold, centered at 64,80, font size 90) -->
+    <path
+        android:fillColor="#21356d"
+        android:pathData="M34.75,80
+            C34.75,67 50,57 64,80
+            C78,103 93.25,93 93.25,80
+            C93.25,67 78,57 64,80
+            C50,103 34.75,93 34.75,80
+            Z" />
+
+    <!-- Liveon (approximated for readability and scalability, set at y=120, font-size=28) -->
+
+    <!-- L -->
+    <path android:fillColor="#21356d"
+        android:pathData="M40,110 v18 h6 v-2 h-4 v-16 z"/>
+    <!-- i -->
+    <path android:fillColor="#21356d"
+        android:pathData="M48,110 v14 h2 v-14 z M49,127
+            a1,1 0 1 0 0.01,0"/>
+    <!-- v -->
+    <path android:fillColor="#21356d"
+        android:pathData="M53,110 v12 q0,2 2,2 t2,-2 v-12 h-2 v12 q0,0.5 -0.5,0.5 t-0.5,-0.5 v-12 z"/>
+    <!-- e -->
+    <path android:fillColor="#21356d"
+        android:pathData="M62,116 a4,4 0 1,1 0,-8
+            h2 q2,0 2,2 h-2
+            q-2,0 -2,2 h4
+            a4,4 0 1,1 -4,4"/>
+    <!-- o -->
+    <path android:fillColor="#21356d"
+        android:pathData="M72,120 a4,4 0 1,1 0,-8 a4,4 0 1,1 0,8"/>
+    <!-- n -->
+    <path android:fillColor="#21356d"
+        android:pathData="M80,110 v10 q0,2 2,2 t2,-2 v-10 h-2 v10 q0,0.5 -0.5,0.5 t-0.5,-0.5 v-10 z"/>
+
+</vector>

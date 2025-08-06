@@ -26,6 +26,8 @@ import com.liveongames.liveon.ui.screens.SettingsScreen
 import com.liveongames.liveon.viewmodel.SettingsViewModel
 import com.liveongames.liveon.ui.viewmodel.GameViewModel
 import com.liveongames.liveon.ui.viewmodel.GameUiState
+import com.liveongames.liveon.ui.LiveonGameScreen
+import com.liveongames.liveon.ui.theme.LiveonTheme
 import com.liveongames.domain.model.GameEvent
 import com.liveongames.domain.model.CharacterStats
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,8 +38,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MaterialTheme {
-                liveonApp()
+            LiveonTheme {
+                LiveonGameScreen()
             }
         }
     }

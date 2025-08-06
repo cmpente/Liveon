@@ -1,0 +1,44 @@
+<!-- res/drawable/ic_palette.xml -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+
+    <!-- Palette Body (Rounded) -->
+    <path
+        android:pathData="M38,43c-14,2-27,-5-28,-16C9,14,26,4,39,10c9,5,12,19,6,28c-3,5-9,5-10,5z"
+        android:fillColor="#FFE0B2"/>
+
+    <!-- Thumb Hole -->
+    <path
+        android:pathData="M33,40
+            m-3,0
+            a3,3 0 1,0 6,0
+            a3,3 0 1,0 -6,0"
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.6"/>
+
+    <!-- Paint blobs (drawn as circles using pathData) -->
+    <!-- Blue blob -->
+    <path
+        android:pathData="M16,16 m-2.4,0 a2.4,2.4 0 1,0 4.8,0 a2.4,2.4 0 1,0 -4.8,0"
+        android:fillColor="#1976D2"/>
+    <!-- Yellow blob -->
+    <path
+        android:pathData="M21,11 m-2.4,0 a2.4,2.4 0 1,0 4.8,0 a2.4,2.4 0 1,0 -4.8,0"
+        android:fillColor="#FFD700"/>
+    <!-- Green blob -->
+    <path
+        android:pathData="M27,11 m-2.4,0 a2.4,2.4 0 1,0 4.8,0 a2.4,2.4 0 1,0 -4.8,0"
+        android:fillColor="#43A047"/>
+    <!-- Orange blob -->
+    <path
+        android:pathData="M36,16 m-2.4,0 a2.4,2.4 0 1,0 4.8,0 a2.4,2.4 0 1,0 -4.8,0"
+        android:fillColor="#FF6F00"/>
+    <!-- Purple blob -->
+    <path
+        android:pathData="M36,26 m-2.4,0 a2.4,2.4 0 1,0 4.8,0 a2.4,2.4 0 1,0 -4.8,0"
+        android:fillColor="#9B5DE5"/>
+
+</vector>

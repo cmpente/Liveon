@@ -5,33 +5,48 @@
     "description": "You're invited to your best friend's house for your first-ever sleepover. You're excited, but also a bit nervous.",
     "choices": [
       {
+        "id": "sleepover_choice_1",
         "text": "Go and stay the night",
-        "result": {
-          "outcome": "You have fun, make new memories, and feel more grown-up.",
-          "statChanges": {
-            "happiness": 3,
-            "relationships": 2
+        "description": "Accept the invitation and stay overnight",
+        "outcomes": [
+          {
+            "description": "You have fun, make new memories, and feel more grown-up.",
+            "statChanges": {
+              "happiness": 3,
+              "relationships": 2
+            },
+            "ageProgression": 1
           }
-        }
+        ]
       },
       {
+        "id": "sleepover_choice_2", 
         "text": "Call home and ask to leave early",
-        "result": {
-          "outcome": "Your parents pick you up, but you feel embarrassed.",
-          "statChanges": {
-            "happiness": -2,
-            "reputation": -1
+        "description": "Ask to go home early",
+        "outcomes": [
+          {
+            "description": "Your parents pick you up, but you feel embarrassed.",
+            "statChanges": {
+              "happiness": -2,
+              "reputation": -1
+            },
+            "ageProgression": 1
           }
-        }
+        ]
       },
       {
+        "id": "sleepover_choice_3",
         "text": "Decline the invitation",
-        "result": {
-          "outcome": "You miss out but feel comfortable at home.",
-          "statChanges": {
-            "happiness": 0
+        "description": "Don't go to the sleepover",
+        "outcomes": [
+          {
+            "description": "You miss out but feel comfortable at home.",
+            "statChanges": {
+              "happiness": 0
+            },
+            "ageProgression": 1
           }
-        }
+        ]
       }
     ],
     "minAge": 7,
@@ -47,32 +62,47 @@
     "description": "Your tooth becomes wobbly during dinner, and it finally comes out!",
     "choices": [
       {
+        "id": "tooth_choice_1",
         "text": "Show everyone at the table",
-        "result": {
-          "outcome": "Everyone celebrates with you.",
-          "statChanges": {
-            "reputation": 1,
-            "happiness": 2
+        "description": "Show off your lost tooth",
+        "outcomes": [
+          {
+            "description": "Everyone celebrates with you.",
+            "statChanges": {
+              "reputation": 1,
+              "happiness": 2
+            },
+            "ageProgression": 1
           }
-        }
+        ]
       },
       {
+        "id": "tooth_choice_2",
         "text": "Hide it because you're embarrassed",
-        "result": {
-          "outcome": "You quietly slip away, no one notices.",
-          "statChanges": {
-            "happiness": -1
+        "description": "Keep it to yourself",
+        "outcomes": [
+          {
+            "description": "You quietly slip away, no one notices.",
+            "statChanges": {
+              "happiness": -1
+            },
+            "ageProgression": 1
           }
-        }
+        ]
       },
       {
+        "id": "tooth_choice_3",
         "text": "Try to wiggle out more teeth",
-        "result": {
-          "outcome": "You hurt your gums!",
-          "statChanges": {
-            "health": -2
+        "description": "Try to remove more teeth",
+        "outcomes": [
+          {
+            "description": "You hurt your gums!",
+            "statChanges": {
+              "health": -2
+            },
+            "ageProgression": 1
           }
-        }
+        ]
       }
     ],
     "minAge": 5,
@@ -88,33 +118,48 @@
     "description": "You fib to your parents about finishing your homework. They find out.",
     "choices": [
       {
+        "id": "lie_choice_1",
         "text": "Admit and apologize",
-        "result": {
-          "outcome": "They appreciate your honesty but ground you.",
-          "statChanges": {
-            "reputation": 2,
-            "happiness": -2
+        "description": "Tell the truth and say sorry",
+        "outcomes": [
+          {
+            "description": "They appreciate your honesty but ground you.",
+            "statChanges": {
+              "reputation": 2,
+              "happiness": -2
+            },
+            "ageProgression": 1
           }
-        }
+        ]
       },
       {
+        "id": "lie_choice_2",
         "text": "Stick to your story",
-        "result": {
-          "outcome": "You get caught anyway and lose some trust.",
-          "statChanges": {
-            "reputation": -3
+        "description": "Keep lying about what happened",
+        "outcomes": [
+          {
+            "description": "You get caught anyway and lose some trust.",
+            "statChanges": {
+              "reputation": -3
+            },
+            "ageProgression": 1
           }
-        }
+        ]
       },
       {
+        "id": "lie_choice_3",
         "text": "Blame your sibling",
-        "result": {
-          "outcome": "Your sibling gets in trouble and you're wracked with guilt.",
-          "statChanges": {
-            "relationships": -2,
-            "happiness": -2
+        "description": "Say your sibling did it",
+        "outcomes": [
+          {
+            "description": "Your sibling gets in trouble and you're wracked with guilt.",
+            "statChanges": {
+              "relationships": -2,
+              "happiness": -2
+            },
+            "ageProgression": 1
           }
-        }
+        ]
       }
     ],
     "minAge": 8,
@@ -122,699 +167,6 @@
     "tags": [
       "family",
       "honesty"
-    ]
-  },
-  {
-    "id": 2004,
-    "title": "Schoolyard Argument",
-    "description": "You get into an argument with another kid at recess.",
-    "choices": [
-      {
-        "text": "Try to make peace",
-        "result": {
-          "outcome": "You both apologize and become friends.",
-          "statChanges": {
-            "relationships": 2
-          }
-        }
-      },
-      {
-        "text": "Tell a teacher",
-        "result": {
-          "outcome": "The teacher intervenes. You both get a time out.",
-          "statChanges": {
-            "reputation": 0,
-            "happiness": -1
-          }
-        }
-      },
-      {
-        "text": "Fight back",
-        "result": {
-          "outcome": "You get in trouble.",
-          "statChanges": {
-            "reputation": -2,
-            "health": -1
-          }
-        }
-      }
-    ],
-    "minAge": 6,
-    "maxAge": 10,
-    "tags": [
-      "school",
-      "friendship"
-    ]
-  },
-  {
-    "id": 2005,
-    "title": "Pet Goldfish",
-    "description": "You win a goldfish at a carnival and bring it home.",
-    "choices": [
-      {
-        "text": "Take good care of it",
-        "result": {
-          "outcome": "Your goldfish thrives and you feel responsible.",
-          "statChanges": {
-            "happiness": 2
-          }
-        }
-      },
-      {
-        "text": "Forget to feed it",
-        "result": {
-          "outcome": "The goldfish doesn't survive long.",
-          "statChanges": {
-            "happiness": -2
-          }
-        }
-      },
-      {
-        "text": "Let your sibling take over",
-        "result": {
-          "outcome": "You share responsibility and grow closer.",
-          "statChanges": {
-            "relationships": 1
-          }
-        }
-      }
-    ],
-    "minAge": 6,
-    "maxAge": 9,
-    "tags": [
-      "pet",
-      "family"
-    ]
-  },
-  {
-    "id": 2006,
-    "title": "Embarrassing Wardrobe Malfunction",
-    "description": "During a school play, your costume falls apart in front of everyone.",
-    "choices": [
-      {
-        "text": "Laugh it off",
-        "result": {
-          "outcome": "Everyone laughs with you, and you become more popular.",
-          "statChanges": {
-            "reputation": 2,
-            "happiness": 1
-          }
-        }
-      },
-      {
-        "text": "Run off stage",
-        "result": {
-          "outcome": "You feel mortified.",
-          "statChanges": {
-            "happiness": -3
-          }
-        }
-      },
-      {
-        "text": "Keep going like nothing happened",
-        "result": {
-          "outcome": "You earn respect for your composure.",
-          "statChanges": {
-            "reputation": 2
-          }
-        }
-      }
-    ],
-    "minAge": 8,
-    "maxAge": 11,
-    "tags": [
-      "school",
-      "confidence"
-    ]
-  },
-  {
-    "id": 2007,
-    "title": "Library Card",
-    "description": "Your parents take you to get your first library card.",
-    "choices": [
-      {
-        "text": "Pick out lots of books",
-        "result": {
-          "outcome": "You dive into new worlds and learn a lot.",
-          "statChanges": {
-            "smarts": 3,
-            "happiness": 1
-          }
-        }
-      },
-      {
-        "text": "Get one comic and leave",
-        "result": {
-          "outcome": "You have a fun afternoon.",
-          "statChanges": {
-            "happiness": 2
-          }
-        }
-      },
-      {
-        "text": "Say you're not interested",
-        "result": {
-          "outcome": "Your parents are disappointed.",
-          "statChanges": {
-            "relationships": -1
-          }
-        }
-      }
-    ],
-    "minAge": 6,
-    "maxAge": 10,
-    "tags": [
-      "family",
-      "smarts"
-    ]
-  },
-  {
-    "id": 2008,
-    "title": "Hide and Seek Champion",
-    "description": "You become famous among your friends for being impossible to find in hide and seek.",
-    "choices": [
-      {
-        "text": "Teach others your tricks",
-        "result": {
-          "outcome": "You become a group favorite.",
-          "statChanges": {
-            "relationships": 2,
-            "reputation": 1
-          }
-        }
-      },
-      {
-        "text": "Stay secretive",
-        "result": {
-          "outcome": "You maintain your streak.",
-          "statChanges": {
-            "reputation": 2
-          }
-        }
-      },
-      {
-        "text": "Let someone else win",
-        "result": {
-          "outcome": "You help a friend feel good.",
-          "statChanges": {
-            "relationships": 2
-          }
-        }
-      }
-    ],
-    "minAge": 6,
-    "maxAge": 10,
-    "tags": [
-      "friendship",
-      "game"
-    ]
-  },
-  {
-    "id": 2009,
-    "title": "Neighborhood Bully",
-    "description": "A bigger kid threatens to take your lunch money on the walk home.",
-    "choices": [
-      {
-        "text": "Stand up for yourself",
-        "result": {
-          "outcome": "They back down, but you feel shaken.",
-          "statChanges": {
-            "reputation": 2,
-            "happiness": -1
-          }
-        }
-      },
-      {
-        "text": "Hand over the money",
-        "result": {
-          "outcome": "You avoid conflict, but feel bad.",
-          "statChanges": {
-            "happiness": -2
-          }
-        }
-      },
-      {
-        "text": "Run away and tell an adult",
-        "result": {
-          "outcome": "The bully is caught. You feel safe.",
-          "statChanges": {
-            "reputation": 1
-          }
-        }
-      }
-    ],
-    "minAge": 8,
-    "maxAge": 12,
-    "tags": [
-      "friendship",
-      "conflict"
-    ]
-  },
-  {
-    "id": 2010,
-    "title": "Rainy Day Art",
-    "description": "You're stuck inside because of bad weather. You discover a love for drawing.",
-    "choices": [
-      {
-        "text": "Draw a picture for your parents",
-        "result": {
-          "outcome": "They hang it on the fridge.",
-          "statChanges": {
-            "relationships": 1,
-            "happiness": 2
-          }
-        }
-      },
-      {
-        "text": "Make up a comic strip",
-        "result": {
-          "outcome": "You entertain yourself for hours.",
-          "statChanges": {
-            "happiness": 2
-          }
-        }
-      },
-      {
-        "text": "Play video games instead",
-        "result": {
-          "outcome": "You have a good time, but don't create anything.",
-          "statChanges": {
-            "happiness": 1
-          }
-        }
-      }
-    ],
-    "minAge": 5,
-    "maxAge": 11,
-    "tags": [
-      "creativity",
-      "family"
-    ]
-  },
-  {
-    "id": 2011,
-    "title": "Allergic Reaction",
-    "description": "You eat a food for the first time and have a mild allergic reaction.",
-    "choices": [
-      {
-        "text": "Tell an adult right away",
-        "result": {
-          "outcome": "They take care of you. All is well.",
-          "statChanges": {
-            "health": 2
-          }
-        }
-      },
-      {
-        "text": "Ignore it",
-        "result": {
-          "outcome": "You feel sick all day.",
-          "statChanges": {
-            "health": -4
-          }
-        }
-      },
-      {
-        "text": "Try the food again later",
-        "result": {
-          "outcome": "You realize it's a recurring problem.",
-          "statChanges": {
-            "smarts": 1,
-            "health": -1
-          }
-        }
-      }
-    ],
-    "minAge": 6,
-    "maxAge": 10,
-    "tags": [
-      "health",
-      "random"
-    ]
-  },
-  {
-    "id": 2012,
-    "title": "Class Pet Duty",
-    "description": "You're assigned to take care of the class hamster over the weekend.",
-    "choices": [
-      {
-        "text": "Feed and play with it",
-        "result": {
-          "outcome": "Your classmates praise your care.",
-          "statChanges": {
-            "reputation": 2
-          }
-        }
-      },
-      {
-        "text": "Forget to clean the cage",
-        "result": {
-          "outcome": "The teacher is not pleased.",
-          "statChanges": {
-            "reputation": -2
-          }
-        }
-      },
-      {
-        "text": "Let your sibling help",
-        "result": {
-          "outcome": "You bond with your sibling.",
-          "statChanges": {
-            "relationships": 1
-          }
-        }
-      }
-    ],
-    "minAge": 7,
-    "maxAge": 11,
-    "tags": [
-      "school",
-      "pet"
-    ]
-  },
-  {
-    "id": 2013,
-    "title": "Family Road Trip",
-    "description": "Your family embarks on a long road trip across the state.",
-    "choices": [
-      {
-        "text": "Play car games with siblings",
-        "result": {
-          "outcome": "You make fun memories.",
-          "statChanges": {
-            "relationships": 2
-          }
-        }
-      },
-      {
-        "text": "Complain about being bored",
-        "result": {
-          "outcome": "Your parents get frustrated.",
-          "statChanges": {
-            "relationships": -1
-          }
-        }
-      },
-      {
-        "text": "Sleep the whole way",
-        "result": {
-          "outcome": "You miss most of the trip.",
-          "statChanges": {
-            "happiness": -1
-          }
-        }
-      }
-    ],
-    "minAge": 6,
-    "maxAge": 11,
-    "tags": [
-      "family",
-      "travel"
-    ]
-  },
-  {
-    "id": 2014,
-    "title": "Birthday Candle Wish",
-    "description": "You blow out the candles on your birthday cake and make a wish.",
-    "choices": [
-      {
-        "text": "Wish for a new toy",
-        "result": {
-          "outcome": "You get the toy and are thrilled.",
-          "statChanges": {
-            "happiness": 2
-          }
-        }
-      },
-      {
-        "text": "Wish for your family to be happy",
-        "result": {
-          "outcome": "Your parents hug you tight.",
-          "statChanges": {
-            "relationships": 2
-          }
-        }
-      },
-      {
-        "text": "Wish to be a superhero",
-        "result": {
-          "outcome": "You run around in a cape for hours.",
-          "statChanges": {
-            "happiness": 1
-          }
-        }
-      }
-    ],
-    "minAge": 5,
-    "maxAge": 12,
-    "tags": [
-      "birthday",
-      "family"
-    ]
-  },
-  {
-    "id": 2015,
-    "title": "Sibling Rivalry",
-    "description": "You and your sibling fight over who gets to pick the TV show.",
-    "choices": [
-      {
-        "text": "Let them have their pick",
-        "result": {
-          "outcome": "They thank you and you feel mature.",
-          "statChanges": {
-            "relationships": 2
-          }
-        }
-      },
-      {
-        "text": "Insist on your choice",
-        "result": {
-          "outcome": "You get your way but start an argument.",
-          "statChanges": {
-            "relationships": -2
-          }
-        }
-      },
-      {
-        "text": "Suggest a compromise",
-        "result": {
-          "outcome": "You both watch something you like.",
-          "statChanges": {
-            "relationships": 1
-          }
-        }
-      }
-    ],
-    "minAge": 6,
-    "maxAge": 12,
-    "tags": [
-      "family",
-      "conflict"
-    ]
-  },
-  {
-    "id": 2016,
-    "title": "Rain Boots Day",
-    "description": "You jump in puddles on the way to school and arrive with muddy pants.",
-    "choices": [
-      {
-        "text": "Laugh it off",
-        "result": {
-          "outcome": "Everyone laughs and you become the fun kid.",
-          "statChanges": {
-            "reputation": 1,
-            "happiness": 1
-          }
-        }
-      },
-      {
-        "text": "Hide in the bathroom",
-        "result": {
-          "outcome": "You miss the start of class.",
-          "statChanges": {
-            "happiness": -1
-          }
-        }
-      },
-      {
-        "text": "Blame your sibling",
-        "result": {
-          "outcome": "Your parents get annoyed.",
-          "statChanges": {
-            "relationships": -1
-          }
-        }
-      }
-    ],
-    "minAge": 6,
-    "maxAge": 9,
-    "tags": [
-      "school",
-      "random"
-    ]
-  },
-  {
-    "id": 2017,
-    "title": "First Day of Kindergarten",
-    "description": "You start kindergarten. Everything feels new and big.",
-    "choices": [
-      {
-        "text": "Make friends with a classmate",
-        "result": {
-          "outcome": "You find a buddy for the day.",
-          "statChanges": {
-            "relationships": 2
-          }
-        }
-      },
-      {
-        "text": "Stay close to the teacher",
-        "result": {
-          "outcome": "You feel safe, but a bit left out.",
-          "statChanges": {
-            "happiness": -1
-          }
-        }
-      },
-      {
-        "text": "Cry for your parents",
-        "result": {
-          "outcome": "The teacher comforts you.",
-          "statChanges": {
-            "reputation": -1
-          }
-        }
-      }
-    ],
-    "minAge": 5,
-    "maxAge": 6,
-    "tags": [
-      "school",
-      "milestone"
-    ]
-  },
-  {
-    "id": 2018,
-    "title": "Broken Arm",
-    "description": "You fall from the playground slide and break your arm.",
-    "choices": [
-      {
-        "text": "Bravely face the doctor",
-        "result": {
-          "outcome": "You get a cool cast and classmates sign it.",
-          "statChanges": {
-            "reputation": 2,
-            "health": -5
-          }
-        }
-      },
-      {
-        "text": "Cry and avoid the doctor",
-        "result": {
-          "outcome": "You eventually get treated, but it takes longer.",
-          "statChanges": {
-            "health": -6
-          }
-        }
-      },
-      {
-        "text": "Show off your cast",
-        "result": {
-          "outcome": "You become the center of attention.",
-          "statChanges": {
-            "reputation": 2,
-            "happiness": 2
-          }
-        }
-      }
-    ],
-    "minAge": 7,
-    "maxAge": 10,
-    "tags": [
-      "health",
-      "school"
-    ]
-  },
-  {
-    "id": 2019,
-    "title": "Neighborhood Lemonade Stand",
-    "description": "You and friends set up a lemonade stand on your block.",
-    "choices": [
-      {
-        "text": "Help with sales",
-        "result": {
-          "outcome": "You learn about teamwork and money.",
-          "statChanges": {
-            "money": 2,
-            "smarts": 1
-          }
-        }
-      },
-      {
-        "text": "Sneak some lemonade for yourself",
-        "result": {
-          "outcome": "Your friends catch you.",
-          "statChanges": {
-            "reputation": -1
-          }
-        }
-      },
-      {
-        "text": "Decorate the stand",
-        "result": {
-          "outcome": "You attract more customers.",
-          "statChanges": {
-            "reputation": 1
-          }
-        }
-      }
-    ],
-    "minAge": 7,
-    "maxAge": 11,
-    "tags": [
-      "money",
-      "friendship"
-    ]
-  },
-  {
-    "id": 2020,
-    "title": "Learning to Ride a Bike",
-    "description": "You take off the training wheels and ride a bike alone for the first time.",
-    "choices": [
-      {
-        "text": "Fall and get back up",
-        "result": {
-          "outcome": "You master it after a few tries.",
-          "statChanges": {
-            "smarts": 2,
-            "happiness": 2
-          }
-        }
-      },
-      {
-        "text": "Give up after falling",
-        "result": {
-          "outcome": "You feel discouraged but safe.",
-          "statChanges": {
-            "happiness": -2
-          }
-        }
-      },
-      {
-        "text": "Ask a parent for help",
-        "result": {
-          "outcome": "You and your parent bond.",
-          "statChanges": {
-            "relationships": 1
-          }
-        }
-      }
-    ],
-    "minAge": 5,
-    "maxAge": 8,
-    "tags": [
-      "milestone",
-      "family"
     ]
   }
 ]

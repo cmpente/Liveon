@@ -2,8 +2,11 @@
 package com.liveongames.domain.model
 
 data class LifeLogEntry(
-    val id: String,
-    val message: String,
-    val timestamp: String,
-    val type: String // "event", "achievement", "relationship", etc.
+    val id: String = System.currentTimeMillis().toString(),
+    val timestamp: Long = System.currentTimeMillis(),
+    val title: String,
+    val description: String,
+    val category: String,
+    val age: Int,
+    val statChanges: Map<String, Int> = emptyMap()
 )

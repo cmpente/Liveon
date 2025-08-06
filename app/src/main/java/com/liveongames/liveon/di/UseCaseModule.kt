@@ -4,6 +4,7 @@ package com.liveongames.liveon.di
 import com.liveongames.domain.repository.CrimeRepository
 import com.liveongames.domain.repository.PetRepository
 import com.liveongames.domain.repository.ScenarioRepository
+import com.liveongames.domain.repository.EventRepository
 import com.liveongames.domain.usecase.AdoptPetUseCase
 import com.liveongames.domain.usecase.ClearCriminalRecordUseCase
 import com.liveongames.domain.usecase.GetCrimeStatsUseCase
@@ -12,6 +13,11 @@ import com.liveongames.domain.usecase.RecordCrimeUseCase
 import com.liveongames.domain.usecase.RemovePetUseCase
 import com.liveongames.domain.usecase.GetScenarioUseCase
 import com.liveongames.domain.usecase.GetScenariosUseCase
+import com.liveongames.domain.usecase.GetRandomEventsUseCase
+import com.liveongames.domain.usecase.GetYearlyEventsUseCase
+import com.liveongames.domain.usecase.AddEventUseCase
+import com.liveongames.domain.usecase.RemoveEventUseCase
+import com.liveongames.domain.usecase.MarkEventAsShownUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -71,5 +77,36 @@ object UseCaseModule {
     @Singleton
     fun provideRemovePetUseCase(repository: PetRepository): RemovePetUseCase {
         return RemovePetUseCase(repository)
+    }
+
+    // Event UseCases - ADD THESE!
+    @Provides
+    @Singleton
+    fun provideGetRandomEventsUseCase(repository: EventRepository): GetRandomEventsUseCase {
+        return GetRandomEventsUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetYearlyEventsUseCase(repository: EventRepository): GetYearlyEventsUseCase {
+        return GetYearlyEventsUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAddEventUseCase(repository: EventRepository): AddEventUseCase {
+        return AddEventUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRemoveEventUseCase(repository: EventRepository): RemoveEventUseCase {
+        return RemoveEventUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMarkEventAsShownUseCase(repository: EventRepository): MarkEventAsShownUseCase {
+        return MarkEventAsShownUseCase(repository)
     }
 }
