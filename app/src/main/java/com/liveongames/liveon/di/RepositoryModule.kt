@@ -1,6 +1,8 @@
 // app/src/main/java/com/liveongames/liveon/di/RepositoryModule.kt
 package com.liveongames.liveon.di
 
+import android.content.SharedPreferences
+import com.google.gson.Gson
 import com.liveongames.data.repository.CrimeRepositoryImpl
 import com.liveongames.data.repository.PetRepositoryImpl
 import com.liveongames.data.repository.EventRepositoryImpl
@@ -56,7 +58,7 @@ object RepositoryModule {
     // Add this provider for PlayerRepository
     @Provides
     @Singleton
-    fun providePlayerRepository(): PlayerRepository {
-        return PlayerRepositoryImpl()
+    fun providePlayerRepository(sharedPreferences: SharedPreferences, gson: Gson): PlayerRepository {
+        return PlayerRepositoryImpl(sharedPreferences, gson)
     }
 }
