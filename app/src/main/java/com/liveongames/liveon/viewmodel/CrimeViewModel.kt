@@ -44,8 +44,7 @@ class CrimeViewModel @Inject constructor(
                     description = "Stole something valuable",
                     severity = 3,
                     chanceOfGettingCaught = 0.3,
-                    fine = 500,
-                    jailTime = 0
+                    fine = 500
                 )
                 CrimeType.ASSAULT -> Crime(
                     id = UUID.randomUUID().toString(),
@@ -53,8 +52,7 @@ class CrimeViewModel @Inject constructor(
                     description = "Physical altercation",
                     severity = 6,
                     chanceOfGettingCaught = 0.7,
-                    fine = 2000,
-                    jailTime = 30
+                    fine = 2000
                 )
                 CrimeType.FRAUD -> Crime(
                     id = UUID.randomUUID().toString(),
@@ -62,8 +60,7 @@ class CrimeViewModel @Inject constructor(
                     description = "Financial deception",
                     severity = 5,
                     chanceOfGettingCaught = 0.4,
-                    fine = 5000,
-                    jailTime = 15
+                    fine = 5000
                 )
                 CrimeType.DRUG_POSSESSION -> Crime(
                     id = UUID.randomUUID().toString(),
@@ -71,8 +68,7 @@ class CrimeViewModel @Inject constructor(
                     description = "Possession of illegal substances",
                     severity = 4,
                     chanceOfGettingCaught = 0.5,
-                    fine = 1000,
-                    jailTime = 5
+                    fine = 1000
                 )
                 CrimeType.DRUG_DEALING -> Crime(
                     id = UUID.randomUUID().toString(),
@@ -80,8 +76,7 @@ class CrimeViewModel @Inject constructor(
                     description = "Selling illegal substances",
                     severity = 8,
                     chanceOfGettingCaught = 0.8,
-                    fine = 10000,
-                    jailTime = 180
+                    fine = 10000
                 )
                 CrimeType.MURDER -> Crime(
                     id = UUID.randomUUID().toString(),
@@ -89,8 +84,7 @@ class CrimeViewModel @Inject constructor(
                     description = "Taking a life",
                     severity = 10,
                     chanceOfGettingCaught = 0.9,
-                    fine = 0,
-                    jailTime = 1825 // 5 years
+                    fine = 0
                 )
                 CrimeType.EXTORTION -> Crime(
                     id = UUID.randomUUID().toString(),
@@ -98,8 +92,7 @@ class CrimeViewModel @Inject constructor(
                     description = "Threatening for money",
                     severity = 7,
                     chanceOfGettingCaught = 0.6,
-                    fine = 3000,
-                    jailTime = 60
+                    fine = 3000
                 )
                 CrimeType.VANDALISM -> Crime(
                     id = UUID.randomUUID().toString(),
@@ -107,8 +100,7 @@ class CrimeViewModel @Inject constructor(
                     description = "Property damage",
                     severity = 2,
                     chanceOfGettingCaught = 0.4,
-                    fine = 200,
-                    jailTime = 0
+                    fine = 200
                 )
             }
 
@@ -150,10 +142,21 @@ class CrimeViewModel @Inject constructor(
                     outcomeDescription += " Caught! Fined $$baseCrime.fine"
                 }
 
-                // Add jail time to player if applicable
-                if (baseCrime.jailTime > 0) {
-                    playerRepository.updateJailTime("default_character", baseCrime.jailTime)
-                    outcomeDescription += " and jailed for ${baseCrime.jailTime} days"
+                // Add jail time based on crime severity
+                val jailTime = when (type) {
+                    CrimeType.THEFT -> 0
+                    CrimeType.ASSAULT -> 30
+                    CrimeType.FRAUD -> 15
+                    CrimeType.DRUG_POSSESSION -> 5
+                    CrimeType.DRUG_DEALING -> 180
+                    CrimeType.MURDER -> 1825 // 5 years
+                    CrimeType.EXTORTION -> 60
+                    CrimeType.VANDALISM -> 0
+                }
+
+                if (jailTime > 0) {
+                    playerRepository.updateJailTime("default_character", jailTime)
+                    outcomeDescription += " and jailed for ${jailTime} days"
                 }
             }
 

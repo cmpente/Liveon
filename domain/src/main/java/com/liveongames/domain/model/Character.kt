@@ -1,3 +1,4 @@
+// app/src/main/java/com/liveongames/domain/model/Character.kt
 package com.liveongames.domain.model
 
 data class Character(
@@ -14,5 +15,6 @@ data class Character(
     val career: String? = null,
     val relationships: List<Relationship> = emptyList(),
     val achievements: List<Achievement> = emptyList(),
-    val events: List<Event> = emptyList()
+    val events: List<Event> = emptyList(),
+    val jailTime: Int = 0 // Add this line
 )

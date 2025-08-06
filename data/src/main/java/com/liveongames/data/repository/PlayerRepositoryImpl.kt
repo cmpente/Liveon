@@ -1,14 +1,13 @@
-// app/src/main/java/com/liveongames/data/repository/PlayerRepositoryImpl.kt
+// PlayerRepositoryImpl.kt
 package com.liveongames.data.repository
 
 import com.liveongames.domain.model.Character
 import com.liveongames.domain.repository.PlayerRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject  // Add this import
 
-class PlayerRepositoryImpl : PlayerRepository {
-
-    // In a real app, this would use a database or data source
+class PlayerRepositoryImpl @Inject constructor() : PlayerRepository {  // Add @Inject constructor
     private val characters = mutableMapOf<String, Character>()
 
     override fun getCharacter(characterId: String): Flow<Character?> = flow {
@@ -18,7 +17,7 @@ class PlayerRepositoryImpl : PlayerRepository {
     override suspend fun updateMoney(characterId: String, amount: Int) {
         val character = characters[characterId]
         if (character != null) {
-            val newMoney = (character.money ?: 0) + amount
+            val newMoney = character.money + amount
             characters[characterId] = character.copy(money = newMoney)
         }
     }
@@ -33,7 +32,7 @@ class PlayerRepositoryImpl : PlayerRepository {
     override suspend fun updateJailTime(characterId: String, days: Int) {
         val character = characters[characterId]
         if (character != null) {
-            val newJailTime = (character.jailTime ?: 0) + days
+            val newJailTime = character.jailTime + days
             characters[characterId] = character.copy(jailTime = newJailTime)
         }
     }

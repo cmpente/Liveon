@@ -6,11 +6,13 @@ import com.liveongames.data.repository.PetRepositoryImpl
 import com.liveongames.data.repository.EventRepositoryImpl
 import com.liveongames.data.repository.SaveRepositoryImpl
 import com.liveongames.data.repository.ScenarioRepositoryImpl
+import com.liveongames.data.repository.PlayerRepositoryImpl  // Add this import
 import com.liveongames.domain.repository.CrimeRepository
 import com.liveongames.domain.repository.PetRepository
 import com.liveongames.domain.repository.EventRepository
 import com.liveongames.domain.repository.SaveRepository
 import com.liveongames.domain.repository.ScenarioRepository
+import com.liveongames.domain.repository.PlayerRepository  // Add this import
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -49,5 +51,12 @@ object RepositoryModule {
     @Singleton
     fun provideSaveRepository(impl: SaveRepositoryImpl): SaveRepository {
         return impl
+    }
+
+    // Add this provider for PlayerRepository
+    @Provides
+    @Singleton
+    fun providePlayerRepository(): PlayerRepository {
+        return PlayerRepositoryImpl()
     }
 }
