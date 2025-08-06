@@ -18,9 +18,18 @@ class SettingsViewModel @Inject constructor(
     private val _matureContentEnabled = MutableStateFlow(false)
     val matureContentEnabled: StateFlow<Boolean> = _matureContentEnabled.asStateFlow()
 
+    private val _selectedThemeIndex = MutableStateFlow(0)
+    val selectedThemeIndex: StateFlow<Int> = _selectedThemeIndex.asStateFlow()
+
     fun toggleMatureContent() {
         viewModelScope.launch {
             _matureContentEnabled.value = !_matureContentEnabled.value
+        }
+    }
+
+    fun selectTheme(index: Int) {
+        viewModelScope.launch {
+            _selectedThemeIndex.value = index
         }
     }
 }

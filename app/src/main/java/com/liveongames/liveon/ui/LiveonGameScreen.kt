@@ -27,139 +27,33 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.liveongames.liveon.R
 import com.liveongames.liveon.ui.viewmodel.GameViewModel
+import com.liveongames.liveon.viewmodel.SettingsViewModel
 import com.liveongames.domain.model.GameEvent
+import com.liveongames.liveon.ui.theme.AllGameThemes
+import com.liveongames.liveon.ui.theme.LiveonTheme
 import kotlinx.coroutines.delay
 import org.json.JSONObject
 import kotlin.random.Random
 
-// Theme definitions
-data class LiveonTheme(
-    val name: String,
-    val background: Color,
-    val surface: Color,
-    val primary: Color,
-    val accent: Color,
-    val secondary: Color,
-    val text: Color,
-    val surfaceVariant: Color
-)
-
-val PremiumSleek = LiveonTheme(
-    name = "Premium & Sleek",
-    background = Color(0xFF151926), // midnight navy
-    surface = Color(0xFF232C3A),    // deep indigo
-    primary = Color(0xFFFFD700),     // gold
-    accent = Color(0xFF00B4D8),     // crystal blue
-    secondary = Color(0xFF43A047),  // bold green
-    text = Color(0xFFF1F5F9),      // very light gray-white
-    surfaceVariant = Color(0xFF2D3A4A)
-)
-
-val MinimalEnergetic = LiveonTheme(
-    name = "Minimal & Energetic",
-    background = Color(0xFFF5F6FA), // almost white
-    surface = Color(0xFFE2E8F0),    // gentle cool gray
-    primary = Color(0xFFFF6F00),    // amber orange
-    accent = Color(0xFF009688),    // modern teal
-    secondary = Color(0xFF546E7A), // slate blue-gray
-    text = Color(0xFF22314A),       // deep slate
-    surfaceVariant = Color(0xFFD1DAE8)
-)
-
-val CalmHorizon = LiveonTheme(
-    name = "Calm Horizon",
-    background = Color(0xFFF4F8FB), // sky mist
-    surface = Color(0xFFEAF2F7),    // cloud blue
-    primary = Color(0xFF0EA5E9),    // vibrant sky blue
-    accent = Color(0xFFFFB300),     // soft gold
-    secondary = Color(0xFF00897B),  // teal green
-    text = Color(0xFF23304A),       // slate navy
-    surfaceVariant = Color(0xFFD2E4EC)
-)
-
-val GreenfieldSerenity = LiveonTheme(
-    name = "Greenfield Serenity",
-    background = Color(0xFFF3F9F5), // minty off-white
-    surface = Color(0xFFE6F2EA),    // pale mint
-    primary = Color(0xFF43A047),    // forest green
-    accent = Color(0xFFF9BE00),     // mellow yellow
-    secondary = Color(0xFF2196F3),  // lively blue
-    text = Color(0xFF1C2B36),       // charcoal blue-black
-    surfaceVariant = Color(0xFFD8EEDC)
-)
-
-val SoftSunset = LiveonTheme(
-    name = "Soft Sunset",
-    background = Color(0xFFFFFAF3), // warm sand
-    surface = Color(0xFFFFF3E7),    // peach cream
-    primary = Color(0xFFF97316),    // sunset orange
-    accent = Color(0xFF38BDF8),     // bright sky blue
-    secondary = Color(0xFF10B981),  // minty green
-    text = Color(0xFF373737),       // deep graphite
-    surfaceVariant = Color(0xFFFFEDD5)
-)
-
-val NeutralPremium = LiveonTheme(
-    name = "Neutral Premium",
-    background = Color(0xFFF5F6FA), // soft light gray
-    surface = Color(0xFFE2E8F0),    // gentle cool gray
-    primary = Color(0xFF6750A4),    // muted indigo
-    accent = Color(0xFF00B4D8),     // crystal blue
-    secondary = Color(0xFF26A69A),  // calm teal
-    text = Color(0xFF22223B),       // deep navy-black
-    surfaceVariant = Color(0xFFE8EAF6)
-)
-
-val TwilightForest = LiveonTheme(
-    name = "Twilight Forest",
-    background = Color(0xFF23272E), // charcoal blue
-    surface = Color(0xFF2D333B),    // deep blue-gray
-    primary = Color(0xFF7BD389),    // fresh leaf green
-    accent = Color(0xFFF9E066),     // pale golden yellow
-    secondary = Color(0xFF296748),  // deep forest
-    text = Color(0xFFF3F9F6),       // off-white
-    surfaceVariant = Color(0xFF3E4854)
-)
-
-val BreezeBlossom = LiveonTheme(
-    name = "Breeze Blossom",
-    background = Color(0xFFFCF8FF), // white-lavender
-    surface = Color(0xFFF1F2F6),    // icy blue-gray
-    primary = Color(0xFF9B5DE5),    // vivid purple
-    accent = Color(0xFF00BBF9),     // electric blue
-    secondary = Color(0xFFF15BB5),  // bright pink
-    text = Color(0xFF2E294E),       // plum-navy
-    surfaceVariant = Color(0xFFE5D1F7)
-)
-
-// Theme list for selection
-val AllThemes = listOf(
-    PremiumSleek,
-    MinimalEnergetic,
-    CalmHorizon,
-    GreenfieldSerenity,
-    SoftSunset,
-    NeutralPremium,
-    TwilightForest,
-    BreezeBlossom
-)
-
 @Composable
-fun LiveonGameScreen(viewModel: GameViewModel = hiltViewModel()) {
+fun LiveonGameScreen(
+    gameViewModel: GameViewModel = hiltViewModel(),
+    settingsViewModel: SettingsViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
     val density = LocalDensity.current
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by gameViewModel.uiState.collectAsState()
 
-    // Theme selection state (stored in ViewModel or saved state in real implementation)
-    var currentThemeIndex by remember { mutableStateOf(0) }
-    val currentTheme = AllThemes[currentThemeIndex]
+    // Get selected theme from SettingsViewModel
+    val selectedThemeIndex by settingsViewModel.selectedThemeIndex.collectAsState()
+    val currentTheme = AllGameThemes.getOrElse(selectedThemeIndex) { AllGameThemes[0] }
 
     // Calculate panel heights - Optimized for visibility
-    val headerHeight = 48f
-    val statsHeight = 100f
-    val menuHeight = 340f
-    val totalPanelHeight = headerHeight + statsHeight + menuHeight
-    val stopPosition = 70f  // Stop position (button height + spacing)
+    val headerHeight = 48
+    val statsHeight = 100
+    val menuHeight = 200  // Reduced height for initial visible menu items
+    val totalPanelHeight = headerHeight + statsHeight + 340  // Full height when fully open
+    val stopPosition = 70  // Stop position (button height + spacing)
 
     // Draggable Life Management/Stats state
     var panelOffset by remember { mutableStateOf(0f) }
@@ -200,6 +94,9 @@ fun LiveonGameScreen(viewModel: GameViewModel = hiltViewModel()) {
 
     // Scroll state for Lifebook
     val lifebookScrollState = rememberScrollState()
+
+    // Scroll state for menu (only when fully open)
+    val menuScrollState = rememberScrollState()
 
     // Load random events from JSON assets
     val randomEvents = remember(context) {
@@ -302,7 +199,7 @@ fun LiveonGameScreen(viewModel: GameViewModel = hiltViewModel()) {
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = "Lifebook",  // Removed number of entries
+                                text = "Lifebook",
                                 style = MaterialTheme.typography.titleMedium,
                                 color = currentTheme.primary,
                                 fontWeight = FontWeight.Bold
@@ -384,7 +281,7 @@ fun LiveonGameScreen(viewModel: GameViewModel = hiltViewModel()) {
                     IconButton(
                         onClick = {
                             if (!isCooldown) {
-                                viewModel.ageUp()
+                                gameViewModel.ageUp()
                             }
                         },
                         modifier = Modifier
@@ -431,7 +328,7 @@ fun LiveonGameScreen(viewModel: GameViewModel = hiltViewModel()) {
                             change.consume()
                             // Slow movement - divide by 3 for controlled response
                             val slowDrag = dragAmount.y / 3f
-                            val maxVisibleHeight = totalPanelHeight - stopPosition
+                            val maxVisibleHeight = (totalPanelHeight - stopPosition).toFloat()
                             panelOffset = (panelOffset - slowDrag)
                                 .coerceIn(0f, maxVisibleHeight)
                         },
@@ -443,7 +340,7 @@ fun LiveonGameScreen(viewModel: GameViewModel = hiltViewModel()) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(totalPanelHeight.dp), // Full height, position controlled by offset
+                    .height(totalPanelHeight.dp), // Full height when fully open
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                 shape = androidx.compose.foundation.shape.RoundedCornerShape(
                     topStart = 20.dp,
@@ -539,17 +436,24 @@ fun LiveonGameScreen(viewModel: GameViewModel = hiltViewModel()) {
                         }
                     }
 
-                    // Life Management Menu - Fits perfectly without scrolling
+                    // Life Management Menu - Initial visible items only
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(menuHeight.dp)
+                            .height(menuHeight.dp)  // Fixed height for initial visible items
                             .padding(top = 12.dp, start = 10.dp, end = 10.dp, bottom = 10.dp)
                     ) {
+                        // Enable scrolling only when panel is fully open
+                        val isFullyOpen = panelOffset >= (totalPanelHeight - stopPosition - 50) // Threshold for "fully open"
+
                         Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight()
+                            modifier = if (isFullyOpen) {
+                                Modifier
+                                    .fillMaxSize()
+                                    .verticalScroll(menuScrollState)
+                            } else {
+                                Modifier.fillMaxSize()
+                            }
                         ) {
                             val menuItems = listOf(
                                 MenuItemData(R.drawable.ic_business, "Career", "Manage your professional life", currentTheme) { },
@@ -561,9 +465,7 @@ fun LiveonGameScreen(viewModel: GameViewModel = hiltViewModel()) {
                                 MenuItemData(R.drawable.ic_health, "Health Records", "View medical history", currentTheme) { },
                                 MenuItemData(R.drawable.ic_travel, "Travel Log", "View places visited", currentTheme) { },
                                 MenuItemData(R.drawable.ic_save, "Save Game", "Manage saves", currentTheme) { },
-                                MenuItemData(R.drawable.ic_settings, "Settings", "Game preferences including theme selection", currentTheme) {
-                                    // Theme selection happens in Settings
-                                }
+                                MenuItemData(R.drawable.ic_settings, "Settings", "Game preferences including theme selection", currentTheme) { }
                             )
 
                             menuItems.forEachIndexed { index, item ->
@@ -594,10 +496,10 @@ fun LiveonGameScreen(viewModel: GameViewModel = hiltViewModel()) {
                 EventDialogComposable(
                     event = firstEvent,
                     onChoiceSelected = { choiceId ->
-                        viewModel.makeChoice(firstEvent.id, choiceId)
+                        gameViewModel.makeChoice(firstEvent.id, choiceId)
                     },
                     onDismiss = {
-                        viewModel.dismissEvent(firstEvent.id)
+                        gameViewModel.dismissEvent(firstEvent.id)
                     },
                     theme = currentTheme
                 )
@@ -657,7 +559,7 @@ fun generateRandomLifeEvents(eventsMap: Map<String, List<String>>, eventCount: I
     return events.distinct()
 }
 
-// Lifebook Entry Item Composable
+// Lifebook Entry Item Composable with smaller text
 @Composable
 fun LifebookEntryItem(
     entry: String,
@@ -682,6 +584,7 @@ fun LifebookEntryItem(
                 style = MaterialTheme.typography.bodySmall,
                 color = theme.text,
                 fontWeight = FontWeight.Normal,
+                fontSize = 12.sp,  // Smaller text size
                 lineHeight = 14.sp
             )
         }

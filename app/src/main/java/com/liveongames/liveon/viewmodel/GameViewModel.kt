@@ -69,31 +69,34 @@ class GameViewModel @Inject constructor(
     fun ageUp() {
         viewModelScope.launch {
             try {
-                val currentStats = _uiState.value.playerStats
-                if (currentStats != null) {
-                    // Get available events - using try-catch for now since repos aren't implemented
-                    val events = try {
-                         getAvailableEventsUseCase()
-                        emptyList<GameEvent>()
-                    } catch (e: Exception) {
-                        emptyList()
-                    }
+                val currentStats = _uiState.value.playerStats ?: return@launch
 
-                    _uiState.value = _uiState.value.copy(
-                        playerStats = advanceYearUseCase(currentStats), // This returns CharacterStats
-                        showEventDialog = events.isNotEmpty(),
-                        activeEvents = events.ifEmpty {
-                            listOf(
-                                GameEvent(
-                                    id = "default_event",
-                                    title = "Another Year Passes",
-                                    description = "Time flies! You are now ${currentStats.age + 1} years old.",
-                                    choices = emptyList()
-                                )
-                            )
-                        }
-                    )
+                // Advance year using use case
+                val newStats = advanceYearUseCase(currentStats)
+
+                // Get available events - using try-catch for now since repos aren't implemented
+                val events: List<GameEvent> = try {
+                    getAvailableEventsUseCase() as List<GameEvent>
+                } catch (e: Exception) {
+                    emptyList<GameEvent>()
                 }
+
+                _uiState.value = _uiState.value.copy(
+                    playerStats = newStats,
+                    showEventDialog = events.isNotEmpty(),
+                    activeEvents = if (events.isNotEmpty()) {
+                        events
+                    } else {
+                        listOf(
+                            GameEvent(
+                                id = "default_event",
+                                title = "Another Year Passes",
+                                description = "Time flies! You are now ${newStats.age} years old.",
+                                choices = emptyList()
+                            )
+                        )
+                    }
+                )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(error = e.message)
             }
@@ -103,9 +106,28 @@ class GameViewModel @Inject constructor(
     fun makeChoice(eventId: String, choiceId: String) {
         viewModelScope.launch {
             try {
-                // Apply choice outcomes using your use case
-                // This would involve finding the event, choice, and applying outcomes
-                _uiState.value = _uiState.value.copy(showEventDialog = false)
+                // Find the event and choice to get stat changes
+                val event = _uiState.value.activeEvents.find { it.id == eventId }
+                if (event != null) {
+                    val choice = event.choices.find { it.id == choiceId }
+                    if (choice != null && choice.outcomes.isNotEmpty()) {
+                        // Apply stat changes from the choice outcome
+                        val outcome = choice.outcomes[0] // Get first outcome
+                        val statChanges = outcome.statChanges
+
+                        // Update stats based on outcome
+                        val currentStats = _uiState.value.playerStats ?: return@launch
+
+                        // Create the changes map for updateStatsUseCase
+                        val updatedStats = updateStatsUseCase(currentStats, statChanges)
+
+                        _uiState.value = _uiState.value.copy(
+                            playerStats = updatedStats,
+                            showEventDialog = false,
+                            activeEvents = emptyList()
+                        )
+                    }
+                }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(error = e.message)
             }
@@ -124,9 +146,15 @@ class GameViewModel @Inject constructor(
     fun clearError() {
         _uiState.value = _uiState.value.copy(error = null)
     }
-}
 
-fun saveGame() {
-    // Placeholder for future save functionality
-    // TODO: Implement actual save logic
+    fun saveGame() {
+        viewModelScope.launch {
+            try {
+                // TODO: Implement actual save logic with saveGameUseCase
+                // saveGameUseCase(_uiState.value)
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(error = e.message)
+            }
+        }
+    }
 }

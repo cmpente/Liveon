@@ -1,218 +1,2365 @@
 {
-  "world_events": [
-    "News breaks that two nations, after years of tension, have finally signed the Aurora Accord—people everywhere celebrate in the streets.",
-    "The world watches as the Celestia IX comet streaks across the sky, leaving a shimmering blue trail. You catch a glimpse and feel oddly connected to the cosmos.",
-    "A surprise announcement: a global day of unplugging is held. All major internet providers go dark for 24 hours, and people rediscover board games and conversation.",
-    "The King of a distant country abdicates, choosing love over the throne. Social media explodes with hot takes.",
-    "Wildfires sweep through the Outback, prompting rescue efforts from around the globe.",
-    "After a record-breaking 42-hour flight, a solar-powered plane lands safely. You dream about where you'd go if flights were always that green.",
-    "The World Cup is hosted in a brand-new, floating stadium. A team from a tiny island nation makes it to the finals.",
-    "The Nobel Peace Prize is awarded to a group of high school students for their ocean cleanup invention. Kids at your school are inspired.",
-    "Breaking: evidence of microbial life is found on Europa, one of Jupiter’s moons. Your science teacher can't stop talking about it.",
-    "A global flash mob is organized via social media—nearly everyone you know posts their awkward dance videos.",
-    "A famous actor launches a campaign for global literacy, matching every book donated with one given to a child in need.",
-    "The world holds its breath as Mount Seraphine, dormant for centuries, erupts. Ash clouds circle the planet.",
-    "A rare alignment of five planets is visible to the naked eye. Your family sets the alarm for 3am to watch from the backyard.",
-    "A breakthrough in renewable energy promises nearly free electricity in the next decade.",
-    "A chef from your country wins the world pastry championship. You consider learning how to bake.",
-    "The United Nations declares universal internet access a human right. Rural towns finally get connected.",
-    "A global meditation event is held—millions pause at the same moment, and you join, if only for the curiosity.",
-    "A viral video from a remote village unites people in laughter—and the village school gets worldwide donations.",
-    "A solar storm interrupts satellites, causing GPS chaos. Your phone tells you you’re in the ocean.",
-    "A time capsule from 1920 is opened live on TV, revealing a love letter and a list of wild predictions—some scarily accurate.",
-    "After years of planning, the Global Wildlife Bridge is completed, letting animals migrate safely across a continent.",
-    "A pop singer hosts a live concert on every continent in a single week. You catch the stream, amazed by the crowd size.",
-    "A mathematician proves a problem unsolved for 300 years. You only understand the headlines, but everyone is talking about it.",
-    "An artist’s peace mural appears on every major news channel, inspiring similar projects worldwide.",
-    "In a historic first, a wheelchair marathon is run alongside the main Olympic event. The winner's smile is shared everywhere."
-  ],
-  "local_events": [
-    "You wake to sirens: the local bakery caught fire, but neighbors formed a bucket line and saved the day. Free pastries for all.",
-    "A beloved street performer retires, and the city hosts a parade in their honor. You join the confetti-throwers.",
-    "A new mural appears overnight on the side of the old hardware store. You recognize your own face among the crowd painted there.",
-    "The river floods after heavy rain, but the town bands together, sandbagging and singing work songs.",
-    "Your neighborhood's annual block party features a surprise: a world-record attempt for the longest picnic table.",
-    "A dog goes missing, and the whole community helps look. It returns home three days later, muddy and proud.",
-    "The town council approves a new park—construction begins on what will be the city’s first skate plaza.",
-    "A local legend retires from the fire department, and everyone gathers for a barbecue at the station.",
-    "The city library launches a bookmobile. Its cheerful horn soon becomes as familiar as the ice cream truck.",
-    "A group of volunteers plants wildflowers along Main Street. Within weeks, the bees are back.",
-    "The community center hosts a talent show. Your neighbor’s operatic yodeling is... unforgettable.",
-    "A blackout hits during dinner time, and neighbors gather outside, sharing food and flashlights.",
-    "A long-lost cat returns to its family. The reunion makes the evening news.",
-    "A rare owl is spotted in the city park, and birdwatchers flock from miles around.",
-    "A pop-up food truck market sets up for one weekend only. You try something called 'cosmic tacos.'",
-    "You discover an old, hand-painted sign beneath the wallpaper in your house—no one knows the story.",
-    "A rumor of hidden treasure in the city pond leads to a day of kids fishing for coins.",
-    "A 5K charity run winds through your neighborhood. You join on a whim, regretting it only after the third hill.",
-    "A citywide scavenger hunt is announced, with a big prize. You team up with strangers to solve the clues.",
-    "For one night, the city converts Main Street into a car-free promenade. Music and laughter fill the air.",
-    "A meteor shower is visible above town, and hundreds gather in the football field to watch.",
-    "The old movie theater reopens after decades, screening black-and-white classics.",
-    "Local radio hosts a call-in for the weirdest pet. A lady with a three-legged ferret wins.",
-    "A charity bake-off leads to a sugar-fueled pie fight. You dodge a lemon meringue.",
-    "A retired teacher starts free language classes in the park—your first word is 'hello' in Icelandic."
-  ],
-  "social_events": [
-    "Your childhood friend, always the risk-taker, texts from an airport, inviting you to join a spur-of-the-moment trip.",
-    "Your older sibling lands their dream job in a faraway city. The family group chat buzzes for days.",
-    "A friend comes out to you over coffee. You feel honored to be trusted.",
-    "You find out your cousin started a quirky side hustle selling custom painted rocks.",
-    "A childhood friend gets married. You make a toast that almost brings the room to tears.",
-    "Your best friend shows up at your door in the middle of the night, needing to talk.",
-    "A neighbor’s kid asks if you'll help build a cardboard castle for their science project.",
-    "You reconnect with an old camp buddy who moved back to town.",
-    "Your parents share a story about their rebellious youth you’ve never heard before.",
-    "You and your friends start a regular game night, and it quickly becomes the highlight of your week.",
-    "A family member gets scouted for a local talent show. You help with their routine backstage.",
-    "A friend brings home a stray animal, and you help them find it a loving home.",
-    "Your grandparents move in for the summer. Every evening is a new story.",
-    "You and a friend have a falling out, but patch things up after a long walk.",
-    "Your friend group goes camping and you tell ghost stories until sunrise.",
-    "A friend’s band finally gets their first gig. You make a sign and cheer the loudest.",
-    "You’re asked to be the godparent to your cousin’s newborn.",
-    "Your sibling asks for your advice before a big exam.",
-    "A friend gives you a handmade gift on your birthday.",
-    "A family reunion brings relatives from four different countries. The food is incredible.",
-    "Your friend group adopts a highway, spending weekends picking up litter together.",
-    "You and a friend start a two-person book club—mostly an excuse to eat snacks.",
-    "Your neighbor bakes too much bread and leaves loaves at your door.",
-    "A childhood enemy apologizes for something that happened years ago.",
-    "Your friend wins the lottery and insists on treating you to dinner at a fancy restaurant."
-  ],
-  "personal_events": [
-    "You stare at the ceiling late at night, wondering if you’re living your truest self.",
-    "A sudden memory of your first day at school pops up, and you realize how much you’ve changed.",
-    "You write a letter to your future self, sealing it in a jar for someday.",
-    "You find an old diary and cringe at what you used to worry about.",
-    "You practice a new language phrase until it feels natural in your mouth.",
-    "You get a strong urge to change your hairstyle, and impulsively go for it.",
-    "You reflect on a time you helped someone and hope they’re doing well.",
-    "You catch your reflection and think: I’m not a kid anymore.",
-    "You challenge yourself to go a day without complaining—and mostly succeed.",
-    "You try meditating for the first time, and your mind wanders to pizza.",
-    "You reread a favorite book and find new meaning in the words.",
-    "You dream about moving to another country, wondering if you’d be braver there.",
-    "You think about what kind of person you want to become five years from now.",
-    "You make a list of everything that scares you, and decide to tackle one of them.",
-    "You wonder if you’ll ever feel as happy as you did on your last birthday.",
-    "You find yourself jealous of someone, then try to turn it into inspiration.",
-    "You try to recall your earliest memory and surprise yourself with what comes up.",
-    "You realize you’ve outgrown a friendship, and feel sad but relieved.",
-    "You write a poem about a feeling you can’t quite name.",
-    "You have a day where everything seems to click—you feel genuinely content.",
-    "You notice you’re humming your favorite song and smile for no reason.",
-    "You question whether you want to keep following the same path in life.",
-    "You imagine your life if you’d made a different big decision.",
-    "You finally accept something about yourself you used to hide.",
-    "You feel a wave of gratitude for the small things: a warm cup of tea, a favorite sweater, a sunny day."
-  ],
-  "travel_events": [
-    "You win a local radio contest and are whisked away for a surprise weekend getaway.",
-    "Your backpack rips open in a foreign train station—strangers rush to help, laughing together.",
-    "You try unfamiliar street food in a night market and discover your new favorite snack.",
-    "You get caught in a rainstorm hiking in the hills. Drenched, you stumble upon a hidden waterfall.",
-    "You miss a train in a tiny village, but spend the night swapping stories with the stationmaster.",
-    "A flight is overbooked, so you get upgraded to first class. You feel out of place but secretly enjoy it.",
-    "You travel to see the Aurora Borealis. When the sky erupts in color, you feel tiny and awestruck.",
-    "You accidentally join a local parade and end up in festival photos.",
-    "You visit a famous landmark but find yourself more interested in the stray cats nearby.",
-    "You share a hostel room with a musician who serenades the guests to sleep.",
-    "You wander ancient city streets at dawn, the world quiet except for distant bells.",
-    "You and your friends rent mopeds and get lost in a labyrinth of alleys.",
-    "You fall asleep on a bus and wake up in a town that isn’t on the map.",
-    "You take a river cruise and spot dolphins racing the boat.",
-    "A local invites you to their family dinner—you’re overwhelmed by hospitality.",
-    "You find a piece of sea glass on the shore and keep it as a good luck charm.",
-    "You hike to a remote mountain shrine and leave a wish on a fluttering ribbon.",
-    "You snap a photo that goes viral online, capturing a rare moment of joy.",
-    "You get pickpocketed but are helped by a kind stranger who becomes a friend.",
-    "You help rescue a lost puppy on a winding mountain trail.",
-    "You spot a rare bird on a safari and the guide makes you honorary 'birdwatcher of the day.'",
-    "You travel to see a once-in-a-lifetime eclipse and everyone around you cheers at totality.",
-    "You ride a train through endless fields, writing poetry in your notebook.",
-    "You sign up for a scuba diving lesson and spot a sunken statue.",
-    "You camp on a beach, and at dawn, you and your friends jump into the waves fully clothed."
-  ],
-  "pop_culture_events": [
-    "A new indie band releases a single called 'Midnight Drive.' It becomes the soundtrack to your summer.",
-    "You attend a midnight screening of a cult movie—half the crowd is in costume.",
-    "Your favorite author announces a surprise sequel and you preorder it immediately.",
-    "A street artist paints your portrait and it actually looks like you.",
-    "A new dance craze sweeps social media. You try it, with mixed results.",
-    "You binge-watch a detective show and start narrating your life in noir style.",
-    "Your fan letter is read aloud on a podcast you adore.",
-    "A friend gets you backstage passes to a music festival. You meet the drummer.",
-    "A magician calls you on stage during a show and you end up holding the rabbit.",
-    "You win a trivia contest at a local bar. Your team name is 'Quiztopher Walken.'",
-    "A viral challenge dares everyone to cook with only five ingredients. You join in and surprise yourself.",
-    "You spot a meme you made getting shared by a celebrity.",
-    "A new video game launches with a city based on your hometown.",
-    "A local bookstore holds a readathon and you finish three books in one weekend.",
-    "You get invited to join a Dungeons & Dragons campaign. Your wizard is quickly eaten by a dragon.",
-    "You attend a poetry slam and are moved to tears by a stranger’s words.",
-    "A YouTuber starts a series about random acts of kindness—you and your friends try to join in.",
-    "A long-running comic strip ends its story after 50 years. The final panel gets everyone emotional.",
-    "You get cast as an extra in a TV commercial, and your awkward wave becomes a meme.",
-    "You discover a fan community obsessed with the same obscure movie as you.",
-    "A massive flash mob re-enacts a famous musical in your city square.",
-    "You join a neighborhood band just for the percussion section.",
-    "A short film festival comes to your town, and you’re surprised how much you love it.",
-    "You try escape rooms for the first time and your team breaks the record.",
-    "You accidentally send a silly meme to your boss, but they laugh."
-  ],
-  "career_events": [
-    "Your boss asks you to train the new hire, and you realize you’ve become the expert.",
-    "A teacher nominates you for a regional award in your favorite subject.",
-    "You get your first paycheck and decide to treat your family to dinner.",
-    "You’re accepted into an advanced class after acing the entry exam.",
-    "Your idea for a project is picked up by management—presentation nerves kick in.",
-    "You join a professional group and make your first new friend.",
-    "You publish an article in the school paper and get rave reviews.",
-    "A company recruiter contacts you out of the blue.",
-    "You organize a charity event at work and smash your fundraising goal.",
-    "A professor asks you to co-author a research paper.",
-    "You’re selected for a mentorship program and meet a career hero.",
-    "You apply for a job that seems out of reach—and get an interview.",
-    "You win a scholarship for a quirky essay on cheese.",
-    "Your business launches its first product and you celebrate with your team.",
-    "You’re elected to a student council position after a last-minute speech.",
-    "You land an internship in a city you’ve always wanted to visit.",
-    "You accidentally send a silly meme to your boss, but they laugh.",
-    "Your proposal for a new club is accepted at school.",
-    "You fail a test but get support from friends and bounce back.",
-    "Your mentor retires and leaves you their lucky pen.",
-    "You win the office holiday decorating contest.",
-    "A guest speaker at your school inspires you to change your major.",
-    "You negotiate a raise and succeed for the first time.",
-    "You’re invited to teach a guest class and discover you love it.",
-    "You get recognized publicly for your contributions at work or school."
-  ],
   "random_events": [
-    "You find a painted rock with a cryptic message in the park.",
-    "A squirrel steals your sandwich and runs up a tree, pausing to look back at you smugly.",
-    "You have a conversation with your neighbor’s parrot, who seems to know your secrets.",
-    "You dream you’re late for class, then wake up relieved you graduated years ago.",
-    "Your phone autocorrects your boss’s name to 'Banana.'",
-    "A double rainbow appears while you’re stuck in traffic.",
-    "You get photobombed by a dog in your family picture.",
-    "You order coffee and they write your name hilariously wrong on the cup.",
-    "A magician at a street fair guesses your favorite color on the first try.",
-    "You spot a cloud that looks exactly like your childhood pet.",
-    "Your houseplant seems to grow two inches overnight.",
-    "You see someone walking a pet pig down the main street.",
-    "You find a lost earring and return it to a grateful stranger.",
-    "A bee lands on your arm but then takes off without stinging you.",
-    "You join a conga line at a wedding and forget how you got there.",
-    "A goat escapes from a petting zoo and briefly causes chaos downtown.",
-    "You enter a pie-eating contest on a dare.",
-    "You run into someone wearing the exact same outfit as you.",
-    "You’re mistaken for a tour guide at a museum—and you improvise.",
-    "A group of ducks blocks the crosswalk on your way to work.",
-    "Your friend’s cat becomes internet famous for a day.",
-    "You win a raffle for a year’s supply of socks.",
-    "You get asked for directions and actually know the answer.",
-    "A child hands you a drawing they made just for you.",
-    "You accidentally join the wrong Zoom call and make a new friend."
+    {
+      "id": "world_1",
+      "title": "World Events Event",
+      "description": "{'text': 'News breaks that two nations, after years of tension, have finally signed the Aurora Accord—people everywhere celebrate in the streets.', 'statChanges': {'happiness': 5, 'social': 10}}",
+      "choices": [
+        {
+          "id": "share_news",
+          "text": "Share this news with friends",
+          "outcomes": [
+            {
+              "description": "You spark a conversation and feel more connected.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "text": "Reflect on its impact",
+          "outcomes": [
+            {
+              "description": "You gain perspective on the bigger picture.",
+              "statChanges": {
+                "intelligence": 5,
+                "happiness": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_2",
+      "title": "World Events Event",
+      "description": "{'text': 'The world watches as the Celestia IX comet streaks across the sky, leaving a shimmering blue trail. You catch a glimpse and feel oddly connected to the cosmos.', 'statChanges': {'happiness': 10, 'intelligence': 5}}",
+      "choices": [
+        {
+          "id": "share_news",
+          "text": "Share this news with friends",
+          "outcomes": [
+            {
+              "description": "You spark a conversation and feel more connected.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "text": "Reflect on its impact",
+          "outcomes": [
+            {
+              "description": "You gain perspective on the bigger picture.",
+              "statChanges": {
+                "intelligence": 5,
+                "happiness": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_3",
+      "title": "World Events Event",
+      "description": "{'text': 'A surprise announcement: a global day of unplugging is held. All major internet providers go dark for 24 hours, and people rediscover board games and conversation.', 'statChanges': {'happiness': 5, 'social': 15, 'intelligence': 5}}",
+      "choices": [
+        {
+          "id": "share_news",
+          "text": "Share this news with friends",
+          "outcomes": [
+            {
+              "description": "You spark a conversation and feel more connected.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "text": "Reflect on its impact",
+          "outcomes": [
+            {
+              "description": "You gain perspective on the bigger picture.",
+              "statChanges": {
+                "intelligence": 5,
+                "happiness": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_4",
+      "title": "World Events Event",
+      "description": "{'text': 'The King of a distant country abdicates, choosing love over the throne. Social media explodes with hot takes.', 'statChanges': {'happiness': 5, 'social': 10}}",
+      "choices": [
+        {
+          "id": "share_news",
+          "text": "Share this news with friends",
+          "outcomes": [
+            {
+              "description": "You spark a conversation and feel more connected.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "text": "Reflect on its impact",
+          "outcomes": [
+            {
+              "description": "You gain perspective on the bigger picture.",
+              "statChanges": {
+                "intelligence": 5,
+                "happiness": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_5",
+      "title": "World Events Event",
+      "description": "{'text': 'Wildfires sweep through the Outback, prompting rescue efforts from around the globe.', 'statChanges': {'happiness': -10, 'social': 5}}",
+      "choices": [
+        {
+          "id": "share_news",
+          "text": "Share this news with friends",
+          "outcomes": [
+            {
+              "description": "You spark a conversation and feel more connected.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "text": "Reflect on its impact",
+          "outcomes": [
+            {
+              "description": "You gain perspective on the bigger picture.",
+              "statChanges": {
+                "intelligence": 5,
+                "happiness": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_6",
+      "title": "World Events Event",
+      "description": "{'text': \"After a record-breaking 42-hour flight, a solar-powered plane lands safely. You dream about where you'd go if flights were always that green.\", 'statChanges': {'happiness': 5, 'intelligence': 10}}",
+      "choices": [
+        {
+          "id": "share_news",
+          "text": "Share this news with friends",
+          "outcomes": [
+            {
+              "description": "You spark a conversation and feel more connected.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "text": "Reflect on its impact",
+          "outcomes": [
+            {
+              "description": "You gain perspective on the bigger picture.",
+              "statChanges": {
+                "intelligence": 5,
+                "happiness": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_7",
+      "title": "World Events Event",
+      "description": "{'text': 'The World Cup is hosted in a brand-new, floating stadium. A team from a tiny island nation makes it to the finals.', 'statChanges': {'happiness': 15, 'social': 10}}",
+      "choices": [
+        {
+          "id": "share_news",
+          "text": "Share this news with friends",
+          "outcomes": [
+            {
+              "description": "You spark a conversation and feel more connected.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "text": "Reflect on its impact",
+          "outcomes": [
+            {
+              "description": "You gain perspective on the bigger picture.",
+              "statChanges": {
+                "intelligence": 5,
+                "happiness": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_8",
+      "title": "World Events Event",
+      "description": "{'text': 'The Nobel Peace Prize is awarded to a group of high school students for their ocean cleanup invention. Kids at your school are inspired.', 'statChanges': {'happiness': 10, 'intelligence': 5, 'social': 5}}",
+      "choices": [
+        {
+          "id": "share_news",
+          "text": "Share this news with friends",
+          "outcomes": [
+            {
+              "description": "You spark a conversation and feel more connected.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "text": "Reflect on its impact",
+          "outcomes": [
+            {
+              "description": "You gain perspective on the bigger picture.",
+              "statChanges": {
+                "intelligence": 5,
+                "happiness": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_9",
+      "title": "World Events Event",
+      "description": "{'text': \"Breaking: evidence of microbial life is found on Europa, one of Jupiter's moons. Your science teacher can't stop talking about it.\", 'statChanges': {'happiness': 10, 'intelligence': 15}}",
+      "choices": [
+        {
+          "id": "share_news",
+          "text": "Share this news with friends",
+          "outcomes": [
+            {
+              "description": "You spark a conversation and feel more connected.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "text": "Reflect on its impact",
+          "outcomes": [
+            {
+              "description": "You gain perspective on the bigger picture.",
+              "statChanges": {
+                "intelligence": 5,
+                "happiness": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_10",
+      "title": "World Events Event",
+      "description": "{'text': 'A global flash mob is organized via social media—nearly everyone you know posts their awkward dance videos.', 'statChanges': {'happiness': 10, 'social': 15}}",
+      "choices": [
+        {
+          "id": "share_news",
+          "text": "Share this news with friends",
+          "outcomes": [
+            {
+              "description": "You spark a conversation and feel more connected.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "text": "Reflect on its impact",
+          "outcomes": [
+            {
+              "description": "You gain perspective on the bigger picture.",
+              "statChanges": {
+                "intelligence": 5,
+                "happiness": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_11",
+      "title": "World Events Event",
+      "description": "{'text': 'A famous actor launches a campaign for global literacy, matching every book donated with one given to a child in need.', 'statChanges': {'happiness': 10, 'social': 10}}",
+      "choices": [
+        {
+          "id": "share_news",
+          "text": "Share this news with friends",
+          "outcomes": [
+            {
+              "description": "You spark a conversation and feel more connected.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "text": "Reflect on its impact",
+          "outcomes": [
+            {
+              "description": "You gain perspective on the bigger picture.",
+              "statChanges": {
+                "intelligence": 5,
+                "happiness": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_12",
+      "title": "World Events Event",
+      "description": "{'text': 'The world holds its breath as Mount Seraphine, dormant for centuries, erupts. Ash clouds circle the planet.', 'statChanges': {'happiness': -15, 'health': -5}}",
+      "choices": [
+        {
+          "id": "share_news",
+          "text": "Share this news with friends",
+          "outcomes": [
+            {
+              "description": "You spark a conversation and feel more connected.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "text": "Reflect on its impact",
+          "outcomes": [
+            {
+              "description": "You gain perspective on the bigger picture.",
+              "statChanges": {
+                "intelligence": 5,
+                "happiness": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_13",
+      "title": "World Events Event",
+      "description": "{'text': 'A rare alignment of five planets is visible to the naked eye. Your family sets the alarm for 3am to watch from the backyard.', 'statChanges': {'happiness': 10, 'social': 10}}",
+      "choices": [
+        {
+          "id": "share_news",
+          "text": "Share this news with friends",
+          "outcomes": [
+            {
+              "description": "You spark a conversation and feel more connected.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "text": "Reflect on its impact",
+          "outcomes": [
+            {
+              "description": "You gain perspective on the bigger picture.",
+              "statChanges": {
+                "intelligence": 5,
+                "happiness": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_14",
+      "title": "World Events Event",
+      "description": "{'text': 'A breakthrough in renewable energy promises nearly free electricity in the next decade.', 'statChanges': {'happiness': 5, 'intelligence': 10}}",
+      "choices": [
+        {
+          "id": "share_news",
+          "text": "Share this news with friends",
+          "outcomes": [
+            {
+              "description": "You spark a conversation and feel more connected.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "text": "Reflect on its impact",
+          "outcomes": [
+            {
+              "description": "You gain perspective on the bigger picture.",
+              "statChanges": {
+                "intelligence": 5,
+                "happiness": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_15",
+      "title": "World Events Event",
+      "description": "{'text': 'A chef from your country wins the world pastry championship. You consider learning how to bake.', 'statChanges': {'happiness': 10, 'social': 5}}",
+      "choices": [
+        {
+          "id": "share_news",
+          "text": "Share this news with friends",
+          "outcomes": [
+            {
+              "description": "You spark a conversation and feel more connected.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "text": "Reflect on its impact",
+          "outcomes": [
+            {
+              "description": "You gain perspective on the bigger picture.",
+              "statChanges": {
+                "intelligence": 5,
+                "happiness": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_16",
+      "title": "World Events Event",
+      "description": "{'text': 'The United Nations declares universal internet access a human right. Rural towns finally get connected.', 'statChanges': {'happiness': 10, 'intelligence': 5}}",
+      "choices": [
+        {
+          "id": "share_news",
+          "text": "Share this news with friends",
+          "outcomes": [
+            {
+              "description": "You spark a conversation and feel more connected.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "text": "Reflect on its impact",
+          "outcomes": [
+            {
+              "description": "You gain perspective on the bigger picture.",
+              "statChanges": {
+                "intelligence": 5,
+                "happiness": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_17",
+      "title": "World Events Event",
+      "description": "{'text': 'A global meditation event is held—millions pause at the same moment, and you join, if only for the curiosity.', 'statChanges': {'happiness': 10, 'health': 5}}",
+      "choices": [
+        {
+          "id": "share_news",
+          "text": "Share this news with friends",
+          "outcomes": [
+            {
+              "description": "You spark a conversation and feel more connected.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "text": "Reflect on its impact",
+          "outcomes": [
+            {
+              "description": "You gain perspective on the bigger picture.",
+              "statChanges": {
+                "intelligence": 5,
+                "happiness": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_18",
+      "title": "World Events Event",
+      "description": "{'text': 'A viral video from a remote village unites people in laughter—and the village school gets worldwide donations.', 'statChanges': {'happiness': 15, 'social': 10}}",
+      "choices": [
+        {
+          "id": "share_news",
+          "text": "Share this news with friends",
+          "outcomes": [
+            {
+              "description": "You spark a conversation and feel more connected.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "text": "Reflect on its impact",
+          "outcomes": [
+            {
+              "description": "You gain perspective on the bigger picture.",
+              "statChanges": {
+                "intelligence": 5,
+                "happiness": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_19",
+      "title": "World Events Event",
+      "description": "{'text': \"A solar storm interrupts satellites, causing GPS chaos. Your phone tells you you're in the ocean.\", 'statChanges': {'happiness': -5, 'intelligence': 5}}",
+      "choices": [
+        {
+          "id": "share_news",
+          "text": "Share this news with friends",
+          "outcomes": [
+            {
+              "description": "You spark a conversation and feel more connected.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "text": "Reflect on its impact",
+          "outcomes": [
+            {
+              "description": "You gain perspective on the bigger picture.",
+              "statChanges": {
+                "intelligence": 5,
+                "happiness": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_20",
+      "title": "World Events Event",
+      "description": "{'text': 'A time capsule from 1920 is opened live on TV, revealing a love letter and a list of wild predictions—some scarily accurate.', 'statChanges': {'happiness': 10, 'intelligence': 5}}",
+      "choices": [
+        {
+          "id": "share_news",
+          "text": "Share this news with friends",
+          "outcomes": [
+            {
+              "description": "You spark a conversation and feel more connected.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "text": "Reflect on its impact",
+          "outcomes": [
+            {
+              "description": "You gain perspective on the bigger picture.",
+              "statChanges": {
+                "intelligence": 5,
+                "happiness": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_21",
+      "title": "World Events Event",
+      "description": "{'text': 'After years of planning, the Global Wildlife Bridge is completed, letting animals migrate safely across a continent.', 'statChanges': {'happiness': 15, 'social': 5}}",
+      "choices": [
+        {
+          "id": "share_news",
+          "text": "Share this news with friends",
+          "outcomes": [
+            {
+              "description": "You spark a conversation and feel more connected.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "text": "Reflect on its impact",
+          "outcomes": [
+            {
+              "description": "You gain perspective on the bigger picture.",
+              "statChanges": {
+                "intelligence": 5,
+                "happiness": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_22",
+      "title": "World Events Event",
+      "description": "{'text': 'A pop singer hosts a live concert on every continent in a single week. You catch the stream, amazed by the crowd size.', 'statChanges': {'happiness': 15, 'social': 10}}",
+      "choices": [
+        {
+          "id": "share_news",
+          "text": "Share this news with friends",
+          "outcomes": [
+            {
+              "description": "You spark a conversation and feel more connected.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "text": "Reflect on its impact",
+          "outcomes": [
+            {
+              "description": "You gain perspective on the bigger picture.",
+              "statChanges": {
+                "intelligence": 5,
+                "happiness": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_23",
+      "title": "World Events Event",
+      "description": "{'text': 'A mathematician proves a problem unsolved for 300 years. You only understand the headlines, but everyone is talking about it.', 'statChanges': {'happiness': 5, 'intelligence': 15}}",
+      "choices": [
+        {
+          "id": "share_news",
+          "text": "Share this news with friends",
+          "outcomes": [
+            {
+              "description": "You spark a conversation and feel more connected.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "text": "Reflect on its impact",
+          "outcomes": [
+            {
+              "description": "You gain perspective on the bigger picture.",
+              "statChanges": {
+                "intelligence": 5,
+                "happiness": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_24",
+      "title": "World Events Event",
+      "description": "{'text': \"An artist's peace mural appears on every major news channel, inspiring similar projects worldwide.\", 'statChanges': {'happiness': 10, 'social': 10}}",
+      "choices": [
+        {
+          "id": "share_news",
+          "text": "Share this news with friends",
+          "outcomes": [
+            {
+              "description": "You spark a conversation and feel more connected.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "text": "Reflect on its impact",
+          "outcomes": [
+            {
+              "description": "You gain perspective on the bigger picture.",
+              "statChanges": {
+                "intelligence": 5,
+                "happiness": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_25",
+      "title": "World Events Event",
+      "description": "{'text': \"In a historic first, a wheelchair marathon is run alongside the main Olympic event. The winner's smile is shared everywhere.\", 'statChanges': {'happiness': 15, 'health': 10, 'social': 5}}",
+      "choices": [
+        {
+          "id": "share_news",
+          "text": "Share this news with friends",
+          "outcomes": [
+            {
+              "description": "You spark a conversation and feel more connected.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "text": "Reflect on its impact",
+          "outcomes": [
+            {
+              "description": "You gain perspective on the bigger picture.",
+              "statChanges": {
+                "intelligence": 5,
+                "happiness": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "local_1",
+      "title": "Local Events Event",
+      "description": "{'text': 'You wake to sirens: the local bakery caught fire, but neighbors formed a bucket line and saved the day. Free pastries for all.', 'statChanges': {'happiness': 10, 'social': 15}}",
+      "choices": [
+        {
+          "id": "participate",
+          "text": "Participate in the event",
+          "outcomes": [
+            {
+              "description": "You engage locally and feel involved.",
+              "statChanges": {
+                "social": 8,
+                "happiness": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "stay_home",
+          "text": "Stay home instead",
+          "outcomes": [
+            {
+              "description": "You miss out but feel rested.",
+              "statChanges": {
+                "happiness": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "local_2",
+      "title": "Local Events Event",
+      "description": "{'text': 'A beloved street performer retires, and the city hosts a parade in their honor. You join the confetti-throwers.', 'statChanges': {'happiness': 15, 'social': 10}}",
+      "choices": [
+        {
+          "id": "participate",
+          "text": "Participate in the event",
+          "outcomes": [
+            {
+              "description": "You engage locally and feel involved.",
+              "statChanges": {
+                "social": 8,
+                "happiness": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "stay_home",
+          "text": "Stay home instead",
+          "outcomes": [
+            {
+              "description": "You miss out but feel rested.",
+              "statChanges": {
+                "happiness": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "local_3",
+      "title": "Local Events Event",
+      "description": "{'text': 'A new mural appears overnight on the side of the old hardware store. You recognize your own face among the crowd painted there.', 'statChanges': {'happiness': 10, 'social': 5}}",
+      "choices": [
+        {
+          "id": "participate",
+          "text": "Participate in the event",
+          "outcomes": [
+            {
+              "description": "You engage locally and feel involved.",
+              "statChanges": {
+                "social": 8,
+                "happiness": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "stay_home",
+          "text": "Stay home instead",
+          "outcomes": [
+            {
+              "description": "You miss out but feel rested.",
+              "statChanges": {
+                "happiness": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "local_4",
+      "title": "Local Events Event",
+      "description": "{'text': 'The river floods after heavy rain, but the town bands together, sandbagging and singing work songs.', 'statChanges': {'happiness': 5, 'social': 15, 'health': -5}}",
+      "choices": [
+        {
+          "id": "participate",
+          "text": "Participate in the event",
+          "outcomes": [
+            {
+              "description": "You engage locally and feel involved.",
+              "statChanges": {
+                "social": 8,
+                "happiness": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "stay_home",
+          "text": "Stay home instead",
+          "outcomes": [
+            {
+              "description": "You miss out but feel rested.",
+              "statChanges": {
+                "happiness": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "local_5",
+      "title": "Local Events Event",
+      "description": "{'text': \"Your neighborhood's annual block party features a surprise: a world-record attempt for the longest picnic table.\", 'statChanges': {'happiness': 15, 'social': 20}}",
+      "choices": [
+        {
+          "id": "participate",
+          "text": "Participate in the event",
+          "outcomes": [
+            {
+              "description": "You engage locally and feel involved.",
+              "statChanges": {
+                "social": 8,
+                "happiness": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "stay_home",
+          "text": "Stay home instead",
+          "outcomes": [
+            {
+              "description": "You miss out but feel rested.",
+              "statChanges": {
+                "happiness": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "local_6",
+      "title": "Local Events Event",
+      "description": "{'text': 'A dog goes missing, and the whole community helps look. It returns home three days later, muddy and proud.', 'statChanges': {'happiness': 20, 'social': 10}}",
+      "choices": [
+        {
+          "id": "participate",
+          "text": "Participate in the event",
+          "outcomes": [
+            {
+              "description": "You engage locally and feel involved.",
+              "statChanges": {
+                "social": 8,
+                "happiness": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "stay_home",
+          "text": "Stay home instead",
+          "outcomes": [
+            {
+              "description": "You miss out but feel rested.",
+              "statChanges": {
+                "happiness": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "local_7",
+      "title": "Local Events Event",
+      "description": "{'text': \"The town council approves a new park—construction begins on what will be the city's first skate plaza.\", 'statChanges': {'happiness': 10, 'health': 5, 'social': 5}}",
+      "choices": [
+        {
+          "id": "participate",
+          "text": "Participate in the event",
+          "outcomes": [
+            {
+              "description": "You engage locally and feel involved.",
+              "statChanges": {
+                "social": 8,
+                "happiness": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "stay_home",
+          "text": "Stay home instead",
+          "outcomes": [
+            {
+              "description": "You miss out but feel rested.",
+              "statChanges": {
+                "happiness": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "local_8",
+      "title": "Local Events Event",
+      "description": "{'text': 'A local legend retires from the fire department, and everyone gathers for a barbecue at the station.', 'statChanges': {'happiness': 10, 'social': 15}}",
+      "choices": [
+        {
+          "id": "participate",
+          "text": "Participate in the event",
+          "outcomes": [
+            {
+              "description": "You engage locally and feel involved.",
+              "statChanges": {
+                "social": 8,
+                "happiness": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "stay_home",
+          "text": "Stay home instead",
+          "outcomes": [
+            {
+              "description": "You miss out but feel rested.",
+              "statChanges": {
+                "happiness": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "local_9",
+      "title": "Local Events Event",
+      "description": "{'text': 'The city library launches a bookmobile. Its cheerful horn soon becomes as familiar as the ice cream truck.', 'statChanges': {'happiness': 5, 'intelligence': 10}}",
+      "choices": [
+        {
+          "id": "participate",
+          "text": "Participate in the event",
+          "outcomes": [
+            {
+              "description": "You engage locally and feel involved.",
+              "statChanges": {
+                "social": 8,
+                "happiness": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "stay_home",
+          "text": "Stay home instead",
+          "outcomes": [
+            {
+              "description": "You miss out but feel rested.",
+              "statChanges": {
+                "happiness": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "local_10",
+      "title": "Local Events Event",
+      "description": "{'text': 'A group of volunteers plants wildflowers along Main Street. Within weeks, the bees are back.', 'statChanges': {'happiness': 10, 'social': 10}}",
+      "choices": [
+        {
+          "id": "participate",
+          "text": "Participate in the event",
+          "outcomes": [
+            {
+              "description": "You engage locally and feel involved.",
+              "statChanges": {
+                "social": 8,
+                "happiness": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "stay_home",
+          "text": "Stay home instead",
+          "outcomes": [
+            {
+              "description": "You miss out but feel rested.",
+              "statChanges": {
+                "happiness": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "local_11",
+      "title": "Local Events Event",
+      "description": "{'text': \"The community center hosts a talent show. Your neighbor's operatic yodeling is... unforgettable.\", 'statChanges': {'happiness': 10, 'social': 15}}",
+      "choices": [
+        {
+          "id": "participate",
+          "text": "Participate in the event",
+          "outcomes": [
+            {
+              "description": "You engage locally and feel involved.",
+              "statChanges": {
+                "social": 8,
+                "happiness": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "stay_home",
+          "text": "Stay home instead",
+          "outcomes": [
+            {
+              "description": "You miss out but feel rested.",
+              "statChanges": {
+                "happiness": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "local_12",
+      "title": "Local Events Event",
+      "description": "{'text': 'A blackout hits during dinner time, and neighbors gather outside, sharing food and flashlights.', 'statChanges': {'happiness': 5, 'social': 15}}",
+      "choices": [
+        {
+          "id": "participate",
+          "text": "Participate in the event",
+          "outcomes": [
+            {
+              "description": "You engage locally and feel involved.",
+              "statChanges": {
+                "social": 8,
+                "happiness": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "stay_home",
+          "text": "Stay home instead",
+          "outcomes": [
+            {
+              "description": "You miss out but feel rested.",
+              "statChanges": {
+                "happiness": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "local_13",
+      "title": "Local Events Event",
+      "description": "{'text': 'A long-lost cat returns to its family. The reunion makes the evening news.', 'statChanges': {'happiness': 15, 'social': 5}}",
+      "choices": [
+        {
+          "id": "participate",
+          "text": "Participate in the event",
+          "outcomes": [
+            {
+              "description": "You engage locally and feel involved.",
+              "statChanges": {
+                "social": 8,
+                "happiness": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "stay_home",
+          "text": "Stay home instead",
+          "outcomes": [
+            {
+              "description": "You miss out but feel rested.",
+              "statChanges": {
+                "happiness": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "local_14",
+      "title": "Local Events Event",
+      "description": "{'text': 'A rare owl is spotted in the city park, and birdwatchers flock from miles around.', 'statChanges': {'happiness': 10, 'intelligence': 5}}",
+      "choices": [
+        {
+          "id": "participate",
+          "text": "Participate in the event",
+          "outcomes": [
+            {
+              "description": "You engage locally and feel involved.",
+              "statChanges": {
+                "social": 8,
+                "happiness": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "stay_home",
+          "text": "Stay home instead",
+          "outcomes": [
+            {
+              "description": "You miss out but feel rested.",
+              "statChanges": {
+                "happiness": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "local_15",
+      "title": "Local Events Event",
+      "description": "{'text': \"A pop-up food truck market sets up for one weekend only. You try something called 'cosmic tacos.'\", 'statChanges': {'happiness': 10, 'social': 5, 'money': -20}}",
+      "choices": [
+        {
+          "id": "participate",
+          "text": "Participate in the event",
+          "outcomes": [
+            {
+              "description": "You engage locally and feel involved.",
+              "statChanges": {
+                "social": 8,
+                "happiness": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "stay_home",
+          "text": "Stay home instead",
+          "outcomes": [
+            {
+              "description": "You miss out but feel rested.",
+              "statChanges": {
+                "happiness": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "local_16",
+      "title": "Local Events Event",
+      "description": "{'text': 'You discover an old, hand-painted sign beneath the wallpaper in your house—no one knows the story.', 'statChanges': {'happiness': 5, 'intelligence': 10}}",
+      "choices": [
+        {
+          "id": "participate",
+          "text": "Participate in the event",
+          "outcomes": [
+            {
+              "description": "You engage locally and feel involved.",
+              "statChanges": {
+                "social": 8,
+                "happiness": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "stay_home",
+          "text": "Stay home instead",
+          "outcomes": [
+            {
+              "description": "You miss out but feel rested.",
+              "statChanges": {
+                "happiness": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "local_17",
+      "title": "Local Events Event",
+      "description": "{'text': 'A rumor of hidden treasure in the city pond leads to a day of kids fishing for coins.', 'statChanges': {'happiness': 10, 'social': 10}}",
+      "choices": [
+        {
+          "id": "participate",
+          "text": "Participate in the event",
+          "outcomes": [
+            {
+              "description": "You engage locally and feel involved.",
+              "statChanges": {
+                "social": 8,
+                "happiness": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "stay_home",
+          "text": "Stay home instead",
+          "outcomes": [
+            {
+              "description": "You miss out but feel rested.",
+              "statChanges": {
+                "happiness": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "local_18",
+      "title": "Local Events Event",
+      "description": "{'text': 'A 5K charity run winds through your neighborhood. You join on a whim, regretting it only after the third hill.', 'statChanges': {'happiness': 5, 'health': 10, 'social': 5}}",
+      "choices": [
+        {
+          "id": "participate",
+          "text": "Participate in the event",
+          "outcomes": [
+            {
+              "description": "You engage locally and feel involved.",
+              "statChanges": {
+                "social": 8,
+                "happiness": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "stay_home",
+          "text": "Stay home instead",
+          "outcomes": [
+            {
+              "description": "You miss out but feel rested.",
+              "statChanges": {
+                "happiness": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "local_19",
+      "title": "Local Events Event",
+      "description": "{'text': 'A citywide scavenger hunt is announced, with a big prize. You team up with strangers to solve the clues.', 'statChanges': {'happiness': 15, 'intelligence': 10, 'social': 15}}",
+      "choices": [
+        {
+          "id": "participate",
+          "text": "Participate in the event",
+          "outcomes": [
+            {
+              "description": "You engage locally and feel involved.",
+              "statChanges": {
+                "social": 8,
+                "happiness": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "stay_home",
+          "text": "Stay home instead",
+          "outcomes": [
+            {
+              "description": "You miss out but feel rested.",
+              "statChanges": {
+                "happiness": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "local_20",
+      "title": "Local Events Event",
+      "description": "{'text': 'For one night, the city converts Main Street into a car-free promenade. Music and laughter fill the air.', 'statChanges': {'happiness': 15, 'social': 20}}",
+      "choices": [
+        {
+          "id": "participate",
+          "text": "Participate in the event",
+          "outcomes": [
+            {
+              "description": "You engage locally and feel involved.",
+              "statChanges": {
+                "social": 8,
+                "happiness": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "stay_home",
+          "text": "Stay home instead",
+          "outcomes": [
+            {
+              "description": "You miss out but feel rested.",
+              "statChanges": {
+                "happiness": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "local_21",
+      "title": "Local Events Event",
+      "description": "{'text': 'A meteor shower is visible above town, and hundreds gather in the football field to watch.', 'statChanges': {'happiness': 15, 'social': 10}}",
+      "choices": [
+        {
+          "id": "participate",
+          "text": "Participate in the event",
+          "outcomes": [
+            {
+              "description": "You engage locally and feel involved.",
+              "statChanges": {
+                "social": 8,
+                "happiness": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "stay_home",
+          "text": "Stay home instead",
+          "outcomes": [
+            {
+              "description": "You miss out but feel rested.",
+              "statChanges": {
+                "happiness": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "local_22",
+      "title": "Local Events Event",
+      "description": "{'text': 'The old movie theater reopens after decades, screening black-and-white classics.', 'statChanges': {'happiness': 10, 'social': 5}}",
+      "choices": [
+        {
+          "id": "participate",
+          "text": "Participate in the event",
+          "outcomes": [
+            {
+              "description": "You engage locally and feel involved.",
+              "statChanges": {
+                "social": 8,
+                "happiness": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "stay_home",
+          "text": "Stay home instead",
+          "outcomes": [
+            {
+              "description": "You miss out but feel rested.",
+              "statChanges": {
+                "happiness": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "local_23",
+      "title": "Local Events Event",
+      "description": "{'text': 'Local radio hosts a call-in for the weirdest pet. A lady with a three-legged ferret wins.', 'statChanges': {'happiness': 10, 'social': 5}}",
+      "choices": [
+        {
+          "id": "participate",
+          "text": "Participate in the event",
+          "outcomes": [
+            {
+              "description": "You engage locally and feel involved.",
+              "statChanges": {
+                "social": 8,
+                "happiness": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "stay_home",
+          "text": "Stay home instead",
+          "outcomes": [
+            {
+              "description": "You miss out but feel rested.",
+              "statChanges": {
+                "happiness": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "local_24",
+      "title": "Local Events Event",
+      "description": "{'text': 'A charity bake-off leads to a sugar-fueled pie fight. You dodge a lemon meringue.', 'statChanges': {'happiness': 15, 'social': 10}}",
+      "choices": [
+        {
+          "id": "participate",
+          "text": "Participate in the event",
+          "outcomes": [
+            {
+              "description": "You engage locally and feel involved.",
+              "statChanges": {
+                "social": 8,
+                "happiness": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "stay_home",
+          "text": "Stay home instead",
+          "outcomes": [
+            {
+              "description": "You miss out but feel rested.",
+              "statChanges": {
+                "happiness": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "local_25",
+      "title": "Local Events Event",
+      "description": "{'text': \"A retired teacher starts free language classes in the park—your first word is 'hello' in Icelandic.\", 'statChanges': {'happiness': 5, 'intelligence': 15, 'social': 5}}",
+      "choices": [
+        {
+          "id": "participate",
+          "text": "Participate in the event",
+          "outcomes": [
+            {
+              "description": "You engage locally and feel involved.",
+              "statChanges": {
+                "social": 8,
+                "happiness": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "stay_home",
+          "text": "Stay home instead",
+          "outcomes": [
+            {
+              "description": "You miss out but feel rested.",
+              "statChanges": {
+                "happiness": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "social_1",
+      "title": "Social Events Event",
+      "description": "{'text': 'Your childhood friend, always the risk-taker, texts from an airport, inviting you to join a spur-of-the-moment trip.', 'statChanges': {'happiness': 15, 'social': 10, 'money': -100}}",
+      "choices": [
+        {
+          "id": "join",
+          "text": "Join in with friends",
+          "outcomes": [
+            {
+              "description": "You strengthen your social bonds.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 7
+              }
+            }
+          ]
+        },
+        {
+          "id": "observe",
+          "text": "Just observe from a distance",
+          "outcomes": [
+            {
+              "description": "You feel a bit left out, but safe.",
+              "statChanges": {
+                "happiness": -1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "social_2",
+      "title": "Social Events Event",
+      "description": "{'text': 'Your older sibling lands their dream job in a faraway city. The family group chat buzzes for days.', 'statChanges': {'happiness': 10, 'social': 5}}",
+      "choices": [
+        {
+          "id": "join",
+          "text": "Join in with friends",
+          "outcomes": [
+            {
+              "description": "You strengthen your social bonds.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 7
+              }
+            }
+          ]
+        },
+        {
+          "id": "observe",
+          "text": "Just observe from a distance",
+          "outcomes": [
+            {
+              "description": "You feel a bit left out, but safe.",
+              "statChanges": {
+                "happiness": -1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "social_3",
+      "title": "Social Events Event",
+      "description": "{'text': 'A friend comes out to you over coffee. You feel honored to be trusted.', 'statChanges': {'happiness': 10, 'social': 15}}",
+      "choices": [
+        {
+          "id": "join",
+          "text": "Join in with friends",
+          "outcomes": [
+            {
+              "description": "You strengthen your social bonds.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 7
+              }
+            }
+          ]
+        },
+        {
+          "id": "observe",
+          "text": "Just observe from a distance",
+          "outcomes": [
+            {
+              "description": "You feel a bit left out, but safe.",
+              "statChanges": {
+                "happiness": -1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "social_4",
+      "title": "Social Events Event",
+      "description": "{'text': 'You find out your cousin started a quirky side hustle selling custom painted rocks.', 'statChanges': {'happiness': 5, 'social': 10}}",
+      "choices": [
+        {
+          "id": "join",
+          "text": "Join in with friends",
+          "outcomes": [
+            {
+              "description": "You strengthen your social bonds.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 7
+              }
+            }
+          ]
+        },
+        {
+          "id": "observe",
+          "text": "Just observe from a distance",
+          "outcomes": [
+            {
+              "description": "You feel a bit left out, but safe.",
+              "statChanges": {
+                "happiness": -1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "social_5",
+      "title": "Social Events Event",
+      "description": "{'text': 'A childhood friend gets married. You make a toast that almost brings the room to tears.', 'statChanges': {'happiness': 20, 'social': 15}}",
+      "choices": [
+        {
+          "id": "join",
+          "text": "Join in with friends",
+          "outcomes": [
+            {
+              "description": "You strengthen your social bonds.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 7
+              }
+            }
+          ]
+        },
+        {
+          "id": "observe",
+          "text": "Just observe from a distance",
+          "outcomes": [
+            {
+              "description": "You feel a bit left out, but safe.",
+              "statChanges": {
+                "happiness": -1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "social_6",
+      "title": "Social Events Event",
+      "description": "{'text': 'Your best friend shows up at your door in the middle of the night, needing to talk.', 'statChanges': {'happiness': -5, 'social': 15}}",
+      "choices": [
+        {
+          "id": "join",
+          "text": "Join in with friends",
+          "outcomes": [
+            {
+              "description": "You strengthen your social bonds.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 7
+              }
+            }
+          ]
+        },
+        {
+          "id": "observe",
+          "text": "Just observe from a distance",
+          "outcomes": [
+            {
+              "description": "You feel a bit left out, but safe.",
+              "statChanges": {
+                "happiness": -1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "social_7",
+      "title": "Social Events Event",
+      "description": "{'text': \"A neighbor's kid asks if you'll help build a cardboard castle for their science project.\", 'statChanges': {'happiness': 10, 'social': 10, 'intelligence': 5}}",
+      "choices": [
+        {
+          "id": "join",
+          "text": "Join in with friends",
+          "outcomes": [
+            {
+              "description": "You strengthen your social bonds.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 7
+              }
+            }
+          ]
+        },
+        {
+          "id": "observe",
+          "text": "Just observe from a distance",
+          "outcomes": [
+            {
+              "description": "You feel a bit left out, but safe.",
+              "statChanges": {
+                "happiness": -1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "social_8",
+      "title": "Social Events Event",
+      "description": "{'text': 'You reconnect with an old camp buddy who moved back to town.', 'statChanges': {'happiness': 15, 'social': 15}}",
+      "choices": [
+        {
+          "id": "join",
+          "text": "Join in with friends",
+          "outcomes": [
+            {
+              "description": "You strengthen your social bonds.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 7
+              }
+            }
+          ]
+        },
+        {
+          "id": "observe",
+          "text": "Just observe from a distance",
+          "outcomes": [
+            {
+              "description": "You feel a bit left out, but safe.",
+              "statChanges": {
+                "happiness": -1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "social_9",
+      "title": "Social Events Event",
+      "description": "{'text': \"Your parents share a story about their rebellious youth you've never heard before.\", 'statChanges': {'happiness': 10, 'social': 10}}",
+      "choices": [
+        {
+          "id": "join",
+          "text": "Join in with friends",
+          "outcomes": [
+            {
+              "description": "You strengthen your social bonds.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 7
+              }
+            }
+          ]
+        },
+        {
+          "id": "observe",
+          "text": "Just observe from a distance",
+          "outcomes": [
+            {
+              "description": "You feel a bit left out, but safe.",
+              "statChanges": {
+                "happiness": -1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "social_10",
+      "title": "Social Events Event",
+      "description": "{'text': 'You and your friends start a regular game night, and it quickly becomes the highlight of your week.', 'statChanges': {'happiness': 15, 'social': 20}}",
+      "choices": [
+        {
+          "id": "join",
+          "text": "Join in with friends",
+          "outcomes": [
+            {
+              "description": "You strengthen your social bonds.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 7
+              }
+            }
+          ]
+        },
+        {
+          "id": "observe",
+          "text": "Just observe from a distance",
+          "outcomes": [
+            {
+              "description": "You feel a bit left out, but safe.",
+              "statChanges": {
+                "happiness": -1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "social_11",
+      "title": "Social Events Event",
+      "description": "{'text': 'A family member gets scouted for a local talent show. You help with their routine backstage.', 'statChanges': {'happiness': 15, 'social': 15}}",
+      "choices": [
+        {
+          "id": "join",
+          "text": "Join in with friends",
+          "outcomes": [
+            {
+              "description": "You strengthen your social bonds.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 7
+              }
+            }
+          ]
+        },
+        {
+          "id": "observe",
+          "text": "Just observe from a distance",
+          "outcomes": [
+            {
+              "description": "You feel a bit left out, but safe.",
+              "statChanges": {
+                "happiness": -1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "social_12",
+      "title": "Social Events Event",
+      "description": "{'text': 'A friend brings home a stray animal, and you help them find it a loving home.', 'statChanges': {'happiness': 15, 'social': 10}}",
+      "choices": [
+        {
+          "id": "join",
+          "text": "Join in with friends",
+          "outcomes": [
+            {
+              "description": "You strengthen your social bonds.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 7
+              }
+            }
+          ]
+        },
+        {
+          "id": "observe",
+          "text": "Just observe from a distance",
+          "outcomes": [
+            {
+              "description": "You feel a bit left out, but safe.",
+              "statChanges": {
+                "happiness": -1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "social_13",
+      "title": "Social Events Event",
+      "description": "{'text': 'Your grandparents move in for the summer. Every evening is a new story.', 'statChanges': {'happiness': 15, 'social': 15}}",
+      "choices": [
+        {
+          "id": "join",
+          "text": "Join in with friends",
+          "outcomes": [
+            {
+              "description": "You strengthen your social bonds.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 7
+              }
+            }
+          ]
+        },
+        {
+          "id": "observe",
+          "text": "Just observe from a distance",
+          "outcomes": [
+            {
+              "description": "You feel a bit left out, but safe.",
+              "statChanges": {
+                "happiness": -1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "social_14",
+      "title": "Social Events Event",
+      "description": "{'text': 'You and a friend have a falling out, but patch things up after a long walk.', 'statChanges': {'happiness': 5, 'social': 10}}",
+      "choices": [
+        {
+          "id": "join",
+          "text": "Join in with friends",
+          "outcomes": [
+            {
+              "description": "You strengthen your social bonds.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 7
+              }
+            }
+          ]
+        },
+        {
+          "id": "observe",
+          "text": "Just observe from a distance",
+          "outcomes": [
+            {
+              "description": "You feel a bit left out, but safe.",
+              "statChanges": {
+                "happiness": -1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "social_15",
+      "title": "Social Events Event",
+      "description": "{'text': 'Your friend group goes camping and you tell ghost stories until sunrise.', 'statChanges': {'happiness': 15, 'social': 15, 'health': -5}}",
+      "choices": [
+        {
+          "id": "join",
+          "text": "Join in with friends",
+          "outcomes": [
+            {
+              "description": "You strengthen your social bonds.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 7
+              }
+            }
+          ]
+        },
+        {
+          "id": "observe",
+          "text": "Just observe from a distance",
+          "outcomes": [
+            {
+              "description": "You feel a bit left out, but safe.",
+              "statChanges": {
+                "happiness": -1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "social_16",
+      "title": "Social Events Event",
+      "description": "{'text': \"A friend's band finally gets their first gig. You make a sign and cheer the loudest.\", 'statChanges': {'happiness': 15, 'social': 15}}",
+      "choices": [
+        {
+          "id": "join",
+          "text": "Join in with friends",
+          "outcomes": [
+            {
+              "description": "You strengthen your social bonds.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 7
+              }
+            }
+          ]
+        },
+        {
+          "id": "observe",
+          "text": "Just observe from a distance",
+          "outcomes": [
+            {
+              "description": "You feel a bit left out, but safe.",
+              "statChanges": {
+                "happiness": -1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "social_17",
+      "title": "Social Events Event",
+      "description": "{'text': \"You're asked to be the godparent to your cousin's newborn.\", 'statChanges': {'happiness': 20, 'social': 15}}",
+      "choices": [
+        {
+          "id": "join",
+          "text": "Join in with friends",
+          "outcomes": [
+            {
+              "description": "You strengthen your social bonds.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 7
+              }
+            }
+          ]
+        },
+        {
+          "id": "observe",
+          "text": "Just observe from a distance",
+          "outcomes": [
+            {
+              "description": "You feel a bit left out, but safe.",
+              "statChanges": {
+                "happiness": -1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "social_18",
+      "title": "Social Events Event",
+      "description": "{'text': 'Your sibling asks for your advice before a big exam.', 'statChanges': {'happiness': 10, 'social': 10, 'intelligence': 5}}",
+      "choices": [
+        {
+          "id": "join",
+          "text": "Join in with friends",
+          "outcomes": [
+            {
+              "description": "You strengthen your social bonds.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 7
+              }
+            }
+          ]
+        },
+        {
+          "id": "observe",
+          "text": "Just observe from a distance",
+          "outcomes": [
+            {
+              "description": "You feel a bit left out, but safe.",
+              "statChanges": {
+                "happiness": -1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "social_19",
+      "title": "Social Events Event",
+      "description": "{'text': 'A friend gives you a handmade gift on your birthday.', 'statChanges': {'happiness': 15, 'social': 10}}",
+      "choices": [
+        {
+          "id": "join",
+          "text": "Join in with friends",
+          "outcomes": [
+            {
+              "description": "You strengthen your social bonds.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 7
+              }
+            }
+          ]
+        },
+        {
+          "id": "observe",
+          "text": "Just observe from a distance",
+          "outcomes": [
+            {
+              "description": "You feel a bit left out, but safe.",
+              "statChanges": {
+                "happiness": -1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "social_20",
+      "title": "Social Events Event",
+      "description": "{'text': 'A family reunion brings relatives from four different countries. The food is incredible.', 'statChanges': {'happiness': 20, 'social': 25}}",
+      "choices": [
+        {
+          "id": "join",
+          "text": "Join in with friends",
+          "outcomes": [
+            {
+              "description": "You strengthen your social bonds.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 7
+              }
+            }
+          ]
+        },
+        {
+          "id": "observe",
+          "text": "Just observe from a distance",
+          "outcomes": [
+            {
+              "description": "You feel a bit left out, but safe.",
+              "statChanges": {
+                "happiness": -1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "social_21",
+      "title": "Social Events Event",
+      "description": "{'text': 'Your friend group adopts a highway, spending weekends picking up litter together.', 'statChanges': {'happiness': 10, 'social': 15, 'health': 5}}",
+      "choices": [
+        {
+          "id": "join",
+          "text": "Join in with friends",
+          "outcomes": [
+            {
+              "description": "You strengthen your social bonds.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 7
+              }
+            }
+          ]
+        },
+        {
+          "id": "observe",
+          "text": "Just observe from a distance",
+          "outcomes": [
+            {
+              "description": "You feel a bit left out, but safe.",
+              "statChanges": {
+                "happiness": -1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "social_22",
+      "title": "Social Events Event",
+      "description": "{'text': 'You and a friend start a two-person book club—mostly an excuse to eat snacks.', 'statChanges': {'happiness': 10, 'social': 10, 'intelligence': 5}}",
+      "choices": [
+        {
+          "id": "join",
+          "text": "Join in with friends",
+          "outcomes": [
+            {
+              "description": "You strengthen your social bonds.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 7
+              }
+            }
+          ]
+        },
+        {
+          "id": "observe",
+          "text": "Just observe from a distance",
+          "outcomes": [
+            {
+              "description": "You feel a bit left out, but safe.",
+              "statChanges": {
+                "happiness": -1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "social_23",
+      "title": "Social Events Event",
+      "description": "{'text': 'Your neighbor bakes too much bread and leaves loaves at your door.', 'statChanges': {'happiness': 10, 'social': 10}}",
+      "choices": [
+        {
+          "id": "join",
+          "text": "Join in with friends",
+          "outcomes": [
+            {
+              "description": "You strengthen your social bonds.",
+              "statChanges": {
+                "social": 10,
+                "happiness": 7
+              }
+            }
+          ]
+        },
+        {
+          "id": "observe",
+          "text": "Just observe from a distance",
+          "outcomes": [
+            {
+              "description": "You feel a bit left out, but safe.",
+              "statChanges": {
+                "happiness": -1
+              }
+            }
+          ]
+        }
+      ]
+    }
   ]
 }
