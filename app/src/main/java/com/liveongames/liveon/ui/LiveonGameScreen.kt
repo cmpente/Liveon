@@ -5,8 +5,9 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,7 +18,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -38,7 +38,10 @@ import kotlin.random.Random
 @Composable
 fun LiveonGameScreen(
     gameViewModel: GameViewModel = hiltViewModel(),
-    settingsViewModel: SettingsViewModel = hiltViewModel()
+    settingsViewModel: SettingsViewModel = hiltViewModel(),
+    onNavigateToCrime: () -> Unit = {},
+    onNavigateToPets: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val density = LocalDensity.current
@@ -48,15 +51,19 @@ fun LiveonGameScreen(
     val selectedThemeIndex by settingsViewModel.selectedThemeIndex.collectAsState()
     val currentTheme = AllGameThemes.getOrElse(selectedThemeIndex) { AllGameThemes[0] }
 
-    // Calculate panel heights - Optimized for visibility
-    val headerHeight = 48
-    val statsHeight = 100
-    val menuHeight = 200  // Reduced height for initial visible menu items
-    val totalPanelHeight = headerHeight + statsHeight + 340  // Full height when fully open
-    val stopPosition = 70  // Stop position (button height + spacing)
+// PANEL CONTROLS - TAP TO OPEN/CLOSE
 
-    // Draggable Life Management/Stats state
-    var panelOffset by remember { mutableStateOf(0f) }
+// HEIGHT: Full height for stats panel when closed (shows ALL stats)
+    val closedVisibleHeight = 160  // <-- FULL height - shows all stats
+
+// OPEN STATE: Controls whether popup menu is visible
+    var isMenuOpen by remember { mutableStateOf(false) } // <-- FALSE = stats only, TRUE = full menu
+
+// Position where stats panel rests when closed (affects vertical placement)
+// LOWERING: Increase value to move panel DOWN (away from top edge)
+// RAISING: Decrease value to move panel UP (toward top edge)
+// TIP: Low values (5-10) keep panel pinned to bottom of screen
+    val panelRestPosition = 5 // <-- CONTROLS resting position on screen
 
     // Persistent storage for Lifebook entries
     var lifeHistoryEntries by rememberSaveable {
@@ -94,9 +101,6 @@ fun LiveonGameScreen(
 
     // Scroll state for Lifebook
     val lifebookScrollState = rememberScrollState()
-
-    // Scroll state for menu (only when fully open)
-    val menuScrollState = rememberScrollState()
 
     // Load random events from JSON assets
     val randomEvents = remember(context) {
@@ -168,16 +172,16 @@ fun LiveonGameScreen(
                 )
             }
 
-            // Lifebook Section with Age Up Button Overlay
+            // Lifebook Section with Age Up Button Overlay - Increased height
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(320.dp)
+                    .height(400.dp)
             ) {
                 Card(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(bottom = 35.dp),
+                        .padding(bottom = 55.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                     shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
                     colors = CardDefaults.cardColors(containerColor = currentTheme.surface)
@@ -254,11 +258,11 @@ fun LiveonGameScreen(
                     }
                 }
 
-                // Age Up Button with Gradient Glow
+                // Age Up Button with Gradient Glow - Moved further down
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .offset(y = 17.dp)
+                        .offset(y = 27.dp)
                 ) {
                     // Gradient Glow Background
                     Box(
@@ -307,176 +311,101 @@ fun LiveonGameScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(52.dp))
+            Spacer(modifier = Modifier.height(72.dp))
         }
 
-        // Combined Life Management/Stats Panel (slides up from bottom)
+        // FULL STATS PANEL (always visible - shows ALL stats)
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .offset {
-                    // Calculate offset so panel stops correctly
-                    val maxOffset = (totalPanelHeight - stopPosition) * density.density
-                    val currentOffset = maxOffset - (panelOffset * density.density)
-                    androidx.compose.ui.unit.IntOffset(0, currentOffset.toInt())
-                }
-                .pointerInput(Unit) {
-                    detectDragGestures(
-                        onDragStart = { },
-                        onDrag = { change, dragAmount ->
-                            change.consume()
-                            // Slow movement - divide by 3 for controlled response
-                            val slowDrag = dragAmount.y / 3f
-                            val maxVisibleHeight = (totalPanelHeight - stopPosition).toFloat()
-                            panelOffset = (panelOffset - slowDrag)
-                                .coerceIn(0f, maxVisibleHeight)
-                        },
-                        onDragEnd = { }
-                    )
-                }
+                .height(closedVisibleHeight.dp)
+                .offset(y = (-panelRestPosition).dp)
+                .background(currentTheme.surface)
         ) {
-            // Combined Panel Content
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(totalPanelHeight.dp), // Full height when fully open
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(
-                    topStart = 20.dp,
-                    topEnd = 20.dp
-                ),
-                colors = CardDefaults.cardColors(containerColor = currentTheme.surface)
+            Column(
+                modifier = Modifier.fillMaxSize()
             ) {
-                Column(
+                // Life Management Header - Tappable to open menu
+                Box(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .fillMaxWidth()
+                        .height(48.dp)
+                        .background(currentTheme.primary)
+                        .clickable { isMenuOpen = true }, // <-- TAP TO OPEN FULL MENU
+                    contentAlignment = Alignment.Center
                 ) {
-                    // Life Management Header
-                    Box(
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_settings),
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp),
+                            tint = currentTheme.text
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Life Management",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = currentTheme.text,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+
+                // Stats Content - Always fully visible
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .background(currentTheme.surface)
+                        .padding(vertical = 6.dp),
+                    contentAlignment = Alignment.TopCenter
+                ) {
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(headerHeight.dp)
-                            .background(currentTheme.primary),
-                        contentAlignment = Alignment.Center
+                            .fillMaxSize()
+                            .padding(horizontal = 10.dp)
                     ) {
                         Row(
+                            modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
-                                painter = painterResource(id = R.drawable.ic_settings),
+                                painter = painterResource(id = R.drawable.ic_person),
                                 contentDescription = null,
-                                modifier = Modifier.size(20.dp),
-                                tint = currentTheme.text
+                                modifier = Modifier.size(16.dp),
+                                tint = currentTheme.primary
                             )
-                            Spacer(modifier = Modifier.width(6.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = "Life Management",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = currentTheme.text,
+                                text = "Stats",
+                                style = MaterialTheme.typography.titleSmall,
+                                color = currentTheme.primary,
                                 fontWeight = FontWeight.Bold
                             )
                         }
-                    }
 
-                    // Stats Section - Always visible when panel is partially up
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(statsHeight.dp)
-                            .background(currentTheme.surface)
-                            .padding(vertical = 6.dp),
-                        contentAlignment = Alignment.TopCenter
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 10.dp)
-                        ) {
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Column(modifier = Modifier.fillMaxWidth()) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
+                                horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_person),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp),
-                                    tint = currentTheme.primary
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(
-                                    text = "Stats",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    color = currentTheme.primary,
-                                    fontWeight = FontWeight.Bold
-                                )
+                                CompactStatItem("Age", uiState.playerStats?.age?.toString() ?: "0", R.drawable.ic_yearbook, currentTheme.primary, currentTheme)
+                                CompactStatItem("Health", uiState.playerStats?.health?.toString() ?: "0", R.drawable.ic_health, Color(0xFF4CAF50), currentTheme)
+                                CompactStatItem("Happiness", uiState.playerStats?.happiness?.toString() ?: "0", R.drawable.ic_happiness_new, Color(0xFFFF9800), currentTheme)
                             }
-
                             Spacer(modifier = Modifier.height(4.dp))
-
-                            Column(modifier = Modifier.fillMaxWidth()) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    CompactStatItem("Age", uiState.playerStats?.age?.toString() ?: "0", R.drawable.ic_yearbook, currentTheme.primary, currentTheme)
-                                    CompactStatItem("Health", uiState.playerStats?.health?.toString() ?: "0", R.drawable.ic_health, Color(0xFF4CAF50), currentTheme)
-                                    CompactStatItem("Happiness", uiState.playerStats?.happiness?.toString() ?: "0", R.drawable.ic_happiness_new, Color(0xFFFF9800), currentTheme)
-                                }
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    CompactStatItem("Intelligence", uiState.playerStats?.intelligence?.toString() ?: "0", R.drawable.ic_brain, Color(0xFF2196F3), currentTheme)
-                                    CompactStatItem("Money", "$${uiState.playerStats?.money?.toString() ?: "0"}", R.drawable.ic_money, Color(0xFF9E9E9E), currentTheme)
-                                    CompactStatItem("Social", uiState.playerStats?.social?.toString() ?: "0", R.drawable.ic_people, Color(0xFFF44336), currentTheme)
-                                }
-                            }
-                        }
-                    }
-
-                    // Life Management Menu - Initial visible items only
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(menuHeight.dp)  // Fixed height for initial visible items
-                            .padding(top = 12.dp, start = 10.dp, end = 10.dp, bottom = 10.dp)
-                    ) {
-                        // Enable scrolling only when panel is fully open
-                        val isFullyOpen = panelOffset >= (totalPanelHeight - stopPosition - 50) // Threshold for "fully open"
-
-                        Column(
-                            modifier = if (isFullyOpen) {
-                                Modifier
-                                    .fillMaxSize()
-                                    .verticalScroll(menuScrollState)
-                            } else {
-                                Modifier.fillMaxSize()
-                            }
-                        ) {
-                            val menuItems = listOf(
-                                MenuItemData(R.drawable.ic_business, "Career", "Manage your professional life", currentTheme) { },
-                                MenuItemData(R.drawable.ic_people, "Social", "Manage relationships", currentTheme) { },
-                                MenuItemData(R.drawable.ic_law, "Crime Records", "View criminal history", currentTheme) { },
-                                MenuItemData(R.drawable.ic_band, "Pet Management", "Adopt companions", currentTheme) { },
-                                MenuItemData(R.drawable.ic_education, "Education", "Manage schooling", currentTheme) { },
-                                MenuItemData(R.drawable.ic_relationship, "Relationships", "View connections", currentTheme) { },
-                                MenuItemData(R.drawable.ic_health, "Health Records", "View medical history", currentTheme) { },
-                                MenuItemData(R.drawable.ic_travel, "Travel Log", "View places visited", currentTheme) { },
-                                MenuItemData(R.drawable.ic_save, "Save Game", "Manage saves", currentTheme) { },
-                                MenuItemData(R.drawable.ic_settings, "Settings", "Game preferences including theme selection", currentTheme) { }
-                            )
-
-                            menuItems.forEachIndexed { index, item ->
-                                MenuItemRow(item = item)
-                                if (index < menuItems.size - 1) {
-                                    HorizontalDivider(
-                                        modifier = Modifier.padding(vertical = 3.dp),
-                                        thickness = 1.dp,
-                                        color = currentTheme.surfaceVariant
-                                    )
-                                }
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                CompactStatItem("Intelligence", uiState.playerStats?.intelligence?.toString() ?: "0", R.drawable.ic_brain, Color(0xFF2196F3), currentTheme)
+                                CompactStatItem("Money", "$${uiState.playerStats?.money?.toString() ?: "0"}", R.drawable.ic_money, Color(0xFF9E9E9E), currentTheme)
+                                CompactStatItem("Social", uiState.playerStats?.social?.toString() ?: "0", R.drawable.ic_people, Color(0xFFF44336), currentTheme)
                             }
                         }
                     }
@@ -484,8 +413,154 @@ fun LiveonGameScreen(
             }
         }
 
-        // Event dialog
+        // POPUP MENU (appears when isMenuOpen = true)
+        if (isMenuOpen) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.0f)) // <-- NO DIMMED BACKGROUND
+                    .clickable { isMenuOpen = false } // <-- TAP BACKGROUND TO CLOSE
+            ) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.7f) // <-- TAKES 70% OF SCREEN HEIGHT
+                        .background(currentTheme.surface) // <-- POPUP BACKGROUND
+                        .clickable(enabled = false) { } // <-- PREVENT BACKGROUND CLICKS FROM CLOSING
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                    ) {
+                        // HEADER WITH CLOSE ICON BUTTON
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "Life Management",
+                                style = MaterialTheme.typography.headlineSmall,
+                                modifier = Modifier.weight(1f)
+                            )
+                            IconButton(
+                                onClick = { isMenuOpen = false }
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_collapse),
+                                    contentDescription = "Close",
+                                    tint = currentTheme.text
+                                )
+                            }
+                        }
+
+                        // STAT DISPLAY (same as closed panel but in popup)
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_person),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp),
+                                        tint = currentTheme.primary
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = "Current Stats",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        color = currentTheme.primary,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Column(modifier = Modifier.fillMaxWidth()) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        CompactStatItem("Age", uiState.playerStats?.age?.toString() ?: "0", R.drawable.ic_yearbook, currentTheme.primary, currentTheme)
+                                        CompactStatItem("Health", uiState.playerStats?.health?.toString() ?: "0", R.drawable.ic_health, Color(0xFF4CAF50), currentTheme)
+                                        CompactStatItem("Happiness", uiState.playerStats?.happiness?.toString() ?: "0", R.drawable.ic_happiness_new, Color(0xFFFF9800), currentTheme)
+                                    }
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        CompactStatItem("Intelligence", uiState.playerStats?.intelligence?.toString() ?: "0", R.drawable.ic_brain, Color(0xFF2196F3), currentTheme)
+                                        CompactStatItem("Money", "$${uiState.playerStats?.money?.toString() ?: "0"}", R.drawable.ic_money, Color(0xFF9E9E9E), currentTheme)
+                                        CompactStatItem("Social", uiState.playerStats?.social?.toString() ?: "0", R.drawable.ic_people, Color(0xFFF44336), currentTheme)
+                                    }
+                                }
+                            }
+                        }
+
+                        // MENU ITEMS
+                        Text(
+                            text = "Menu Options:",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+
+                        // Life Management Menu - Scrollable List
+                        val menuItems = listOf(
+                            MenuItemData(R.drawable.ic_business, "Career", "Manage your professional life", currentTheme) { },
+                            MenuItemData(R.drawable.ic_people, "Social", "Manage relationships", currentTheme) { },
+                            MenuItemData(R.drawable.ic_law, "Crime Records", "View criminal history", currentTheme) {
+                                isMenuOpen = false
+                                onNavigateToCrime()
+                            },
+                            MenuItemData(R.drawable.ic_band, "Pet Management", "Adopt companions", currentTheme) {
+                                isMenuOpen = false
+                                onNavigateToPets()
+                            },
+                            MenuItemData(R.drawable.ic_education, "Education", "Manage schooling", currentTheme) { },
+                            MenuItemData(R.drawable.ic_relationship, "Relationships", "View connections", currentTheme) { },
+                            MenuItemData(R.drawable.ic_health, "Health Records", "View medical history", currentTheme) { },
+                            MenuItemData(R.drawable.ic_travel, "Travel Log", "View places visited", currentTheme) { },
+                            MenuItemData(R.drawable.ic_save, "Save Game", "Manage saves", currentTheme) { },
+                            MenuItemData(R.drawable.ic_settings, "Settings", "Game preferences including theme selection", currentTheme) {
+                                isMenuOpen = false
+                                onNavigateToSettings()
+                            }
+                        )
+
+                        LazyColumn(
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            items(menuItems) { item ->
+                                MenuItemRow(item = item)
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(vertical = 3.dp),
+                                    thickness = 1.dp,
+                                    color = currentTheme.surfaceVariant
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Event dialog with stat effects
         uiState.activeEvents
+            .filterIsInstance<GameEvent>()
             .filter { event ->
                 !event.title.contains("Age", ignoreCase = true) &&
                         !event.title.contains("Year", ignoreCase = true) &&
@@ -584,7 +659,7 @@ fun LifebookEntryItem(
                 style = MaterialTheme.typography.bodySmall,
                 color = theme.text,
                 fontWeight = FontWeight.Normal,
-                fontSize = 12.sp,  // Smaller text size
+                fontSize = 12.sp,
                 lineHeight = 14.sp
             )
         }

@@ -1,6 +1,7 @@
 // app/src/main/java/com/liveongames/liveon/ui/screens/SettingsScreen.kt
 package com.liveongames.liveon.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -17,6 +18,8 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
     var darkMode by remember { mutableStateOf(false) }
     val matureContent by viewModel.matureContentEnabled.collectAsState()
     val selectedThemeIndex by viewModel.selectedThemeIndex.collectAsState()
+
+    Log.d("SettingsScreen", "Current theme index: $selectedThemeIndex")
 
     Column(
         modifier = Modifier
@@ -67,7 +70,9 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                     )
                     Switch(
                         checked = matureContent,
-                        onCheckedChange = { viewModel.toggleMatureContent() }
+                        onCheckedChange = {
+                            viewModel.toggleMatureContent()
+                        }
                     )
                 }
             }
@@ -90,13 +95,19 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { viewModel.selectTheme(index) }
+                            .clickable {
+                                Log.d("SettingsScreen", "Selecting theme index: $index")
+                                viewModel.selectTheme(index)
+                            }
                             .padding(vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RadioButton(
                             selected = index == selectedThemeIndex,
-                            onClick = { viewModel.selectTheme(index) }
+                            onClick = {
+                                Log.d("SettingsScreen", "RadioButton selecting theme index: $index")
+                                viewModel.selectTheme(index)
+                            }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(

@@ -15,7 +15,8 @@ import com.liveongames.liveon.ui.screens.PetsScreen
 import com.liveongames.liveon.viewmodel.PetsViewModel
 import com.liveongames.liveon.ui.screens.SettingsScreen
 import com.liveongames.liveon.viewmodel.SettingsViewModel
-import com.liveongames.liveon.ui.LiveonGameScreen // This is your advanced game screen
+import com.liveongames.liveon.ui.LiveonGameScreen
+import com.liveongames.liveon.ui.viewmodel.GameViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -31,28 +32,40 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun LiveonApp() {
     val navController = rememberNavController()
+    val settingsViewModel: SettingsViewModel = hiltViewModel()
 
     NavHost(
         navController = navController,
         startDestination = "main"
     ) {
         composable("main") {
-            // Use your advanced LiveonGameScreen directly here
-            LiveonGameScreen() // This is from com.liveongames.liveon.ui.LiveonGameScreen
+            val gameViewModel: GameViewModel = hiltViewModel()
+            LiveonGameScreen(
+                gameViewModel = gameViewModel,
+                settingsViewModel = settingsViewModel,
+                onNavigateToCrime = { navController.navigate("crime") },
+                onNavigateToPets = { navController.navigate("pets") },
+                onNavigateToSettings = { navController.navigate("settings") }
+            )
         }
 
         composable("crime") {
             val crimeViewModel: CrimeViewModel = hiltViewModel()
-            CrimeScreen(viewModel = crimeViewModel)
+            CrimeScreen(
+                viewModel = crimeViewModel,
+                settingsViewModel = settingsViewModel
+            )
         }
 
         composable("pets") {
             val petsViewModel: PetsViewModel = hiltViewModel()
-            PetsScreen(viewModel = petsViewModel)
+            PetsScreen(
+                viewModel = petsViewModel,
+                settingsViewModel = settingsViewModel
+            )
         }
 
         composable("settings") {
-            val settingsViewModel: SettingsViewModel = hiltViewModel()
             SettingsScreen(viewModel = settingsViewModel)
         }
     }

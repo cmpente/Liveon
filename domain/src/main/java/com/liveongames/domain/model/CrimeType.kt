@@ -7,5 +7,6 @@ enum class CrimeType {
     DRUG_POSSESSION,
     DRUG_DEALING,
     MURDER,
-    OTHER
+    EXTORTION,
+    VANDALISM
 }
