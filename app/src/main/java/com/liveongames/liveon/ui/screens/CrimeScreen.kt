@@ -27,9 +27,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withStyle
 import kotlin.random.Random
 
 @Composable
@@ -176,21 +173,19 @@ fun CrimeScreen(
                         }
                     )
 
-                    // Criminal History Section
+                    // COMPACT Criminal History Section
                     Text(
                         text = "Criminal History",
-                        style = MaterialTheme.typography.headlineSmall,
+                        style = MaterialTheme.typography.titleMedium,
                         color = currentTheme.text,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                        modifier = Modifier.padding(top = 12.dp, bottom = 8.dp)
                     )
 
                     Card(
                         colors = CardDefaults.cardColors(containerColor = currentTheme.surfaceVariant),
                         shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp)
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(
                             modifier = Modifier
@@ -198,84 +193,66 @@ fun CrimeScreen(
                                 .padding(12.dp)
                         ) {
                             if (crimes.isEmpty()) {
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                Text(
+                                    text = "✨ Clean Record - No criminal history ✨",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color(0xFF4CAF50),
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(vertical = 24.dp)
-                                ) {
-                                    Text(
-                                        text = "✨ Clean Record ✨",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        color = Color(0xFF4CAF50),
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    Text(
-                                        text = "No criminal history to display",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = currentTheme.accent,
-                                        modifier = Modifier.padding(top = 8.dp)
-                                    )
-                                }
+                                        .padding(vertical = 16.dp),
+                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                )
                             } else {
-                                // Stats summary
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(bottom = 12.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        text = "${crimes.size} Crime${if (crimes.size > 1) "s" else ""}",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        color = currentTheme.primary,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    Text(
-                                        text = "Severity: ${crimes.maxOfOrNull { it.severity } ?: 0}",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = when {
-                                            crimes.maxOfOrNull { it.severity } ?: 0 >= 8 -> Color.Red
-                                            crimes.maxOfOrNull { it.severity } ?: 0 >= 5 -> Color(0xFFFF9800)
-                                            else -> Color(0xFF4CAF50)
-                                        }
-                                    )
-                                }
+                                // Compact stats
+                                Text(
+                                    text = "${crimes.size} crime${if (crimes.size > 1) "s" else ""} • Max severity: ${crimes.maxOfOrNull { it.severity } ?: 0}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = currentTheme.primary,
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
 
-                                // Crime entries (limited to 5 most recent)
-                                val recentCrimes = crimes.takeLast(5)
-                                recentCrimes.forEachIndexed { index, crime ->
-                                    CrimeHistoryEntry(
+                                // Show only the 3 most recent crimes for compactness
+                                val recentCrimes = crimes.takeLast(3)
+                                recentCrimes.forEach { crime ->
+                                    CompactCrimeHistoryEntry(
                                         crime = crime,
-                                        theme = currentTheme,
-                                        isLast = index == recentCrimes.size - 1
+                                        theme = currentTheme
                                     )
+                                    // Add divider except for last item
+                                    if (crime != recentCrimes.last()) {
+                                        Divider(
+                                            modifier = Modifier.padding(vertical = 4.dp),
+                                            color = currentTheme.surfaceVariant.copy(alpha = 0.5f)
+                                        )
+                                    }
                                 }
 
-                                if (crimes.size > 5) {
+                                // Show "and X more" if there are more crimes
+                                if (crimes.size > 3) {
                                     Text(
-                                        text = "...and ${crimes.size - 5} more crimes",
+                                        text = "...and ${crimes.size - 3} more crimes",
                                         style = MaterialTheme.typography.bodySmall,
                                         color = currentTheme.accent,
-                                        modifier = Modifier.padding(top = 8.dp)
+                                        modifier = Modifier.padding(top = 4.dp)
                                     )
                                 }
                             }
                         }
                     }
 
-                    // Clear Record Button
+                    // Clear Record Button - more compact
                     OutlinedButton(
                         onClick = { showClearDialog = true },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 16.dp, bottom = 8.dp),
+                            .padding(top = 12.dp)
+                            .height(40.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
                             contentColor = MaterialTheme.colorScheme.error
                         ),
-                        border = ButtonDefaults.outlinedButtonBorder.copy(width = 2.dp)
+                        border = ButtonDefaults.outlinedButtonBorder.copy(width = 1.dp)
                     ) {
-                        Text("Clear Criminal Record ($5000)")
+                        Text("Clear Record ($5000)", style = MaterialTheme.typography.bodySmall)
                     }
                 }
             }
@@ -330,12 +307,7 @@ fun CrimeScreen(
                 Column {
                     // Enhanced scenario description
                     Text(
-                        text = buildAnnotatedString {
-                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                                append("Scenario: ")
-                            }
-                            append(dialogData.message)
-                        },
+                        text = "Scenario: ${dialogData.message}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = currentTheme.accent
                     )
@@ -611,7 +583,126 @@ data class CrimeResult(
     val wasCaught: Boolean
 )
 
-// Enhanced UI Components
+// COMPACT Crime History Entry
+@Composable
+fun CompactCrimeHistoryEntry(
+    crime: com.liveongames.domain.model.Crime,
+    theme: com.liveongames.liveon.ui.theme.LiveonTheme
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        // Crime name and severity in one line
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = crime.name,
+                style = MaterialTheme.typography.bodyMedium,
+                color = theme.text,
+                fontWeight = FontWeight.Medium
+            )
+            Text(
+                text = "Severity ${crime.severity}",
+                style = MaterialTheme.typography.bodySmall,
+                color = getCompactSeverityColor(crime.severity),
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        // Cleaned description (remove domain model toString artifacts)
+        val cleanDescription = cleanCrimeDescription(crime.description)
+        Text(
+            text = cleanDescription,
+            style = MaterialTheme.typography.bodySmall,
+            color = theme.accent,
+            modifier = Modifier.padding(top = 2.dp)
+        )
+
+        // Fine and jail time if applicable (only show if > 0)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            if (crime.fine > 0) {
+                Text(
+                    text = "Fine: $${crime.fine}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Red,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+            }
+            if (crime.jailTime > 0) {
+                Text(
+                    text = "Jail: ${crime.jailTime}d",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFFFF9800)
+                )
+            }
+        }
+    }
+}
+
+// Helper function to clean crime description
+fun cleanCrimeDescription(description: String): String {
+    // Remove any domain model toString artifacts
+    var cleanDesc = description
+
+    // Check if description contains Crime(...) toString format
+    if (description.contains("Crime(") && description.contains("name=")) {
+        // Extract just the meaningful part after " - "
+        val startIndex = description.indexOf(" - ")
+        if (startIndex > 0) {
+            cleanDesc = description.substring(startIndex + 3) // Skip " - "
+        } else {
+            // Try to extract between last "description=" and closing parenthesis or comma
+            val descIndex = description.indexOf("description=")
+            if (descIndex > 0) {
+                val descStart = descIndex + 12 // length of "description="
+                val descEnd = description.indexOf(",", descStart)
+                val endParen = description.indexOf(")", descStart)
+
+                val endIndex = if (descEnd > 0 && endParen > 0) {
+                    minOf(descEnd, endParen)
+                } else if (descEnd > 0) {
+                    descEnd
+                } else if (endParen > 0) {
+                    endParen
+                } else {
+                    description.length
+                }
+
+                if (endIndex > descStart) {
+                    cleanDesc = description.substring(descStart, endIndex).trim()
+                    // Clean up any remaining quotes or formatting
+                    cleanDesc = cleanDesc.replace("\"", "").trim()
+                }
+            }
+        }
+    }
+
+    // Clean up common formatting issues
+    cleanDesc = cleanDesc
+        .replace("description=", "")
+        .replace("Crime\\(".toRegex(), "")
+        .replace("\\)[,}]*$".toRegex(), "")
+        .trim()
+
+    return cleanDesc.ifEmpty { description }
+}
+
+// Get compact severity color
+fun getCompactSeverityColor(severity: Int): Color {
+    return when (severity) {
+        in 8..10 -> Color.Red
+        in 5..7 -> Color(0xFFFF9800) // Orange
+        in 3..4 -> Color(0xFFFFEB3B) // Yellow
+        else -> Color(0xFF4CAF50) // Green
+    }
+}
+
+// All other helper functions remain the same as in previous version
 @Composable
 fun CrimeCategorySection(
     title: String,
@@ -735,91 +826,8 @@ fun CrimeTypeCard(
     }
 }
 
-@Composable
-fun CrimeHistoryEntry(
-    crime: com.liveongames.domain.model.Crime,
-    theme: com.liveongames.liveon.ui.theme.LiveonTheme,
-    isLast: Boolean = false
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (crime.severity >= 8)
-                Color.Red.copy(alpha = 0.1f)
-            else if (crime.severity >= 5)
-                Color(0xFFFF9800).copy(alpha = 0.1f)
-            else
-                Color(0xFF4CAF50).copy(alpha = 0.1f)
-        ),
-        shape = RoundedCornerShape(8.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = crime.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = theme.text,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "Severity ${crime.severity}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = getSeverityColor(crime.severity),
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                if (crime.fine > 0) {
-                    Text(
-                        text = "Fine: $${crime.fine}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Red
-                    )
-                }
-                if (crime.jailTime > 0) {
-                    Text(
-                        text = "Jail: ${crime.jailTime} days",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFFFF9800)
-                    )
-                }
-            }
-
-            Text(
-                text = crime.description,
-                style = MaterialTheme.typography.bodySmall,
-                color = theme.accent,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-        }
-    }
-}
-
-// Helper Functions
 fun getCrimeSeverityColor(crimeType: CrimeType, theme: com.liveongames.liveon.ui.theme.LiveonTheme): Color {
     return when (getCrimeSeverity(crimeType)) {
-        in 8..10 -> Color.Red
-        in 5..7 -> Color(0xFFFF9800) // Orange
-        in 3..4 -> Color(0xFFFFEB3B) // Yellow
-        else -> Color(0xFF4CAF50) // Green
-    }
-}
-
-fun getSeverityColor(severity: Int): Color {
-    return when (severity) {
         in 8..10 -> Color.Red
         in 5..7 -> Color(0xFFFF9800) // Orange
         in 3..4 -> Color(0xFFFFEB3B) // Yellow
