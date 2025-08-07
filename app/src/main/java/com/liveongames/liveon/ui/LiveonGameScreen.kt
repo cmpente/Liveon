@@ -522,7 +522,7 @@ fun LiveonGameScreen(
                         val menuItems = listOf(
                             MenuItemData(R.drawable.ic_business, "Career", "Manage your professional life", currentTheme) { },
                             MenuItemData(R.drawable.ic_people, "Social", "Manage relationships", currentTheme) { },
-                            MenuItemData(R.drawable.ic_law, "Crime Records", "View criminal history", currentTheme) {
+                            MenuItemData(R.drawable.ic_law, "Criminal Activities", "View criminal activities.", currentTheme) {
                                 isMenuOpen = false
                                 onNavigateToCrime()
                             },
@@ -532,7 +532,7 @@ fun LiveonGameScreen(
                             },
                             MenuItemData(R.drawable.ic_education, "Education", "Manage schooling", currentTheme) { },
                             MenuItemData(R.drawable.ic_relationship, "Relationships", "View connections", currentTheme) { },
-                            MenuItemData(R.drawable.ic_health, "Health Records", "View medical history", currentTheme) { },
+                            MenuItemData(R.drawable.ic_health, "Healthcare", "View medical history and seek care", currentTheme) { },
                             MenuItemData(R.drawable.ic_travel, "Travel Log", "View places visited", currentTheme) { },
                             MenuItemData(R.drawable.ic_save, "Save Game", "Manage saves", currentTheme) { },
                             MenuItemData(R.drawable.ic_settings, "Settings", "Game preferences including theme selection", currentTheme) {

@@ -1,15 +1,15 @@
 // app/src/main/java/com/liveongames/liveon/ui/viewmodel/GameViewModel.kt
 package com.liveongames.liveon.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.liveongames.domain.model.CharacterStats
 import com.liveongames.domain.model.GameEvent
+import com.liveongames.domain.repository.PlayerRepository
 import com.liveongames.domain.usecase.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,11 +30,17 @@ class GameViewModel @Inject constructor(
     private val recordCrimeUseCase: RecordCrimeUseCase,
     private val clearCriminalRecordUseCase: ClearCriminalRecordUseCase,
     private val adoptPetUseCase: AdoptPetUseCase,
-    private val removePetUseCase: RemovePetUseCase
+    private val removePetUseCase: RemovePetUseCase,
+    private val playerRepository: PlayerRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
+
+    companion object {
+        private const val TAG = "GameViewModel"
+        private const val CHARACTER_ID = "player_character"
+    }
 
     init {
         loadGame()
@@ -44,24 +50,110 @@ class GameViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _uiState.value = _uiState.value.copy(isLoading = true)
-                // Load initial game state
-                val initialStats = CharacterStats(
-                    health = 100,
-                    happiness = 50,
-                    intelligence = 20,
-                    money = 1000,
-                    social = 30,
-                    age = 18
-                )
+
+                // Load actual character data
+                val character = playerRepository.getCharacter(CHARACTER_ID).first()
+
+                val initialStats = if (character != null) {
+                    CharacterStats(
+                        health = character.health,
+                        happiness = character.happiness,
+                        intelligence = character.intelligence,
+                        money = character.money,
+                        social = character.social,
+                        age = character.age
+                    )
+                } else {
+                    CharacterStats(
+                        health = 100,
+                        happiness = 50,
+                        intelligence = 20,
+                        money = 1000,
+                        social = 30,
+                        age = 18
+                    )
+                }
+
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     playerStats = initialStats
                 )
+                Log.d(TAG, "Game loaded with money: ${initialStats.money}")
+
             } catch (e: Exception) {
+                Log.e(TAG, "Error loading game", e)
                 _uiState.value = _uiState.value.copy(
                     error = e.message,
                     isLoading = false
                 )
+            }
+        }
+    }
+
+    fun refreshPlayerStats() {
+        Log.d(TAG, "refreshPlayerStats CALLED")
+        viewModelScope.launch {
+            try {
+                Log.d(TAG, "refreshPlayerStats: About to fetch from repository")
+                // Fetch fresh character data from repository
+                val character = playerRepository.getCharacter("player_character").first()
+                Log.d(TAG, "refreshPlayerStats: Repository returned character with money: ${character?.money}")
+
+                character?.let { char ->
+                    val currentStats = _uiState.value.playerStats
+                    if (currentStats != null) {
+                        Log.d(TAG, "refreshPlayerStats: Current UI state money: ${currentStats.money}")
+                        Log.d(TAG, "refreshPlayerStats: New money from DB: ${char.money}")
+
+                        // FORCE UPDATE by creating completely new object
+                        val updatedStats = currentStats.copy(
+                            money = char.money,
+                            health = char.health,
+                            happiness = char.happiness,
+                            intelligence = char.intelligence,
+                            social = char.social,
+                            age = char.age
+                        )
+
+                        // Force state update with a small delay to ensure detection
+                        _uiState.value = _uiState.value.copy(
+                            playerStats = updatedStats
+                        )
+
+                        Log.d(TAG, "refreshPlayerStats: State updated, new money in UI: ${char.money}")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in refreshPlayerStats", e)
+            }
+        }
+    }
+
+    // Helper methods for debugging
+    fun getCurrentMoney(): Int {
+        return _uiState.value.playerStats?.money ?: 0
+    }
+
+    fun debugState() {
+        Log.d(TAG, "GameViewModel DEBUG - Current money: ${getCurrentMoney()}")
+    }
+
+    // Alternative refresh method that specifically updates money
+    fun updateMoneyFromRepository() {
+        Log.d(TAG, "Updating money from repository...")
+        viewModelScope.launch {
+            try {
+                val character = playerRepository.getCharacter(CHARACTER_ID).first()
+                character?.let { char ->
+                    val currentStats = _uiState.value.playerStats
+                    if (currentStats != null) {
+                        val updatedStats = currentStats.copy(money = char.money)
+                        _uiState.value = _uiState.value.copy(playerStats = updatedStats)
+                        Log.d(TAG, "Money updated in UI to: ${char.money}")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error updating money", e)
             }
         }
     }

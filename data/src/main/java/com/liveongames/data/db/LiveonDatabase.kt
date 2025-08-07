@@ -1,3 +1,4 @@
+// app/src/main/java/com/liveongames/data/db/LiveonDatabase.kt
 package com.liveongames.data.db
 
 import androidx.room.Database
@@ -39,7 +40,7 @@ import com.liveongames.data.db.entity.UnlockedAchievementEntity
     version = 1,
     exportSchema = false
 )
-abstract class liveonDatabase : RoomDatabase() {
+abstract class LiveonDatabase : RoomDatabase() {  // Fixed: uppercase L
     abstract fun assetDao(): AssetDao
     abstract fun careerDao(): CareerDao
     abstract fun characterDao(): CharacterDao

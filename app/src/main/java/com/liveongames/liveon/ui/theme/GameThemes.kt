@@ -17,13 +17,13 @@ data class LiveonTheme(
 
 val PremiumSleek = LiveonTheme(
     name = "Premium & Sleek",
-    background = Color(0xFF151926), // midnight navy
-    surface = Color(0xFF232C3A),    // deep indigo
-    primary = Color(0xFFFFD700),     // gold
-    accent = Color(0xFF00B4D8),     // crystal blue
-    secondary = Color(0xFF43A047),  // bold green
-    text = Color(0xFFF1F5F9),      // very light gray-white
-    surfaceVariant = Color(0xFF2D3A4A)
+    background = Color(0xFF21110D),        // dark iron
+    surface = Color(0xFF39241B),           // deep bronze
+    primary = Color(0xFFD7263D),           // vibrant crimson
+    accent = Color(0xFF28AFB0),            // patina teal
+    secondary = Color(0xFFF46036),         // molten orange
+    text = Color(0xFFF5E9E2),              // antique white
+    surfaceVariant = Color(0xFF2B1911)     // scorched brown
 )
 
 val MinimalEnergetic = LiveonTheme(

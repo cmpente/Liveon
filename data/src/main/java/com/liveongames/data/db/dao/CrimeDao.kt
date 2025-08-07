@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CrimeDao {
-    @Query("SELECT * FROM crimes WHERE characterId = :characterId")
+    @Query("SELECT * FROM crimes WHERE characterId = :characterId ORDER BY id DESC")
     fun getCrimesForCharacter(characterId: String): Flow<List<CrimeEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -18,4 +18,7 @@ interface CrimeDao {
 
     @Query("DELETE FROM crimes WHERE characterId = :characterId")
     suspend fun clearCrimesForCharacter(characterId: String)
+
+    @Query("SELECT * FROM crimes WHERE characterId = :characterId")
+    suspend fun getCrimesForCharacterSync(characterId: String): List<CrimeEntity>
 }
