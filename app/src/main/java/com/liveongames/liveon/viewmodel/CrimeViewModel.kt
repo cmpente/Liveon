@@ -108,7 +108,7 @@ class CrimeViewModel @Inject constructor(
                     Log.d(TAG, "Crime successful, gained money: $moneyGained")
                 } else {
                     notorietyChange = baseCrime.notorietyLoss
-                    Log.d(TAG, "Crime failed, lost notoriety: ${baseCrime.notorietyLoss}")
+                    Log.d(TAG, "Crime failed, notoriety change: $notorietyChange")
                 }
 
                 // Handle consequences if caught
@@ -180,7 +180,7 @@ class CrimeViewModel @Inject constructor(
                     jailMin = 1,
                     jailMax = 3,
                     notorietyGain = 2,
-                    notorietyLoss = -3,
+                    notorietyLoss = -1,  // Reduced penalty
                     iconDescription = "Gloved hand pulling a wallet from a back pocket",
                     scenario = scenarios.random()
                 )
@@ -203,7 +203,7 @@ class CrimeViewModel @Inject constructor(
                     jailMin = 2,
                     jailMax = 5,
                     notorietyGain = 2,
-                    notorietyLoss = -3,
+                    notorietyLoss = -1,  // Reduced penalty
                     iconDescription = "Shopping bag silhouette with hand pulling it away",
                     scenario = scenarios.random()
                 )
@@ -226,7 +226,7 @@ class CrimeViewModel @Inject constructor(
                     jailMin = 1,
                     jailMax = 2,
                     notorietyGain = 2,
-                    notorietyLoss = -3,
+                    notorietyLoss = -1,  // Reduced penalty
                     iconDescription = "Tilted spray paint can with mist cloud",
                     scenario = scenarios.random()
                 )
@@ -249,7 +249,7 @@ class CrimeViewModel @Inject constructor(
                     jailMin = 2,
                     jailMax = 4,
                     notorietyGain = 2,
-                    notorietyLoss = -3,
+                    notorietyLoss = -1,  // Reduced penalty
                     iconDescription = "Dollar bill with cartoon mask overlay",
                     scenario = scenarios.random()
                 )
@@ -267,14 +267,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Mugging",
                     description = "Robbery involving direct confrontation with victims",
                     riskTier = RiskTier.MEDIUM_RISK,
-                    notorietyRequired = 20,
+                    notorietyRequired = 5,  // Reduced requirement
                     baseSuccessChance = 0.55,
                     payoutMin = 100,
                     payoutMax = 800,
                     jailMin = 5,
                     jailMax = 14,
                     notorietyGain = 4,
-                    notorietyLoss = -6,
+                    notorietyLoss = -2,  // Reduced penalty
                     iconDescription = "Fist silhouette with wallet overlay",
                     scenario = scenarios.random()
                 )
@@ -290,14 +290,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Breaking and Entering",
                     description = "Unlawful entry into buildings or homes",
                     riskTier = RiskTier.MEDIUM_RISK,
-                    notorietyRequired = 20,
+                    notorietyRequired = 5,  // Reduced requirement
                     baseSuccessChance = 0.5,
                     payoutMin = 500,
                     payoutMax = 2000,
                     jailMin = 10,
                     jailMax = 20,
                     notorietyGain = 4,
-                    notorietyLoss = -6,
+                    notorietyLoss = -2,  // Reduced penalty
                     iconDescription = "House silhouette with broken door outline",
                     scenario = scenarios.random()
                 )
@@ -313,14 +313,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Drug Dealing",
                     description = "Selling illegal substances for profit",
                     riskTier = RiskTier.MEDIUM_RISK,
-                    notorietyRequired = 20,
+                    notorietyRequired = 10,  // Reduced requirement
                     baseSuccessChance = 0.6,
                     payoutMin = 200,
                     payoutMax = 1800,
                     jailMin = 7,
                     jailMax = 15,
                     notorietyGain = 4,
-                    notorietyLoss = -6,
+                    notorietyLoss = -2,  // Reduced penalty
                     iconDescription = "Pill bottle with dollar sign overlay",
                     scenario = scenarios.random()
                 )
@@ -336,14 +336,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Counterfeit Goods",
                     description = "Selling fake or reproduction items illegally",
                     riskTier = RiskTier.MEDIUM_RISK,
-                    notorietyRequired = 20,
+                    notorietyRequired = 10,  // Reduced requirement
                     baseSuccessChance = 0.65,
                     payoutMin = 300,
                     payoutMax = 1500,
                     jailMin = 8,
                     jailMax = 18,
                     notorietyGain = 4,
-                    notorietyLoss = -6,
+                    notorietyLoss = -2,  // Reduced penalty
                     iconDescription = "Designer handbag with \"fake\" stamp icon",
                     scenario = scenarios.random()
                 )
@@ -361,14 +361,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Burglary",
                     description = "Breaking into homes or businesses to steal valuable items",
                     riskTier = RiskTier.HIGH_RISK,
-                    notorietyRequired = 50,
+                    notorietyRequired = 20,  // Reduced requirement
                     baseSuccessChance = 0.45,
                     payoutMin = 1000,
                     payoutMax = 8000,
-                    jailMin = 60,  // 2 months
-                    jailMax = 150, // 5 months
+                    jailMin = 60,
+                    jailMax = 150,
                     notorietyGain = 7,
-                    notorietyLoss = -10,
+                    notorietyLoss = -3,  // Reduced penalty
                     iconDescription = "Crowbar over house silhouette",
                     scenario = scenarios.random()
                 )
@@ -384,14 +384,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Fraud",
                     description = "Deceiving people or institutions for financial gain",
                     riskTier = RiskTier.HIGH_RISK,
-                    notorietyRequired = 50,
+                    notorietyRequired = 20,  // Reduced requirement
                     baseSuccessChance = 0.5,
                     payoutMin = 2000,
                     payoutMax = 12000,
-                    jailMin = 90,   // 3 months
-                    jailMax = 210,  // 7 months
+                    jailMin = 90,
+                    jailMax = 210,
                     notorietyGain = 7,
-                    notorietyLoss = -10,
+                    notorietyLoss = -3,  // Reduced penalty
                     iconDescription = "Credit card with warning symbol",
                     scenario = scenarios.random()
                 )
@@ -407,14 +407,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Arms Smuggling",
                     description = "Illegally transporting weapons across borders",
                     riskTier = RiskTier.HIGH_RISK,
-                    notorietyRequired = 50,
+                    notorietyRequired = 25,  // Reduced requirement
                     baseSuccessChance = 0.4,
                     payoutMin = 5000,
                     payoutMax = 22000,
-                    jailMin = 150,  // 5 months
-                    jailMax = 270,  // 9 months
+                    jailMin = 150,
+                    jailMax = 270,
                     notorietyGain = 7,
-                    notorietyLoss = -10,
+                    notorietyLoss = -3,  // Reduced penalty
                     iconDescription = "Rifle silhouette in crate",
                     scenario = scenarios.random()
                 )
@@ -430,14 +430,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Drug Trafficking",
                     description = "Large-scale distribution of illegal substances",
                     riskTier = RiskTier.HIGH_RISK,
-                    notorietyRequired = 50,
+                    notorietyRequired = 25,  // Reduced requirement
                     baseSuccessChance = 0.35,
                     payoutMin = 10000,
                     payoutMax = 45000,
-                    jailMin = 180,  // 6 months
-                    jailMax = 365,  // 12 months
+                    jailMin = 180,
+                    jailMax = 365,
                     notorietyGain = 7,
-                    notorietyLoss = -10,
+                    notorietyLoss = -3,  // Reduced penalty
                     iconDescription = "Truck icon with pill/bag symbol",
                     scenario = scenarios.random()
                 )
@@ -455,14 +455,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Armed Robbery",
                     description = "Robbery involving weapons and significant violence",
                     riskTier = RiskTier.EXTREME_RISK,
-                    notorietyRequired = 80,
+                    notorietyRequired = 40,  // Reduced requirement
                     baseSuccessChance = 0.3,
                     payoutMin = 20000,
                     payoutMax = 120000,
-                    jailMin = 1460,  // 4 years
-                    jailMax = 4380,  // 12 years
+                    jailMin = 1460,
+                    jailMax = 4380,
                     notorietyGain = 10,
-                    notorietyLoss = -15,
+                    notorietyLoss = -5,  // Reduced penalty
                     iconDescription = "Masked head with pistol silhouette",
                     scenario = scenarios.random()
                 )
@@ -478,14 +478,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Extortion",
                     description = "Forcing victims to provide money through threats",
                     riskTier = RiskTier.EXTREME_RISK,
-                    notorietyRequired = 80,
+                    notorietyRequired = 40,  // Reduced requirement
                     baseSuccessChance = 0.4,
                     payoutMin = 5000,
                     payoutMax = 40000,
-                    jailMin = 730,   // 2 years
-                    jailMax = 2190,  // 6 years
+                    jailMin = 730,
+                    jailMax = 2190,
                     notorietyGain = 10,
-                    notorietyLoss = -15,
+                    notorietyLoss = -5,  // Reduced penalty
                     iconDescription = "Envelope with dollar sign and warning triangle",
                     scenario = scenarios.random()
                 )
@@ -501,14 +501,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Kidnapping for Ransom",
                     description = "Abducting people for financial gain",
                     riskTier = RiskTier.EXTREME_RISK,
-                    notorietyRequired = 80,
+                    notorietyRequired = 50,  // Reduced requirement
                     baseSuccessChance = 0.25,
                     payoutMin = 50000,
                     payoutMax = 400000,
-                    jailMin = 2190,  // 6 years
-                    jailMax = 5475,  // 15 years
+                    jailMin = 2190,
+                    jailMax = 5475,
                     notorietyGain = 10,
-                    notorietyLoss = -15,
+                    notorietyLoss = -5,  // Reduced penalty
                     iconDescription = "Bound person silhouette",
                     scenario = scenarios.random()
                 )
@@ -524,14 +524,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Ponzi Scheme",
                     description = "Complex fraud involving false investment returns",
                     riskTier = RiskTier.EXTREME_RISK,
-                    notorietyRequired = 80,
+                    notorietyRequired = 50,  // Reduced requirement
                     baseSuccessChance = 0.35,
                     payoutMin = 90000,
                     payoutMax = 900000,
-                    jailMin = 1095,  // 3 years
-                    jailMax = 3650,  // 10 years
+                    jailMin = 1095,
+                    jailMax = 3650,
                     notorietyGain = 10,
-                    notorietyLoss = -15,
+                    notorietyLoss = -5,  // Reduced penalty
                     iconDescription = "Stacked coins forming a pyramid",
                     scenario = scenarios.random()
                 )
@@ -547,14 +547,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Contract Killing",
                     description = "Professional assassination for hire",
                     riskTier = RiskTier.EXTREME_RISK,
-                    notorietyRequired = 80,
+                    notorietyRequired = 60,  // Reduced requirement
                     baseSuccessChance = 0.3,
                     payoutMin = 25000,
                     payoutMax = 450000,
-                    jailMin = 3650,  // 10 years
-                    jailMax = 7300,  // 20 years
+                    jailMin = 3650,
+                    jailMax = 7300,
                     notorietyGain = 10,
-                    notorietyLoss = -15,
+                    notorietyLoss = -5,  // Reduced penalty
                     iconDescription = "Silenced pistol silhouette",
                     scenario = scenarios.random()
                 )
@@ -570,14 +570,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Dark Web Sales",
                     description = "Selling illegal goods and services online",
                     riskTier = RiskTier.EXTREME_RISK,
-                    notorietyRequired = 80,
+                    notorietyRequired = 40,  // Reduced requirement
                     baseSuccessChance = 0.4,
                     payoutMin = 12000,
                     payoutMax = 220000,
-                    jailMin = 730,   // 2 years
-                    jailMax = 2920,  // 8 years
+                    jailMin = 730,
+                    jailMax = 2920,
                     notorietyGain = 10,
-                    notorietyLoss = -15,
+                    notorietyLoss = -5,  // Reduced penalty
                     iconDescription = "Laptop with skull icon",
                     scenario = scenarios.random()
                 )
@@ -593,14 +593,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Art Theft",
                     description = "Stealing high-value artwork",
                     riskTier = RiskTier.EXTREME_RISK,
-                    notorietyRequired = 80,
+                    notorietyRequired = 50,  // Reduced requirement
                     baseSuccessChance = 0.2,
                     payoutMin = 110000,
                     payoutMax = 4800000,
-                    jailMin = 1825,  // 5 years
-                    jailMax = 5475,  // 15 years
+                    jailMin = 1825,
+                    jailMax = 5475,
                     notorietyGain = 10,
-                    notorietyLoss = -15,
+                    notorietyLoss = -5,  // Reduced penalty
                     iconDescription = "Painting frame with cut-out center",
                     scenario = scenarios.random()
                 )
@@ -616,14 +616,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Diamond Heist",
                     description = "Major theft involving high-value gems",
                     riskTier = RiskTier.EXTREME_RISK,
-                    notorietyRequired = 80,
+                    notorietyRequired = 60,  // Reduced requirement
                     baseSuccessChance = 0.15,
                     payoutMin = 500000,
                     payoutMax = 9500000,
-                    jailMin = 2920,  // 8 years
-                    jailMax = 7300,  // 20 years
+                    jailMin = 2920,
+                    jailMax = 7300,
                     notorietyGain = 10,
-                    notorietyLoss = -15,
+                    notorietyLoss = -5,  // Reduced penalty
                     iconDescription = "Diamond silhouette in spotlight",
                     scenario = scenarios.random()
                 )

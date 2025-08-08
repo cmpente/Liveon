@@ -36,25 +36,27 @@ class GameViewModel @Inject constructor(
                 Log.d(TAG, "Starting game load...")
 
                 // Load actual character data
-                val character = playerRepository.getCharacter(CHARACTER_ID).firstOrNull()
-
-                if (character != null) {
-                    Log.d(TAG, "Found existing character with money: ${character.money}")
-                    val initialStats = CharacterStats(
-                        health = character.health,
-                        happiness = character.happiness,
-                        intelligence = character.intelligence,
-                        money = character.money,
-                        social = character.social,
-                        age = character.age
-                    )
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        playerStats = initialStats
-                    )
-                } else {
-                    Log.d(TAG, "No existing character found, creating new one")
-                    createNewCharacter()
+                playerRepository.getCharacter(CHARACTER_ID).collect { character ->
+                    Log.d(TAG, "Repository emitted character: $character")
+                    if (character != null) {
+                        Log.d(TAG, "Found existing character with money: ${character.money}")
+                        val initialStats = CharacterStats(
+                            health = character.health,
+                            happiness = character.happiness,
+                            intelligence = character.intelligence,
+                            money = character.money,
+                            social = character.social,
+                            age = character.age
+                        )
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            playerStats = initialStats
+                        )
+                        Log.d(TAG, "UI state updated with stats: $initialStats")
+                    } else {
+                        Log.d(TAG, "No existing character found, creating new one")
+                        createNewCharacter()
+                    }
                 }
 
             } catch (e: Exception) {
@@ -121,25 +123,25 @@ class GameViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 Log.d(TAG, "refreshPlayerStats: About to fetch from repository")
-                // Fetch fresh character data from repository
-                val character = playerRepository.getCharacter(CHARACTER_ID).firstOrNull()
-                Log.d(TAG, "refreshPlayerStats: Repository returned character with money: ${character?.money}")
+                // Force collect latest data
+                val job = playerRepository.getCharacter(CHARACTER_ID).take(1).collect { character ->
+                    Log.d(TAG, "refreshPlayerStats: Repository returned character: $character")
+                    character?.let { char ->
+                        val updatedStats = CharacterStats(
+                            health = char.health,
+                            happiness = char.happiness,
+                            intelligence = char.intelligence,
+                            money = char.money,
+                            social = char.social,
+                            age = char.age
+                        )
 
-                character?.let { char ->
-                    val updatedStats = CharacterStats(
-                        health = char.health,
-                        happiness = char.happiness,
-                        intelligence = char.intelligence,
-                        money = char.money,
-                        social = char.social,
-                        age = char.age
-                    )
+                        _uiState.value = _uiState.value.copy(
+                            playerStats = updatedStats
+                        )
 
-                    _uiState.value = _uiState.value.copy(
-                        playerStats = updatedStats
-                    )
-
-                    Log.d(TAG, "refreshPlayerStats: State updated, new money in UI: ${char.money}")
+                        Log.d(TAG, "refreshPlayerStats: State updated with: $updatedStats")
+                    }
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error in refreshPlayerStats", e)
@@ -152,43 +154,35 @@ class GameViewModel @Inject constructor(
             try {
                 Log.d(TAG, "ageUp called")
 
-                // Get current character to update
-                val character = playerRepository.getCharacter(CHARACTER_ID).firstOrNull()
+                // Update the character in the database using repository methods
+                playerRepository.updateAge(CHARACTER_ID, 1)  // Add 1 year
+                playerRepository.updateHealth(CHARACTER_ID, -2)  // Lose 2 health
+                playerRepository.updateHappiness(CHARACTER_ID, -1)  // Lose 1 happiness
+                playerRepository.updateIntelligence(CHARACTER_ID, 1)  // Gain 1 intelligence
+                playerRepository.updateFitness(CHARACTER_ID, -1)  // Lose 1 fitness
+                playerRepository.updateMoney(CHARACTER_ID, 100)  // Gain $100 (birthday money)
 
-                if (character != null) {
-                    Log.d(TAG, "Current character age: ${character.age}, money: ${character.money}")
+                // Small delay to ensure database operations complete
+                kotlinx.coroutines.delay(200)
 
-                    // Update the character in the database using repository methods
-                    playerRepository.updateAge(CHARACTER_ID, 1)  // Add 1 year
-                    playerRepository.updateHealth(CHARACTER_ID, -2)  // Lose 2 health
-                    playerRepository.updateHappiness(CHARACTER_ID, -1)  // Lose 1 happiness
-                    playerRepository.updateIntelligence(CHARACTER_ID, 1)  // Gain 1 intelligence
-                    playerRepository.updateFitness(CHARACTER_ID, -1)  // Lose 1 fitness
-                    playerRepository.updateMoney(CHARACTER_ID, 100)  // Gain $100 (birthday money)
+                // Force refresh the UI with updated data
+                refreshPlayerStats()
 
-                    // Small delay to ensure database operations complete
-                    kotlinx.coroutines.delay(100)
-
-                    // Force refresh the UI with updated data
-                    refreshPlayerStats()
-
-                    // Show simple success message
-                    _uiState.value = _uiState.value.copy(
-                        showEventDialog = true,
-                        activeEvents = listOf(
-                            GameEvent(
-                                id = "birthday_${System.currentTimeMillis()}",
-                                title = "Birthday!",
-                                description = "Happy Birthday! You are now ${character.age + 1} years old. +$100!",
-                                choices = emptyList()
-                            )
+                // Show simple success message
+                val currentAge = uiState.value.playerStats?.age ?: 18
+                _uiState.value = _uiState.value.copy(
+                    showEventDialog = true,
+                    activeEvents = listOf(
+                        GameEvent(
+                            id = "birthday_${System.currentTimeMillis()}",
+                            title = "Birthday!",
+                            description = "Happy Birthday! You are now ${currentAge + 1} years old. +$100!",
+                            choices = emptyList()
                         )
                     )
+                )
 
-                } else {
-                    Log.e(TAG, "No character found to age up")
-                    createNewCharacter()
-                }
+                Log.d(TAG, "ageUp completed successfully")
 
             } catch (e: Exception) {
                 Log.e(TAG, "Error aging up", e)
@@ -224,27 +218,27 @@ class GameViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(error = null)
     }
 
-    // DEBUG METHODS - ADD THESE TO THE END OF YOUR CLASS:
-
+    // DEBUG METHODS
     fun debugCharacter() {
         viewModelScope.launch {
             try {
-                val character = playerRepository.getCharacter(CHARACTER_ID).firstOrNull()
-                Log.d(TAG, "=== CHARACTER DEBUG ===")
-                Log.d(TAG, "Character exists: ${character != null}")
-                character?.let {
-                    Log.d(TAG, "ID: ${it.id}")
-                    Log.d(TAG, "Name: ${it.name}")
-                    Log.d(TAG, "Age: ${it.age}")
-                    Log.d(TAG, "Money: ${it.money}")
-                    Log.d(TAG, "Health: ${it.health}")
-                    Log.d(TAG, "Happiness: ${it.happiness}")
-                    Log.d(TAG, "Intelligence: ${it.intelligence}")
-                    Log.d(TAG, "Social: ${it.social}")
-                    Log.d(TAG, "Fitness: ${it.fitness}")
-                    Log.d(TAG, "Notoriety: ${it.notoriety}")
+                playerRepository.getCharacter(CHARACTER_ID).take(1).collect { character ->
+                    Log.d(TAG, "=== CHARACTER DEBUG ===")
+                    Log.d(TAG, "Character exists: ${character != null}")
+                    character?.let {
+                        Log.d(TAG, "ID: ${it.id}")
+                        Log.d(TAG, "Name: ${it.name}")
+                        Log.d(TAG, "Age: ${it.age}")
+                        Log.d(TAG, "Money: ${it.money}")
+                        Log.d(TAG, "Health: ${it.health}")
+                        Log.d(TAG, "Happiness: ${it.happiness}")
+                        Log.d(TAG, "Intelligence: ${it.intelligence}")
+                        Log.d(TAG, "Social: ${it.social}")
+                        Log.d(TAG, "Fitness: ${it.fitness}")
+                        Log.d(TAG, "Notoriety: ${it.notoriety}")
+                    }
+                    Log.d(TAG, "=====================")
                 }
-                Log.d(TAG, "=====================")
             } catch (e: Exception) {
                 Log.e(TAG, "Debug error: ${e.message}")
             }
@@ -277,8 +271,9 @@ class GameViewModel @Inject constructor(
                 Log.d(TAG, "Test character created successfully!")
 
                 // Verify it was saved
-                val saved = playerRepository.getCharacter("test_char").firstOrNull()
-                Log.d(TAG, "Saved character money: ${saved?.money}")
+                playerRepository.getCharacter("test_char").take(1).collect { saved ->
+                    Log.d(TAG, "Saved character money: ${saved?.money}")
+                }
 
             } catch (e: Exception) {
                 Log.e(TAG, "Error creating test character: ${e.message}")
@@ -290,13 +285,10 @@ class GameViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 // Try to directly update the database
-                playerRepository.updateMoney(CHARACTER_ID, 1000)
+                playerRepository.updateMoney(CHARACTER_ID, 5000)
                 Log.d(TAG, "Direct money update completed")
 
-                // Check if it worked
-                val character = playerRepository.getCharacter(CHARACTER_ID).firstOrNull()
-                Log.d(TAG, "Character money after direct update: ${character?.money}")
-
+                // Force refresh to see change
                 refreshPlayerStats()
 
             } catch (e: Exception) {

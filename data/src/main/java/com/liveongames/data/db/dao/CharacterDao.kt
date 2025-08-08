@@ -10,14 +10,14 @@ interface CharacterDao {
     @Query("SELECT * FROM characters WHERE id = :characterId")
     fun getCharacter(characterId: String): Flow<CharacterEntity?>
 
-    @Query("DELETE FROM characters WHERE id = :characterId")
-    suspend fun deleteCharacter(characterId: String)
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacter(character: CharacterEntity)
 
     @Update
     suspend fun updateCharacter(character: CharacterEntity)
+
+    @Query("SELECT * FROM characters WHERE id = :id LIMIT 1")
+    suspend fun getCharacterByIdSync(id: String): CharacterEntity?
 
     @Query("UPDATE characters SET money = money + :amount WHERE id = :characterId")
     suspend fun updateMoney(characterId: String, amount: Int)
@@ -63,4 +63,7 @@ interface CharacterDao {
 
     @Query("UPDATE characters SET notoriety = notoriety + :amount WHERE id = :characterId")
     suspend fun updateNotoriety(characterId: String, amount: Int)
+
+    @Query("DELETE FROM characters WHERE id = :characterId")
+    suspend fun deleteCharacter(characterId: String)
 }
