@@ -1,30 +1,23 @@
 // app/src/main/java/com/liveongames/data/db/dao/CharacterDao.kt
 package com.liveongames.data.db.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.liveongames.data.db.entity.CharacterEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CharacterDao {
-    @Query("SELECT * FROM characters")
-    fun getAllCharacters(): Flow<List<CharacterEntity>>
+    @Query("SELECT * FROM characters WHERE id = :characterId")
+    fun getCharacter(characterId: String): Flow<CharacterEntity?>
 
-    @Query("SELECT * FROM characters WHERE id = :id")
-    suspend fun getCharacterById(id: String): CharacterEntity?
+    @Query("DELETE FROM characters WHERE id = :characterId")
+    suspend fun deleteCharacter(characterId: String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacter(character: CharacterEntity)
 
-    @Query("DELETE FROM characters WHERE id = :id")
-    suspend fun deleteCharacter(id: String)
-
-    // Add missing methods for crime system
-    @Query("SELECT * FROM characters WHERE id = :characterId")
-    fun getCharacter(characterId: String): Flow<CharacterEntity?>
+    @Update
+    suspend fun updateCharacter(character: CharacterEntity)
 
     @Query("UPDATE characters SET money = money + :amount WHERE id = :characterId")
     suspend fun updateMoney(characterId: String, amount: Int)
@@ -56,7 +49,7 @@ interface CharacterDao {
     @Query("UPDATE characters SET relationships = CASE WHEN relationships IS NULL OR relationships = '' THEN :relationship ELSE relationships || ',' || :relationship END WHERE id = :characterId")
     suspend fun addRelationship(characterId: String, relationship: String)
 
-    @Query("UPDATE characters SET relationships = REPLACE(REPLACE(REPLACE(relationships, :relationship || ',', ''), ',' || :relationship, ''), :relationship, '') WHERE id = :characterId")
+    @Query("UPDATE characters SET relationships = REPLACE(relationships, :relationship, '') WHERE id = :characterId")
     suspend fun removeRelationship(characterId: String, relationship: String)
 
     @Query("UPDATE characters SET achievements = CASE WHEN achievements IS NULL OR achievements = '' THEN :achievement ELSE achievements || ',' || :achievement END WHERE id = :characterId")

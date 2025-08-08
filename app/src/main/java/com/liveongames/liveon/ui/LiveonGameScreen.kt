@@ -311,6 +311,53 @@ fun LiveonGameScreen(
                 }
             }
 
+            // DEBUG BUTTONS - ADD THIS SECTION
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                Text(
+                    text = "Debug Tools",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Button(
+                        onClick = { gameViewModel.debugCharacter() },
+                        modifier = Modifier.padding(2.dp)
+                    ) {
+                        Text("Debug Char", fontSize = 10.sp)
+                    }
+
+                    Button(
+                        onClick = { gameViewModel.testCreateCharacter() },
+                        modifier = Modifier.padding(2.dp)
+                    ) {
+                        Text("Test Create", fontSize = 10.sp)
+                    }
+
+                    Button(
+                        onClick = { gameViewModel.testDirectDatabaseWrite() },
+                        modifier = Modifier.padding(2.dp)
+                    ) {
+                        Text("Test DB", fontSize = 10.sp)
+                    }
+
+                    Button(
+                        onClick = { gameViewModel.showCurrentState() },
+                        modifier = Modifier.padding(2.dp)
+                    ) {
+                        Text("Show State", fontSize = 10.sp)
+                    }
+                }
+            }
+
             Spacer(modifier = Modifier.height(72.dp))
         }
 

@@ -1,3 +1,4 @@
+// app/src/main/java/com/liveongames/data/repository/PlayerRepositoryImpl.kt
 package com.liveongames.data.repository
 
 import com.liveongames.data.db.dao.CharacterDao
@@ -9,12 +10,16 @@ import javax.inject.Inject
 
 class PlayerRepositoryImpl @Inject constructor(
     private val characterDao: CharacterDao
-) : PlayerRepository {
+) : PlayerRepository {  // Make sure it implements PlayerRepository, not CharacterRepository
 
-    override fun getCharacter(characterId: String): Flow<com.liveongames.domain.model.Character?> {
+    companion object {
+        private const val PLAYER_CHARACTER_ID = "player_character"
+    }
+
+    override fun getCharacter(characterId: String): Flow<Character?> {
         return characterDao.getCharacter(characterId).map { entity ->
             entity?.let {
-                com.liveongames.domain.model.Character(
+                Character(
                     id = it.id,
                     name = it.name,
                     age = it.age,
@@ -26,9 +31,9 @@ class PlayerRepositoryImpl @Inject constructor(
                     social = it.social,
                     education = it.education,
                     career = it.career,
-                    relationships = it.relationships?.split(",")?.filter { r -> r.isNotBlank() } ?: emptyList(),
-                    achievements = it.achievements?.split(",")?.filter { a -> a.isNotBlank() } ?: emptyList(),
-                    events = it.events?.split(",")?.filter { e -> e.isNotBlank() } ?: emptyList(),
+                    relationships = it.relationships?.split(",")?.filter { r -> r.isNotBlank() }?.toList() ?: emptyList(),
+                    achievements = it.achievements?.split(",")?.filter { a -> a.isNotBlank() }?.toList() ?: emptyList(),
+                    events = it.events?.split(",")?.filter { e -> e.isNotBlank() }?.toList() ?: emptyList(),
                     jailTime = it.jailTime,
                     notoriety = it.notoriety
                 )
@@ -36,26 +41,26 @@ class PlayerRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun createCharacter(characterId: String, character: com.liveongames.domain.model.Character) {
+    override suspend fun createCharacter(characterId: String, character: Character) {
         val entity = com.liveongames.data.db.entity.CharacterEntity(
             id = characterId,
             name = character.name,
             age = character.age,
             health = character.health,
             happiness = character.happiness,
-            intelligence = character.intelligence,
             money = character.money,
-            social = character.social,
-            scenarioId = "", // default value
-            lastPlayed = System.currentTimeMillis(),
+            intelligence = character.intelligence,
             fitness = character.fitness,
+            social = character.social,
             education = character.education,
             career = character.career,
-            relationships = character.relationships.joinToString(","),
-            achievements = character.achievements.joinToString(","),
-            events = character.events.joinToString(","),
+            relationships = if (character.relationships.isNotEmpty()) character.relationships.joinToString(",") else null,
+            achievements = if (character.achievements.isNotEmpty()) character.achievements.joinToString(",") else null,
+            events = if (character.events.isNotEmpty()) character.events.joinToString(",") else null,
             jailTime = character.jailTime,
-            notoriety = character.notoriety
+            notoriety = character.notoriety,
+            scenarioId = "default",
+            lastPlayed = System.currentTimeMillis()
         )
         characterDao.insertCharacter(entity)
     }

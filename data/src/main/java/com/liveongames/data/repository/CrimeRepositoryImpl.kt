@@ -17,13 +17,13 @@ class CrimeRepositoryImpl @Inject constructor(
 
     companion object {
         private const val TAG = "CrimeRepository"
-        private const val CHARACTER_ID = "player_character"
+        private const val PLAYER_CHARACTER_ID = "player_character"
     }
 
     override fun getCrimes(): Flow<List<Crime>> {
-        Log.d(TAG, "getCrimes called for character: $CHARACTER_ID")
-        return crimeDao.getCrimesForCharacter(CHARACTER_ID).map { crimeEntities ->
-            Log.d(TAG, "DB returned ${crimeEntities.size} crime entities for $CHARACTER_ID")
+        Log.d(TAG, "getCrimes called for character: $PLAYER_CHARACTER_ID")
+        return crimeDao.getCrimesForCharacter(PLAYER_CHARACTER_ID).map { crimeEntities ->
+            Log.d(TAG, "DB returned ${crimeEntities.size} crime entities for $PLAYER_CHARACTER_ID")
             crimeEntities.map { it.toCrime() }.also { crimes ->
                 Log.d(TAG, "Mapped to ${crimes.size} crime models")
             }
@@ -34,7 +34,7 @@ class CrimeRepositoryImpl @Inject constructor(
         Log.d(TAG, "recordCrime called for character: $characterId, crime: ${crime.name}")
         val crimeEntity = com.liveongames.data.db.entity.CrimeEntity(
             id = crime.id,
-            characterId = characterId,
+            characterId = PLAYER_CHARACTER_ID,  // Use consistent character ID
             name = crime.name,
             description = crime.description,
             riskTier = crime.riskTier.name,
@@ -54,14 +54,14 @@ class CrimeRepositoryImpl @Inject constructor(
             actualJailTime = crime.actualJailTime,
             timestamp = crime.timestamp
         )
-        Log.d(TAG, "Inserting crime entity: ${crimeEntity.id} for character: $characterId")
+        Log.d(TAG, "Inserting crime entity: ${crimeEntity.id} for character: $PLAYER_CHARACTER_ID")
         crimeDao.insertCrime(crimeEntity)
         Log.d(TAG, "Crime inserted successfully")
     }
 
     override suspend fun clearCriminalRecord(characterId: String) {
         Log.d(TAG, "clearCriminalRecord called for character: $characterId")
-        crimeDao.clearCrimesForCharacter(characterId)
+        crimeDao.clearCrimesForCharacter(PLAYER_CHARACTER_ID)
         Log.d(TAG, "Criminal record cleared for character: $characterId")
     }
 

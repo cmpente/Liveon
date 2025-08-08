@@ -3,12 +3,8 @@ package com.liveongames.liveon.di
 
 import android.content.Context
 import androidx.room.Room
-import com.liveongames.data.db.LiveOnDatabase
-import com.liveongames.data.db.dao.CharacterDao
-import com.liveongames.data.db.dao.CrimeDao
-import com.liveongames.data.db.dao.PetDao
-import com.liveongames.data.db.dao.EventDao
-import com.liveongames.data.db.dao.SaveSlotDao
+import com.liveongames.data.db.LiveonDatabase
+import com.liveongames.data.db.dao.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,42 +18,43 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): LiveOnDatabase {
+    fun provideDatabase(@ApplicationContext context: Context): LiveonDatabase {
         return Room.databaseBuilder(
             context,
-            LiveOnDatabase::class.java,
+            LiveonDatabase::class.java,
             "liveon_database"
-        ).fallbackToDestructiveMigration().build()
+        )
+            .addMigrations(LiveonDatabase.MIGRATION_1_2)
+            .build()
     }
 
     @Provides
     @Singleton
-    fun provideCrimeDao(database: LiveOnDatabase): CrimeDao {
+    fun provideCrimeDao(database: LiveonDatabase): CrimeDao {
         return database.crimeDao()
     }
 
     @Provides
     @Singleton
-    fun providePetDao(database: LiveOnDatabase): PetDao {
+    fun providePetDao(database: LiveonDatabase): PetDao {
         return database.petDao()
     }
 
     @Provides
     @Singleton
-    fun provideEventDao(database: LiveOnDatabase): EventDao {
+    fun provideEventDao(database: LiveonDatabase): EventDao {
         return database.eventDao()
     }
 
     @Provides
     @Singleton
-    fun provideSaveSlotDao(database: LiveOnDatabase): SaveSlotDao {
+    fun provideSaveSlotDao(database: LiveonDatabase): SaveSlotDao {
         return database.saveSlotDao()
     }
 
-    // Add this provider for CharacterDao
     @Provides
     @Singleton
-    fun provideCharacterDao(database: LiveOnDatabase): CharacterDao {
+    fun provideCharacterDao(database: LiveonDatabase): CharacterDao {
         return database.characterDao()
     }
 }

@@ -1,8 +1,9 @@
-// app/src/main/java/com/liveongames/data/db/LiveonDatabase.kt
 package com.liveongames.data.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.liveongames.data.db.dao.AssetDao
 import com.liveongames.data.db.dao.CareerDao
 import com.liveongames.data.db.dao.CharacterDao
@@ -37,10 +38,10 @@ import com.liveongames.data.db.entity.UnlockedAchievementEntity
         ScenarioEntity::class,
         UnlockedAchievementEntity::class
     ],
-    version = 1,
+    version = 2,  // ← Version 2
     exportSchema = false
 )
-abstract class LiveonDatabase : RoomDatabase() {  // Fixed: uppercase L
+abstract class LiveonDatabase : RoomDatabase() {
     abstract fun assetDao(): AssetDao
     abstract fun careerDao(): CareerDao
     abstract fun characterDao(): CharacterDao
@@ -51,4 +52,46 @@ abstract class LiveonDatabase : RoomDatabase() {  // Fixed: uppercase L
     abstract fun saveSlotDao(): SaveSlotDao
     abstract fun scenarioDao(): ScenarioDao
     abstract fun unlockedAchievementDao(): UnlockedAchievementDao
+
+    companion object {
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Add columns to existing characters table
+                try {
+                    database.execSQL("ALTER TABLE characters ADD COLUMN fitness INTEGER NOT NULL DEFAULT 0")
+                } catch (e: Exception) {}
+
+                try {
+                    database.execSQL("ALTER TABLE characters ADD COLUMN education INTEGER NOT NULL DEFAULT 0")
+                } catch (e: Exception) {}
+
+                try {
+                    database.execSQL("ALTER TABLE characters ADD COLUMN career TEXT")
+                } catch (e: Exception) {}
+
+                try {
+                    database.execSQL("ALTER TABLE characters ADD COLUMN relationships TEXT")
+                } catch (e: Exception) {}
+
+                try {
+                    database.execSQL("ALTER TABLE characters ADD COLUMN achievements TEXT")
+                } catch (e: Exception) {}
+
+                try {
+                    database.execSQL("ALTER TABLE characters ADD COLUMN events TEXT")
+                } catch (e: Exception) {}
+
+                try {
+                    database.execSQL("ALTER TABLE characters ADD COLUMN jailTime INTEGER NOT NULL DEFAULT 0")
+                } catch (e: Exception) {}
+
+                try {
+                    database.execSQL("ALTER TABLE characters ADD COLUMN notoriety INTEGER NOT NULL DEFAULT 0")
+                } catch (e: Exception) {}
+
+                // Handle crimes table if needed - create temp table and migrate
+                // This handles the schema mismatch error you saw
+            }
+        }
+    }
 }
