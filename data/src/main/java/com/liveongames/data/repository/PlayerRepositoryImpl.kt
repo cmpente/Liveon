@@ -1,193 +1,122 @@
-// app/src/main/java/com/liveongames/data/repository/PlayerRepositoryImpl.kt
 package com.liveongames.data.repository
 
-import android.content.SharedPreferences
-import com.google.gson.Gson
+import com.liveongames.data.db.dao.CharacterDao
 import com.liveongames.domain.model.Character
 import com.liveongames.domain.repository.PlayerRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class PlayerRepositoryImpl @Inject constructor(
-    private val sharedPreferences: SharedPreferences,
-    private val gson: Gson
+    private val characterDao: CharacterDao
 ) : PlayerRepository {
 
-    companion object {
-        private const val CHARACTER_PREF_KEY = "character_"
-        private const val DEFAULT_MONEY = 1000
+    override fun getCharacter(characterId: String): Flow<com.liveongames.domain.model.Character?> {
+        return characterDao.getCharacter(characterId).map { entity ->
+            entity?.let {
+                com.liveongames.domain.model.Character(
+                    id = it.id,
+                    name = it.name,
+                    age = it.age,
+                    health = it.health,
+                    happiness = it.happiness,
+                    money = it.money,
+                    intelligence = it.intelligence,
+                    fitness = it.fitness,
+                    social = it.social,
+                    education = it.education,
+                    career = it.career,
+                    relationships = it.relationships?.split(",")?.filter { r -> r.isNotBlank() } ?: emptyList(),
+                    achievements = it.achievements?.split(",")?.filter { a -> a.isNotBlank() } ?: emptyList(),
+                    events = it.events?.split(",")?.filter { e -> e.isNotBlank() } ?: emptyList(),
+                    jailTime = it.jailTime,
+                    notoriety = it.notoriety
+                )
+            }
+        }
     }
 
-    override fun getCharacter(characterId: String): Flow<Character?> = flow {
-        val prefKey = "${CHARACTER_PREF_KEY}${characterId}"
-        val characterJson = sharedPreferences.getString(prefKey, null)
-        println("PlayerRepository - Getting character: $characterId, found: ${characterJson != null}")
-
-        val character = if (characterJson != null && characterJson.isNotEmpty()) {
-            try {
-                val parsedCharacter = gson.fromJson(characterJson, Character::class.java)
-                println("PlayerRepository - Parsed character money: ${parsedCharacter.money}")
-                parsedCharacter
-            } catch (e: Exception) {
-                println("PlayerRepository - Error parsing character JSON: ${e.message}")
-                createDefaultCharacter(characterId)
-            }
-        } else {
-            println("PlayerRepository - No character found, creating default")
-            createDefaultCharacter(characterId)
-        }
-        emit(character)
+    override suspend fun createCharacter(characterId: String, character: com.liveongames.domain.model.Character) {
+        val entity = com.liveongames.data.db.entity.CharacterEntity(
+            id = characterId,
+            name = character.name,
+            age = character.age,
+            health = character.health,
+            happiness = character.happiness,
+            intelligence = character.intelligence,
+            money = character.money,
+            social = character.social,
+            scenarioId = "", // default value
+            lastPlayed = System.currentTimeMillis(),
+            fitness = character.fitness,
+            education = character.education,
+            career = character.career,
+            relationships = character.relationships.joinToString(","),
+            achievements = character.achievements.joinToString(","),
+            events = character.events.joinToString(","),
+            jailTime = character.jailTime,
+            notoriety = character.notoriety
+        )
+        characterDao.insertCharacter(entity)
     }
 
     override suspend fun updateMoney(characterId: String, amount: Int) {
-        println("PlayerRepository - updateMoney called for $characterId with amount $amount")
-
-        val prefKey = "${CHARACTER_PREF_KEY}${characterId}"
-        val characterJson = sharedPreferences.getString(prefKey, null)
-        println("PlayerRepository - Current character JSON exists: ${characterJson != null}")
-
-        if (characterJson != null && characterJson.isNotEmpty()) {
-            try {
-                val character = gson.fromJson(characterJson, Character::class.java)
-                val newMoney = (character.money + amount).coerceAtLeast(0) // Ensure non-negative
-                val updatedCharacter = character.copy(money = newMoney)
-                saveCharacter(characterId, updatedCharacter)
-                println("PlayerRepository - Money updated successfully. New money: $newMoney")
-            } catch (e: Exception) {
-                println("PlayerRepository - Error updating money: ${e.message}")
-                // Create new character if parsing failed
-                createAndSaveCharacterWithMoney(characterId, amount)
-            }
-        } else {
-            // Create new character since none exists
-            createAndSaveCharacterWithMoney(characterId, amount)
-        }
+        characterDao.updateMoney(characterId, amount)
     }
 
-    override suspend fun setMoney(characterId: String, amount: Int) {
-        val prefKey = "${CHARACTER_PREF_KEY}${characterId}"
-        val characterJson = sharedPreferences.getString(prefKey, null)
+    override suspend fun updateHealth(characterId: String, amount: Int) {
+        characterDao.updateHealth(characterId, amount)
+    }
 
-        if (characterJson != null && characterJson.isNotEmpty()) {
-            try {
-                val character = gson.fromJson(characterJson, Character::class.java)
-                val updatedCharacter = character.copy(money = amount.coerceAtLeast(0))
-                saveCharacter(characterId, updatedCharacter)
-                println("PlayerRepository - Money set to: $amount")
-            } catch (e: Exception) {
-                println("PlayerRepository - Error setting money: ${e.message}")
-                createAndSaveCharacterWithMoney(characterId, amount)
-            }
-        } else {
-            createAndSaveCharacterWithMoney(characterId, amount)
-        }
+    override suspend fun updateHappiness(characterId: String, amount: Int) {
+        characterDao.updateHappiness(characterId, amount)
+    }
+
+    override suspend fun updateAge(characterId: String, amount: Int) {
+        characterDao.updateAge(characterId, amount)
+    }
+
+    override suspend fun updateIntelligence(characterId: String, amount: Int) {
+        characterDao.updateIntelligence(characterId, amount)
+    }
+
+    override suspend fun updateFitness(characterId: String, amount: Int) {
+        characterDao.updateFitness(characterId, amount)
+    }
+
+    override suspend fun updateSocial(characterId: String, amount: Int) {
+        characterDao.updateSocial(characterId, amount)
+    }
+
+    override suspend fun updateEducation(characterId: String, amount: Int) {
+        characterDao.updateEducation(characterId, amount)
+    }
+
+    override suspend fun updateCareer(characterId: String, career: String?) {
+        characterDao.updateCareer(characterId, career)
+    }
+
+    override suspend fun addRelationship(characterId: String, relationship: String) {
+        characterDao.addRelationship(characterId, relationship)
+    }
+
+    override suspend fun removeRelationship(characterId: String, relationship: String) {
+        characterDao.removeRelationship(characterId, relationship)
+    }
+
+    override suspend fun addAchievement(characterId: String, achievement: String) {
+        characterDao.addAchievement(characterId, achievement)
+    }
+
+    override suspend fun addEvent(characterId: String, event: String) {
+        characterDao.addEvent(characterId, event)
     }
 
     override suspend fun updateJailTime(characterId: String, days: Int) {
-        val prefKey = "${CHARACTER_PREF_KEY}${characterId}"
-        val characterJson = sharedPreferences.getString(prefKey, null)
-
-        if (characterJson != null && characterJson.isNotEmpty()) {
-            try {
-                val character = gson.fromJson(characterJson, Character::class.java)
-                val newJailTime = (character.jailTime + days).coerceAtLeast(0)
-                val updatedCharacter = character.copy(jailTime = newJailTime)
-                saveCharacter(characterId, updatedCharacter)
-                println("PlayerRepository - Jail time updated. New jail time: $newJailTime")
-            } catch (e: Exception) {
-                println("PlayerRepository - Error updating jail time: ${e.message}")
-                createAndSaveCharacterWithJailTime(characterId, days)
-            }
-        } else {
-            createAndSaveCharacterWithJailTime(characterId, days)
-        }
+        characterDao.updateJailTime(characterId, days)
     }
 
-    override suspend fun createCharacter(characterId: String, character: Character) {
-        saveCharacter(characterId, character)
-        println("PlayerRepository - Character created: ${character.name}, money: ${character.money}")
-    }
-
-    override suspend fun updateCharacter(characterId: String, character: Character) {
-        saveCharacter(characterId, character)
-        println("PlayerRepository - Character updated: money: ${character.money}")
-    }
-
-    private fun saveCharacter(characterId: String, character: Character) {
-        val prefKey = "${CHARACTER_PREF_KEY}${characterId}"
-        val characterJson = gson.toJson(character)
-        sharedPreferences.edit()
-            .putString(prefKey, characterJson)
-            .apply()
-        println("PlayerRepository - Character saved to prefs under key: $prefKey")
-        println("PlayerRepository - Saved character money: ${character.money}")
-    }
-
-    private fun createDefaultCharacter(characterId: String): Character {
-        val defaultCharacter = Character(
-            id = characterId,
-            name = "Default Character",
-            age = 18,
-            health = 100,
-            happiness = 50,
-            money = DEFAULT_MONEY,
-            intelligence = 10,
-            fitness = 10,
-            social = 10,
-            education = 0,
-            career = null,
-            relationships = emptyList(),
-            achievements = emptyList(),
-            events = emptyList(),
-            jailTime = 0
-        )
-        saveCharacter(characterId, defaultCharacter)
-        println("PlayerRepository - Created default character with money: ${defaultCharacter.money}")
-        return defaultCharacter
-    }
-
-    private fun createAndSaveCharacterWithMoney(characterId: String, money: Int) {
-        val newCharacter = Character(
-            id = characterId,
-            name = "Default Character",
-            age = 18,
-            health = 100,
-            happiness = 50,
-            money = money.coerceAtLeast(0),
-            intelligence = 10,
-            fitness = 10,
-            social = 10,
-            education = 0,
-            career = null,
-            relationships = emptyList(),
-            achievements = emptyList(),
-            events = emptyList(),
-            jailTime = 0
-        )
-        saveCharacter(characterId, newCharacter)
-        println("PlayerRepository - Created character with money: ${newCharacter.money}")
-    }
-
-    private fun createAndSaveCharacterWithJailTime(characterId: String, jailTime: Int) {
-        val newCharacter = Character(
-            id = characterId,
-            name = "Default Character",
-            age = 18,
-            health = 100,
-            happiness = 50,
-            money = DEFAULT_MONEY,
-            intelligence = 10,
-            fitness = 10,
-            social = 10,
-            education = 0,
-            career = null,
-            relationships = emptyList(),
-            achievements = emptyList(),
-            events = emptyList(),
-            jailTime = jailTime.coerceAtLeast(0)
-        )
-        saveCharacter(characterId, newCharacter)
-        println("PlayerRepository - Created character with jail time: ${newCharacter.jailTime}")
+    override suspend fun updateNotoriety(characterId: String, amount: Int) {
+        characterDao.updateNotoriety(characterId, amount)
     }
 }

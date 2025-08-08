@@ -4,6 +4,7 @@ package com.liveongames.liveon.di
 import android.content.Context
 import androidx.room.Room
 import com.liveongames.data.db.LiveOnDatabase
+import com.liveongames.data.db.dao.CharacterDao
 import com.liveongames.data.db.dao.CrimeDao
 import com.liveongames.data.db.dao.PetDao
 import com.liveongames.data.db.dao.EventDao
@@ -51,5 +52,12 @@ object DatabaseModule {
     @Singleton
     fun provideSaveSlotDao(database: LiveOnDatabase): SaveSlotDao {
         return database.saveSlotDao()
+    }
+
+    // Add this provider for CharacterDao
+    @Provides
+    @Singleton
+    fun provideCharacterDao(database: LiveOnDatabase): CharacterDao {
+        return database.characterDao()
     }
 }

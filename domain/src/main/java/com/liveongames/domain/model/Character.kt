@@ -1,20 +1,21 @@
-// app/src/main/java/com/liveongames/domain/model/Character.kt
+// domain/src/main/java/com/liveongames/domain/model/Character.kt
 package com.liveongames.domain.model
 
 data class Character(
-    val id: String = "",
-    val name: String = "",
-    val age: Int = 0,
-    val health: Int = 100,
-    val happiness: Int = 50,
-    val money: Int = 1000,
-    val intelligence: Int = 10,
-    val fitness: Int = 10,
-    val social: Int = 10,
-    val education: Int = 0,
-    val career: String? = null,
-    val relationships: List<Relationship> = emptyList(),
-    val achievements: List<Achievement> = emptyList(),
-    val events: List<Event> = emptyList(),
-    val jailTime: Int = 0 // Add this line
+    val id: String,
+    val name: String,
+    val age: Int,
+    val health: Int,
+    val happiness: Int,
+    val money: Int,
+    val intelligence: Int,
+    val fitness: Int,
+    val social: Int,
+    val education: Int,
+    val career: String?,
+    val relationships: List<String>,
+    val achievements: List<String>,
+    val events: List<String>,
+    val jailTime: Int,
+    val notoriety: Int = 0
 )

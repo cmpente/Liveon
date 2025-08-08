@@ -37,10 +37,22 @@ class CrimeRepositoryImpl @Inject constructor(
             characterId = characterId,
             name = crime.name,
             description = crime.description,
-            severity = crime.severity,
-            chanceOfGettingCaught = crime.chanceOfGettingCaught,
-            fine = crime.fine,
-            jailTime = crime.jailTime
+            riskTier = crime.riskTier.name,
+            notorietyRequired = crime.notorietyRequired,
+            baseSuccessChance = crime.baseSuccessChance,
+            payoutMin = crime.payoutMin,
+            payoutMax = crime.payoutMax,
+            jailMin = crime.jailMin,
+            jailMax = crime.jailMax,
+            notorietyGain = crime.notorietyGain,
+            notorietyLoss = crime.notorietyLoss,
+            iconDescription = crime.iconDescription,
+            scenario = crime.scenario,
+            success = crime.success,
+            caught = crime.caught,
+            moneyGained = crime.moneyGained,
+            actualJailTime = crime.actualJailTime,
+            timestamp = crime.timestamp
         )
         Log.d(TAG, "Inserting crime entity: ${crimeEntity.id} for character: $characterId")
         crimeDao.insertCrime(crimeEntity)

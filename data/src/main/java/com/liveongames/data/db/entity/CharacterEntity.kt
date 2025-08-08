@@ -14,5 +14,13 @@ data class CharacterEntity(
     val money: Int,
     val social: Int,
     val scenarioId: String,
-    val lastPlayed: Long
+    val lastPlayed: Long,
+    val fitness: Int = 0,
+    val education: Int = 0,
+    val career: String? = null,
+    val relationships: String? = null,
+    val achievements: String? = null,
+    val events: String? = null,
+    val jailTime: Int = 0,
+    val notoriety: Int = 0
 )

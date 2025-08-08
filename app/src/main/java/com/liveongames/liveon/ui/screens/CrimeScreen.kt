@@ -16,7 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.liveongames.domain.model.CrimeType
+import com.liveongames.domain.model.Crime
+import com.liveongames.domain.model.RiskTier
 import com.liveongames.liveon.ui.theme.AllGameThemes
 import com.liveongames.liveon.viewmodel.CrimeViewModel
 import com.liveongames.liveon.viewmodel.SettingsViewModel
@@ -37,6 +38,7 @@ fun CrimeScreen(
     onDismiss: () -> Unit = {}
 ) {
     val crimes by viewModel.crimes.collectAsState()
+    val playerNotoriety by viewModel.playerNotoriety.collectAsState()
     val selectedThemeIndex by settingsViewModel.selectedThemeIndex.collectAsState()
     val currentTheme = AllGameThemes.getOrElse(selectedThemeIndex) { AllGameThemes[0] }
     var showClearDialog by remember { mutableStateOf(false) }
@@ -86,6 +88,46 @@ fun CrimeScreen(
                     }
                 }
 
+                // Player stats bar
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = currentTheme.surfaceVariant),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "Notoriety: $playerNotoriety/100",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = currentTheme.text,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        // Progress bar for notoriety
+                        LinearProgressIndicator(
+                            progress = { playerNotoriety / 100f },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp),
+                            color = when {
+                                playerNotoriety >= 80 -> Color.Red
+                                playerNotoriety >= 50 -> Color(0xFFFF9800)
+                                playerNotoriety >= 20 -> Color(0xFFFFEB3B)
+                                else -> Color(0xFF4CAF50)
+                            }
+                        )
+                    }
+                }
+
                 // Scrollable content area
                 Column(
                     modifier = Modifier
@@ -94,88 +136,120 @@ fun CrimeScreen(
                 ) {
                     // Crime Categories with descriptions
                     CrimeCategorySection(
-                        title = " Petty Crimes",
-                        description = "Low risk, low reward offenses",
+                        title = "Low Risk Crimes",
+                        description = "Safe but modest gains",
                         crimes = listOf(
-                            CrimeType.THEFT to "Quick grab for cash (+$100-$1000)",
-                            CrimeType.VANDALISM to "Damage property for fun (+$50-$500)"
+                            CrimeViewModel.CrimeType.PICKPOCKETING to "Steal wallets ($20-$200)",
+                            CrimeViewModel.CrimeType.SHOPLIFTING to "Shoplift goods ($50-$300)",
+                            CrimeViewModel.CrimeType.VANDALISM to "Damage property ($10-$150)",
+                            CrimeViewModel.CrimeType.PETTY_SCAM to "Small scams ($30-$250)"
                         ),
-                        viewModel = viewModel,
                         theme = currentTheme,
+                        playerNotoriety = playerNotoriety,
                         onCrimeSelected = { crimeType ->
                             showCrimeDialog = CrimeDialogData(
                                 type = crimeType,
-                                title = getCrimeDialogTitle(crimeType),
-                                message = getCrimeDialogMessage(crimeType),
+                                title = getCrimeName(crimeType),
+                                message = getCrimeScenario(crimeType),
                                 confirmText = "Proceed",
-                                cancelText = "Nevermind"
+                                cancelText = "Nevermind",
+                                riskTier = getCrimeRiskTier(crimeType),
+                                notorietyRequired = getCrimeNotorietyRequired(crimeType),
+                                playerNotoriety = playerNotoriety,
+                                successChance = getCrimeSuccessChance(crimeType),
+                                payoutMin = getCrimePayoutMin(crimeType),
+                                payoutMax = getCrimePayoutMax(crimeType)
                             )
                         }
                     )
 
                     CrimeCategorySection(
-                        title = " Serious Crimes",
-                        description = "Higher risk with bigger payoffs",
+                        title = "Medium Risk Crimes",
+                        description = "Bigger rewards, higher danger",
                         crimes = listOf(
-                            CrimeType.ASSAULT to "Physical confrontation (+$200)",
-                            CrimeType.FRAUD to "Deceive others for profit (+$500-$5000)",
-                            CrimeType.EXTORTION to "Threaten people for money (+$200-$2000)"
+                            CrimeViewModel.CrimeType.MUGGING to "Rob victims ($100-$800)",
+                            CrimeViewModel.CrimeType.BREAKING_AND_ENTERING to "B&E homes ($500-$2k)",
+                            CrimeViewModel.CrimeType.DRUG_DEALING to "Sell drugs ($200-$1.8k)",
+                            CrimeViewModel.CrimeType.COUNTERFEIT_GOODS to "Fake goods ($300-$1.5k)"
                         ),
-                        viewModel = viewModel,
                         theme = currentTheme,
+                        playerNotoriety = playerNotoriety,
                         onCrimeSelected = { crimeType ->
                             showCrimeDialog = CrimeDialogData(
                                 type = crimeType,
-                                title = getCrimeDialogTitle(crimeType),
-                                message = getCrimeDialogMessage(crimeType),
+                                title = getCrimeName(crimeType),
+                                message = getCrimeScenario(crimeType),
                                 confirmText = "Proceed",
-                                cancelText = "Nevermind"
+                                cancelText = "Nevermind",
+                                riskTier = getCrimeRiskTier(crimeType),
+                                notorietyRequired = getCrimeNotorietyRequired(crimeType),
+                                playerNotoriety = playerNotoriety,
+                                successChance = getCrimeSuccessChance(crimeType),
+                                payoutMin = getCrimePayoutMin(crimeType),
+                                payoutMax = getCrimePayoutMax(crimeType)
                             )
                         }
                     )
 
                     CrimeCategorySection(
-                        title = " Drug Crimes",
-                        description = "Substance-related offenses",
+                        title = "High Risk Crimes",
+                        description = "Serious crimes with serious consequences",
                         crimes = listOf(
-                            CrimeType.DRUG_POSSESSION to "Possess illegal substances (+$100)",
-                            CrimeType.DRUG_DEALING to "Sell drugs for big money (+$1000-$10000)"
+                            CrimeViewModel.CrimeType.BURGLARY to "Break into homes ($1k-$8k)",
+                            CrimeViewModel.CrimeType.FRAUD to "Financial scams ($2k-$12k)",
+                            CrimeViewModel.CrimeType.ARMS_SMUGGLING to "Weapon trafficking ($5k-$22k)",
+                            CrimeViewModel.CrimeType.DRUG_TRAFFICKING to "Drug distribution ($10k-$45k)"
                         ),
-                        viewModel = viewModel,
                         theme = currentTheme,
+                        playerNotoriety = playerNotoriety,
                         onCrimeSelected = { crimeType ->
                             showCrimeDialog = CrimeDialogData(
                                 type = crimeType,
-                                title = getCrimeDialogTitle(crimeType),
-                                message = getCrimeDialogMessage(crimeType),
+                                title = getCrimeName(crimeType),
+                                message = getCrimeScenario(crimeType),
                                 confirmText = "Proceed",
-                                cancelText = "Nevermind"
+                                cancelText = "Nevermind",
+                                riskTier = getCrimeRiskTier(crimeType),
+                                notorietyRequired = getCrimeNotorietyRequired(crimeType),
+                                playerNotoriety = playerNotoriety,
+                                successChance = getCrimeSuccessChance(crimeType),
+                                payoutMin = getCrimePayoutMin(crimeType),
+                                payoutMax = getCrimePayoutMax(crimeType)
                             )
                         }
                     )
 
                     CrimeCategorySection(
-                        title = "Capital Crimes",
-                        description = "Extremely dangerous and high-stakes",
+                        title = "Extreme Risk Crimes",
+                        description = "Extremely dangerous with life-changing stakes",
                         crimes = listOf(
-                            CrimeType.MURDER to "Take a life - no turning back (+$5000)"
+                            CrimeViewModel.CrimeType.ARMED_ROBBERY to "Armed heists ($20k-$120k)",
+                            CrimeViewModel.CrimeType.EXTORTION to "Threaten for money ($5k-$40k)",
+                            CrimeViewModel.CrimeType.KIDNAPPING_FOR_RANSOM to "Kidnap victims ($50k-$400k)",
+                            CrimeViewModel.CrimeType.PONZI_SCHEME to "Big fraud ($90k-$900k)"
                         ),
-                        viewModel = viewModel,
                         theme = currentTheme,
+                        playerNotoriety = playerNotoriety,
                         onCrimeSelected = { crimeType ->
                             showCrimeDialog = CrimeDialogData(
                                 type = crimeType,
-                                title = getCrimeDialogTitle(crimeType),
-                                message = getCrimeDialogMessage(crimeType),
+                                title = getCrimeName(crimeType),
+                                message = getCrimeScenario(crimeType),
                                 confirmText = "Proceed",
-                                cancelText = "Nevermind"
+                                cancelText = "Nevermind",
+                                riskTier = getCrimeRiskTier(crimeType),
+                                notorietyRequired = getCrimeNotorietyRequired(crimeType),
+                                playerNotoriety = playerNotoriety,
+                                successChance = getCrimeSuccessChance(crimeType),
+                                payoutMin = getCrimePayoutMin(crimeType),
+                                payoutMax = getCrimePayoutMax(crimeType)
                             )
                         }
                     )
 
-                    // COMPACT Criminal History Section
+                    // Criminal Record Section
                     Text(
-                        text = "Criminal History",
+                        text = "Criminal Record",
                         style = MaterialTheme.typography.titleMedium,
                         color = currentTheme.text,
                         fontWeight = FontWeight.Bold,
@@ -205,36 +279,35 @@ fun CrimeScreen(
                             } else {
                                 // Compact stats
                                 Text(
-                                    text = "${crimes.size} crime${if (crimes.size > 1) "s" else ""} • Max severity: ${crimes.maxOfOrNull { it.severity } ?: 0}",
+                                    text = "${crimes.size} crime${if (crimes.size > 1) "s" else ""} • Notoriety: $playerNotoriety",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = currentTheme.primary,
                                     modifier = Modifier.padding(bottom = 8.dp)
                                 )
 
-                                // Show only the 3 most recent crimes for compactness
-                                val recentCrimes = crimes.takeLast(3)
-                                recentCrimes.forEach { crime ->
-                                    CompactCrimeHistoryEntry(
-                                        crime = crime,
-                                        theme = currentTheme
-                                    )
-                                    // Add divider except for last item
-                                    if (crime != recentCrimes.last()) {
-                                        Divider(
-                                            modifier = Modifier.padding(vertical = 4.dp),
-                                            color = currentTheme.surfaceVariant.copy(alpha = 0.5f)
+                                // Scrollable crime history (most recent at top)
+                                val scrollState = rememberScrollState()
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(200.dp)
+                                        .verticalScroll(scrollState)
+                                ) {
+                                    // Sort crimes by timestamp (newest first)
+                                    crimes.sortedByDescending { it.timestamp }.forEachIndexed { index, crime ->
+                                        CompactCrimeHistoryEntry(
+                                            crime = crime,
+                                            theme = currentTheme
                                         )
+                                        // Add divider except for last item
+                                        if (index < crimes.size - 1) {
+                                            HorizontalDivider(
+                                                modifier = Modifier.padding(vertical = 4.dp),
+                                                thickness = 1.dp,
+                                                color = currentTheme.surfaceVariant.copy(alpha = 0.5f)
+                                            )
+                                        }
                                     }
-                                }
-
-                                // Show "and X more" if there are more crimes
-                                if (crimes.size > 3) {
-                                    Text(
-                                        text = "...and ${crimes.size - 3} more crimes",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = currentTheme.accent,
-                                        modifier = Modifier.padding(top = 4.dp)
-                                    )
                                 }
                             }
                         }
@@ -250,7 +323,7 @@ fun CrimeScreen(
                         colors = ButtonDefaults.outlinedButtonColors(
                             contentColor = MaterialTheme.colorScheme.error
                         ),
-                        border = ButtonDefaults.outlinedButtonBorder.copy(width = 1.dp)
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.error)
                     ) {
                         Text("Clear Record ($5000)", style = MaterialTheme.typography.bodySmall)
                     }
@@ -269,17 +342,17 @@ fun CrimeScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    // Crime icon
+                    // Crime icon (using simple placeholder for now)
                     Icon(
-                        painter = androidx.compose.ui.res.painterResource(id = getCrimeIcon(dialogData.type)),
+                        painter = androidx.compose.ui.res.painterResource(id = android.R.drawable.ic_menu_compass),
                         contentDescription = null,
-                        tint = getCrimeSeverityColor(dialogData.type, currentTheme),
+                        tint = getRiskTierColor(dialogData.riskTier),
                         modifier = Modifier.size(48.dp)
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Crime title with severity indicator
+                    // Crime title with risk tier indicator
                     Text(
                         text = dialogData.title,
                         style = MaterialTheme.typography.headlineSmall,
@@ -287,16 +360,16 @@ fun CrimeScreen(
                         fontWeight = FontWeight.Bold
                     )
 
-                    // Severity badge
+                    // Risk tier badge
                     Text(
-                        text = "Severity: ${getCrimeSeverity(dialogData.type)}",
+                        text = dialogData.riskTier.displayName,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = getCrimeSeverityColor(dialogData.type, currentTheme),
+                        color = currentTheme.text,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier
                             .padding(top = 4.dp)
                             .background(
-                                getCrimeSeverityColor(dialogData.type, currentTheme).copy(alpha = 0.2f),
+                                getRiskTierColor(dialogData.riskTier).copy(alpha = 0.2f),
                                 RoundedCornerShape(8.dp)
                             )
                             .padding(horizontal = 12.dp, vertical = 4.dp)
@@ -305,7 +378,7 @@ fun CrimeScreen(
             },
             text = {
                 Column {
-                    // Enhanced scenario description
+                    // Scenario
                     Text(
                         text = "Scenario: ${dialogData.message}",
                         style = MaterialTheme.typography.bodyMedium,
@@ -315,38 +388,41 @@ fun CrimeScreen(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     // Potential rewards
-                    val rewardRange = getCrimeRewardRange(dialogData.type)
-                    if (rewardRange.first > 0) {
+                    Text(
+                        text = "💰 Potential Earnings: $${dialogData.payoutMin}-${dialogData.payoutMax}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color(0xFF4CAF50)
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Notoriety requirement
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
                         Text(
-                            text = "💰 Potential Earnings: $${rewardRange.first}-${rewardRange.second}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFF4CAF50)
+                            text = "Notoriety Required: ${dialogData.notorietyRequired}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = currentTheme.primary
+                        )
+                        Text(
+                            text = "Your Notoriety: ${dialogData.playerNotoriety}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = currentTheme.accent
                         )
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Risk factors
-                    val riskText = when (dialogData.type) {
-                        CrimeType.THEFT -> "Low risk of detection"
-                        CrimeType.VANDALISM -> "Moderate risk of being caught"
-                        CrimeType.ASSAULT -> "High risk - physical confrontation"
-                        CrimeType.FRAUD -> "Moderate risk - can leave digital traces"
-                        CrimeType.DRUG_POSSESSION -> "High risk - police raids likely"
-                        CrimeType.EXTORTION -> "Very high risk - serious charges"
-                        CrimeType.DRUG_DEALING -> "Extremely high risk - federal charges possible"
-                        CrimeType.MURDER -> "100% chance of life sentence"
-                    }
-
+                    // Success chance
                     Text(
-                        text = "⚠️ Risk: $riskText",
+                        text = "Success Chance: ${(dialogData.successChance * 100).toInt()}%",
                         style = MaterialTheme.typography.bodySmall,
-                        color = when (dialogData.type) {
-                            CrimeType.MURDER -> Color.Red
-                            CrimeType.DRUG_DEALING, CrimeType.EXTORTION -> Color(0xFFFF9800)
-                            CrimeType.DRUG_POSSESSION, CrimeType.ASSAULT -> Color(0xFFFF5722)
-                            CrimeType.FRAUD -> Color(0xFFFFEB3B)
-                            else -> Color(0xFF8BC34A)
+                        color = when {
+                            dialogData.successChance >= 0.7 -> Color(0xFF4CAF50)
+                            dialogData.successChance >= 0.5 -> Color(0xFFFFEB3B)
+                            else -> Color.Red
                         }
                     )
 
@@ -363,17 +439,24 @@ fun CrimeScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        viewModel.commitCrime(dialogData.type)
-                        showCrimeDialog = null
-                        CoroutineScope(Dispatchers.Main).launch {
-                            kotlinx.coroutines.delay(1000)
-                            val result = generateEnhancedCrimeResult(dialogData.type)
-                            showCrimeResult = result
-                            onCrimeCommitted()
+                        if (dialogData.notorietyRequired <= dialogData.playerNotoriety) {
+                            viewModel.commitCrime(dialogData.type)
+                            showCrimeDialog = null
+                            // Show result after a delay
+                            CoroutineScope(Dispatchers.Main).launch {
+                                kotlinx.coroutines.delay(1000)
+                                val result = generateCrimeResult(dialogData.type)
+                                showCrimeResult = result
+                                onCrimeCommitted()
+                            }
                         }
                     },
+                    enabled = dialogData.notorietyRequired <= dialogData.playerNotoriety,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = getCrimeSeverityColor(dialogData.type, currentTheme),
+                        containerColor = if (dialogData.notorietyRequired <= dialogData.playerNotoriety)
+                            getRiskTierColor(dialogData.riskTier)
+                        else
+                            Color.Gray,
                         contentColor = Color.White
                     ),
                     modifier = Modifier
@@ -381,7 +464,10 @@ fun CrimeScreen(
                         .height(48.dp)
                 ) {
                     Text(
-                        text = dialogData.confirmText.uppercase(),
+                        text = if (dialogData.notorietyRequired > dialogData.playerNotoriety)
+                            "Need More Notoriety"
+                        else
+                            dialogData.confirmText.uppercase(),
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -389,7 +475,7 @@ fun CrimeScreen(
             dismissButton = {
                 OutlinedButton(
                     onClick = { showCrimeDialog = null },
-                    border = BorderStroke(2.dp, currentTheme.primary),
+                    border = BorderStroke(1.dp, currentTheme.primary),
                     colors = ButtonDefaults.outlinedButtonColors(
                         contentColor = currentTheme.primary
                     )
@@ -400,7 +486,7 @@ fun CrimeScreen(
         )
     }
 
-    // Enhanced Crime Result Dialog
+    // Crime Result Dialog
     showCrimeResult?.let { result ->
         AlertDialog(
             onDismissRequest = { showCrimeResult = null },
@@ -410,16 +496,21 @@ fun CrimeScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    // Result icon
+                    // Result icon based on success
                     Icon(
                         painter = androidx.compose.ui.res.painterResource(
-                            id = if (result.isSuccess)
-                                android.R.drawable.ic_menu_save
-                            else
-                                android.R.drawable.ic_menu_close_clear_cancel
+                            id = when {
+                                result.isSuccess && !result.wasCaught -> android.R.drawable.ic_menu_save
+                                result.isSuccess && result.wasCaught -> android.R.drawable.ic_menu_today
+                                else -> android.R.drawable.ic_menu_close_clear_cancel
+                            }
                         ),
                         contentDescription = null,
-                        tint = if (result.isSuccess) Color(0xFF4CAF50) else Color.Red,
+                        tint = when {
+                            result.isSuccess && !result.wasCaught -> Color(0xFF4CAF50)
+                            result.isSuccess && result.wasCaught -> Color(0xFFFFEB3B)
+                            else -> Color.Red
+                        },
                         modifier = Modifier.size(48.dp)
                     )
 
@@ -428,7 +519,11 @@ fun CrimeScreen(
                     Text(
                         text = result.title,
                         style = MaterialTheme.typography.headlineSmall,
-                        color = if (result.isSuccess) Color(0xFF4CAF50) else Color.Red,
+                        color = when {
+                            result.isSuccess && !result.wasCaught -> Color(0xFF4CAF50)
+                            result.isSuccess && result.wasCaught -> Color(0xFFFFEB3B)
+                            else -> Color.Red
+                        },
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -457,18 +552,39 @@ fun CrimeScreen(
                         )
                     }
 
-                    if (result.wasCaught) {
-                        Spacer(modifier = Modifier.height(12.dp))
+                    if (result.notorietyChange != 0) {
                         Text(
-                            text = "🔒 YOU WERE CAUGHT!",
+                            text = if (result.notorietyChange > 0)
+                                "📈 Notoriety +${result.notorietyChange}"
+                            else
+                                "📉 Notoriety ${result.notorietyChange}",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = if (result.notorietyChange > 0)
+                                Color(0xFF4CAF50)
+                            else
+                                Color.Red,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
+
+                    if (result.jailTime > 0) {
+                        Text(
+                            text = "🔒 Jail Time: ${result.jailTime} days",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color(0xFFFF9800),
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
+
+                    if (result.wasCaught && result.moneySeized > 0) {
+                        Text(
+                            text = "💰 Money Seized: $${result.moneySeized}",
                             style = MaterialTheme.typography.titleMedium,
                             color = Color.Red,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "This crime has been added to your record",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = currentTheme.accent
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(top = 8.dp)
                         )
                     }
                 }
@@ -477,7 +593,11 @@ fun CrimeScreen(
                 Button(
                     onClick = { showCrimeResult = null },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (result.isSuccess) Color(0xFF4CAF50) else Color(0xFFFF9800),
+                        containerColor = when {
+                            result.isSuccess && !result.wasCaught -> Color(0xFF4CAF50)
+                            result.isSuccess && result.wasCaught -> Color(0xFFFFEB3B)
+                            else -> Color(0xFFFF9800)
+                        },
                         contentColor = Color.White
                     ),
                     modifier = Modifier.fillMaxWidth()
@@ -568,31 +688,40 @@ fun CrimeScreen(
 
 // Data classes
 data class CrimeDialogData(
-    val type: CrimeType,
+    val type: CrimeViewModel.CrimeType,
     val title: String,
     val message: String,
     val confirmText: String,
-    val cancelText: String
+    val cancelText: String,
+    val riskTier: RiskTier,
+    val notorietyRequired: Int,
+    val playerNotoriety: Int,
+    val successChance: Double,
+    val payoutMin: Int,
+    val payoutMax: Int
 )
 
 data class CrimeResult(
     val title: String,
     val description: String,
     val moneyGained: Int,
+    val moneySeized: Int,
     val isSuccess: Boolean,
-    val wasCaught: Boolean
+    val wasCaught: Boolean,
+    val jailTime: Int,
+    val notorietyChange: Int
 )
 
-// COMPACT Crime History Entry
+// Compact Crime History Entry
 @Composable
 fun CompactCrimeHistoryEntry(
-    crime: com.liveongames.domain.model.Crime,
+    crime: Crime,
     theme: com.liveongames.liveon.ui.theme.LiveonTheme
 ) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        // Crime name and severity in one line
+        // Crime details in one line
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -604,113 +733,80 @@ fun CompactCrimeHistoryEntry(
                 fontWeight = FontWeight.Medium
             )
             Text(
-                text = "Severity ${crime.severity}",
+                text = when {
+                    crime.success == true && crime.caught == true -> "Messy Job"
+                    crime.success == true && crime.caught == false -> "Success"
+                    crime.success == false -> "Failed"
+                    else -> "Unknown"
+                },
                 style = MaterialTheme.typography.bodySmall,
-                color = getCompactSeverityColor(crime.severity),
+                color = when {
+                    crime.success == true && crime.caught == true -> Color(0xFFFFEB3B)
+                    crime.success == true && crime.caught == false -> Color(0xFF4CAF50)
+                    crime.success == false -> Color.Red
+                    else -> theme.accent
+                },
                 fontWeight = FontWeight.Bold
             )
         }
 
-        // Cleaned description (remove domain model toString artifacts)
-        val cleanDescription = cleanCrimeDescription(crime.description)
-        Text(
-            text = cleanDescription,
-            style = MaterialTheme.typography.bodySmall,
-            color = theme.accent,
-            modifier = Modifier.padding(top = 2.dp)
-        )
-
-        // Fine and jail time if applicable (only show if > 0)
+        // Date and payout
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            if (crime.fine > 0) {
+            Text(
+                text = java.text.SimpleDateFormat("MMM dd, yyyy", java.util.Locale.getDefault())
+                    .format(java.util.Date(crime.timestamp)),
+                style = MaterialTheme.typography.bodySmall,
+                color = theme.accent
+            )
+
+            val moneyGainedValue = crime.moneyGained ?: 0
+            if (moneyGainedValue > 0) {
                 Text(
-                    text = "Fine: $${crime.fine}",
+                    text = "Gained $$moneyGainedValue",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.Red,
-                    modifier = Modifier.padding(end = 8.dp)
+                    color = Color(0xFF4CAF50)
                 )
-            }
-            if (crime.jailTime > 0) {
+            } else if (crime.success == false) {
                 Text(
-                    text = "Jail: ${crime.jailTime}d",
+                    text = "No gain",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFFFF9800)
+                    color = Color.Red
                 )
             }
         }
-    }
-}
 
-// Helper function to clean crime description
-fun cleanCrimeDescription(description: String): String {
-    // Remove any domain model toString artifacts
-    var cleanDesc = description
-
-    // Check if description contains Crime(...) toString format
-    if (description.contains("Crime(") && description.contains("name=")) {
-        // Extract just the meaningful part after " - "
-        val startIndex = description.indexOf(" - ")
-        if (startIndex > 0) {
-            cleanDesc = description.substring(startIndex + 3) // Skip " - "
-        } else {
-            // Try to extract between last "description=" and closing parenthesis or comma
-            val descIndex = description.indexOf("description=")
-            if (descIndex > 0) {
-                val descStart = descIndex + 12 // length of "description="
-                val descEnd = description.indexOf(",", descStart)
-                val endParen = description.indexOf(")", descStart)
-
-                val endIndex = if (descEnd > 0 && endParen > 0) {
-                    minOf(descEnd, endParen)
-                } else if (descEnd > 0) {
-                    descEnd
-                } else if (endParen > 0) {
-                    endParen
-                } else {
-                    description.length
-                }
-
-                if (endIndex > descStart) {
-                    cleanDesc = description.substring(descStart, endIndex).trim()
-                    // Clean up any remaining quotes or formatting
-                    cleanDesc = cleanDesc.replace("\"", "").trim()
-                }
-            }
+        // Jail time if applicable
+        val actualJailTimeValue = crime.actualJailTime ?: 0
+        if (actualJailTimeValue > 0) {
+            Text(
+                text = "Jail: ${actualJailTimeValue} days",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color(0xFFFF9800)
+            )
         }
-    }
 
-    // Clean up common formatting issues
-    cleanDesc = cleanDesc
-        .replace("description=", "")
-        .replace("Crime\\(".toRegex(), "")
-        .replace("\\)[,}]*$".toRegex(), "")
-        .trim()
-
-    return cleanDesc.ifEmpty { description }
-}
-
-// Get compact severity color
-fun getCompactSeverityColor(severity: Int): Color {
-    return when (severity) {
-        in 8..10 -> Color.Red
-        in 5..7 -> Color(0xFFFF9800) // Orange
-        in 3..4 -> Color(0xFFFFEB3B) // Yellow
-        else -> Color(0xFF4CAF50) // Green
+        // Scenario snippet (first 30 chars)
+        Text(
+            text = "${crime.scenario.take(30)}...",
+            style = MaterialTheme.typography.bodySmall,
+            color = theme.accent.copy(alpha = 0.8f),
+            modifier = Modifier.padding(top = 2.dp)
+        )
     }
 }
 
-// All other helper functions remain the same as in previous version
+// Crime Category Section
 @Composable
 fun CrimeCategorySection(
     title: String,
     description: String,
-    crimes: List<Pair<CrimeType, String>>,
-    viewModel: CrimeViewModel,
+    crimes: List<Pair<CrimeViewModel.CrimeType, String>>,
     theme: com.liveongames.liveon.ui.theme.LiveonTheme,
-    onCrimeSelected: (CrimeType) -> Unit = {}
+    playerNotoriety: Int,
+    onCrimeSelected: (CrimeViewModel.CrimeType) -> Unit = {}
 ) {
     Card(
         modifier = Modifier
@@ -743,10 +839,11 @@ fun CrimeCategorySection(
                     crimeType = crimeType,
                     description = crimeDescription,
                     onClick = {
-                        Log.d("CrimeScreen", "Crime ${crimeType.name} clicked")
+                        Log.d("CrimeScreen", "Crime ${getCrimeName(crimeType)} clicked")
                         onCrimeSelected(crimeType)
                     },
-                    theme = theme
+                    theme = theme,
+                    isLocked = getCrimeNotorietyRequired(crimeType) > playerNotoriety
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -756,10 +853,11 @@ fun CrimeCategorySection(
 
 @Composable
 fun CrimeTypeCard(
-    crimeType: CrimeType,
+    crimeType: CrimeViewModel.CrimeType,
     description: String,
     onClick: () -> Unit,
-    theme: com.liveongames.liveon.ui.theme.LiveonTheme
+    theme: com.liveongames.liveon.ui.theme.LiveonTheme,
+    isLocked: Boolean = false
 ) {
     var isPressed by remember { mutableStateOf(false) }
 
@@ -776,16 +874,21 @@ fun CrimeTypeCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable {
-                isPressed = true
-                onClick()
-                CoroutineScope(Dispatchers.Main).launch {
-                    kotlinx.coroutines.delay(150)
-                    isPressed = false
+            .clickable(
+                enabled = !isLocked,
+                onClick = {
+                    isPressed = true
+                    onClick()
+                    CoroutineScope(Dispatchers.Main).launch {
+                        kotlinx.coroutines.delay(150)
+                        isPressed = false
+                    }
                 }
-            }
+            )
             .graphicsLayer(scaleX = scale, scaleY = scale),
-        colors = CardDefaults.cardColors(containerColor = theme.surface),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isLocked) theme.surface.copy(alpha = 0.5f) else theme.surface
+        ),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = if (isPressed) 2.dp else 6.dp
@@ -800,24 +903,52 @@ fun CrimeTypeCard(
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                Text(
-                    text = crimeType.name.replace("_", " ").lowercase()
-                        .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() },
-                    style = MaterialTheme.typography.titleMedium,
-                    color = theme.text,
-                    fontWeight = FontWeight.Medium
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = getCrimeName(crimeType),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = if (isLocked) theme.accent else theme.text,
+                        fontWeight = FontWeight.Medium
+                    )
+                    if (isLocked) {
+                        Icon(
+                            painter = androidx.compose.ui.res.painterResource(id = android.R.drawable.ic_lock_idle_lock),
+                            contentDescription = "Locked",
+                            modifier = Modifier
+                                .size(16.dp)
+                                .padding(start = 4.dp),
+                            tint = Color.Red
+                        )
+                    }
+                }
                 Text(
                     text = description,
                     style = MaterialTheme.typography.bodySmall,
-                    color = theme.accent
+                    color = if (isLocked) theme.accent.copy(alpha = 0.5f) else theme.accent
+                )
+
+                // Risk tier badge
+                Text(
+                    text = getCrimeRiskTier(crimeType).displayName,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = getRiskTierColor(getCrimeRiskTier(crimeType)),
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                        .background(
+                            getRiskTierColor(getCrimeRiskTier(crimeType)).copy(alpha = 0.1f),
+                            RoundedCornerShape(4.dp)
+                        )
+                        .padding(horizontal = 6.dp, vertical = 2.dp)
                 )
             }
 
             Icon(
-                painter = androidx.compose.ui.res.painterResource(id = getCrimeIcon(crimeType)),
+                painter = androidx.compose.ui.res.painterResource(id = android.R.drawable.ic_menu_compass),
                 contentDescription = null,
-                tint = getCrimeSeverityColor(crimeType, theme),
+                tint = getRiskTierColor(getCrimeRiskTier(crimeType)),
                 modifier = Modifier
                     .size(28.dp)
                     .graphicsLayer(scaleX = iconScale, scaleY = iconScale)
@@ -826,172 +957,267 @@ fun CrimeTypeCard(
     }
 }
 
-fun getCrimeSeverityColor(crimeType: CrimeType, theme: com.liveongames.liveon.ui.theme.LiveonTheme): Color {
-    return when (getCrimeSeverity(crimeType)) {
-        in 8..10 -> Color.Red
-        in 5..7 -> Color(0xFFFF9800) // Orange
-        in 3..4 -> Color(0xFFFFEB3B) // Yellow
-        else -> Color(0xFF4CAF50) // Green
+// Helper functions for crime data
+fun getRiskTierColor(riskTier: RiskTier): androidx.compose.ui.graphics.Color {
+    return when (riskTier) {
+        RiskTier.LOW_RISK -> Color(0xFF4CAF50) // Green
+        RiskTier.MEDIUM_RISK -> Color(0xFFFFEB3B) // Yellow
+        RiskTier.HIGH_RISK -> Color(0xFFFF9800) // Orange
+        RiskTier.EXTREME_RISK -> Color(0xFFF44336) // Red
     }
 }
 
-fun getCrimeSeverity(crimeType: CrimeType): Int {
+fun getCrimeName(crimeType: CrimeViewModel.CrimeType): String {
     return when (crimeType) {
-        CrimeType.THEFT -> 3
-        CrimeType.VANDALISM -> 2
-        CrimeType.ASSAULT -> 6
-        CrimeType.FRAUD -> 5
-        CrimeType.DRUG_POSSESSION -> 4
-        CrimeType.EXTORTION -> 7
-        CrimeType.DRUG_DEALING -> 8
-        CrimeType.MURDER -> 10
+        CrimeViewModel.CrimeType.PICKPOCKETING -> "Pickpocketing"
+        CrimeViewModel.CrimeType.SHOPLIFTING -> "Shoplifting"
+        CrimeViewModel.CrimeType.VANDALISM -> "Vandalism"
+        CrimeViewModel.CrimeType.PETTY_SCAM -> "Petty Scam"
+        CrimeViewModel.CrimeType.MUGGING -> "Mugging"
+        CrimeViewModel.CrimeType.BREAKING_AND_ENTERING -> "Breaking and Entering"
+        CrimeViewModel.CrimeType.DRUG_DEALING -> "Drug Dealing"
+        CrimeViewModel.CrimeType.COUNTERFEIT_GOODS -> "Counterfeit Goods"
+        CrimeViewModel.CrimeType.BURGLARY -> "Burglary"
+        CrimeViewModel.CrimeType.FRAUD -> "Fraud"
+        CrimeViewModel.CrimeType.ARMS_SMUGGLING -> "Arms Smuggling"
+        CrimeViewModel.CrimeType.DRUG_TRAFFICKING -> "Drug Trafficking"
+        CrimeViewModel.CrimeType.ARMED_ROBBERY -> "Armed Robbery"
+        CrimeViewModel.CrimeType.EXTORTION -> "Extortion"
+        CrimeViewModel.CrimeType.KIDNAPPING_FOR_RANSOM -> "Kidnapping for Ransom"
+        CrimeViewModel.CrimeType.PONZI_SCHEME -> "Ponzi Scheme"
+        CrimeViewModel.CrimeType.CONTRACT_KILLING -> "Contract Killing"
+        CrimeViewModel.CrimeType.DARK_WEB_SALES -> "Dark Web Sales"
+        CrimeViewModel.CrimeType.ART_THEFT -> "Art Theft"
+        CrimeViewModel.CrimeType.DIAMOND_HEIST -> "Diamond Heist"
     }
 }
 
-fun getCrimeRewardRange(crimeType: CrimeType): Pair<Int, Int> {
-    return when (crimeType) {
-        CrimeType.THEFT -> Pair(100, 1000)
-        CrimeType.VANDALISM -> Pair(50, 500)
-        CrimeType.ASSAULT -> Pair(200, 200)
-        CrimeType.FRAUD -> Pair(500, 5000)
-        CrimeType.DRUG_POSSESSION -> Pair(100, 100)
-        CrimeType.EXTORTION -> Pair(200, 2000)
-        CrimeType.DRUG_DEALING -> Pair(1000, 10000)
-        CrimeType.MURDER -> Pair(5000, 5000)
-    }
-}
-
-fun getCrimeIcon(crimeType: CrimeType): Int {
-    return when (crimeType) {
-        CrimeType.THEFT -> android.R.drawable.ic_menu_compass
-        CrimeType.ASSAULT -> android.R.drawable.ic_menu_view
-        CrimeType.FRAUD -> android.R.drawable.ic_menu_edit
-        CrimeType.DRUG_POSSESSION -> android.R.drawable.ic_menu_preferences
-        CrimeType.DRUG_DEALING -> android.R.drawable.ic_menu_upload
-        CrimeType.MURDER -> android.R.drawable.ic_menu_close_clear_cancel
-        CrimeType.EXTORTION -> android.R.drawable.ic_lock_power_off
-        CrimeType.VANDALISM -> android.R.drawable.ic_menu_delete
-    }
-}
-
-fun getCrimeDialogTitle(crimeType: CrimeType): String {
-    return when (crimeType) {
-        CrimeType.THEFT -> "Theft Opportunity"
-        CrimeType.ASSAULT -> "Assault Target"
-        CrimeType.FRAUD -> "Fraud Scheme"
-        CrimeType.DRUG_POSSESSION -> "Drug Possession"
-        CrimeType.DRUG_DEALING -> "Drug Dealing Operation"
-        CrimeType.MURDER -> "Murder Plan"
-        CrimeType.EXTORTION -> "Extortion Scheme"
-        CrimeType.VANDALISM -> "Vandalize Property"
-    }
-}
-
-fun getCrimeDialogMessage(crimeType: CrimeType): String {
-    val victims = listOf(
-        "a wealthy businessman", "an elderly woman", "a street vendor",
-        "a college student", "a tourist", "a gang member", "a police officer",
-        "a corrupt politician", "a rival gang leader", "an unsuspecting passerby"
-    )
-
-    val locations = listOf(
-        "in a dark alley", "at the marketplace", "near the docks",
-        "in the subway", "at a nightclub", "in the park", "outside a bank",
-        "in a parking garage", "behind a warehouse", "on a quiet street corner"
-    )
-
-    val victim = victims.random()
-    val location = locations.random()
-
-    return when (crimeType) {
-        CrimeType.THEFT -> "You spot $victim carrying a fat wallet $location. They seem distracted and vulnerable. Do you try to pickpocket them?"
-        CrimeType.ASSAULT -> "You encounter $victim $location who looks weak and alone. You could assault them for their cash and belongings."
-        CrimeType.FRAUD -> "You've identified $victim $location as a potential target. You could run an elaborate scam to steal their money."
-        CrimeType.DRUG_POSSESSION -> "A shady dealer offers you drugs $location. The police are known to patrol this area frequently."
-        CrimeType.DRUG_DEALING -> "A major buyer wants to meet $location to purchase a large shipment. This could be very profitable but extremely risky."
-        CrimeType.MURDER -> "You have the perfect opportunity to eliminate $victim $location. Nobody will witness this and you can cover your tracks. This is irreversible."
-        CrimeType.EXTORTION -> "You can threaten $victim $location to hand over money. They look like they have something to hide."
-        CrimeType.VANDALISM -> "You see an expensive car owned by $victim $location. You could damage it for fun while they're away."
-    }
-}
-
-fun generateEnhancedCrimeResult(crimeType: CrimeType): CrimeResult {
-    val baseSuccessRate = when (crimeType) {
-        CrimeType.THEFT -> 0.8
-        CrimeType.VANDALISM -> 0.9
-        CrimeType.ASSAULT -> 0.6
-        CrimeType.FRAUD -> 0.7
-        CrimeType.DRUG_POSSESSION -> 0.5
-        CrimeType.EXTORTION -> 0.4
-        CrimeType.DRUG_DEALING -> 0.3
-        CrimeType.MURDER -> 0.9
-    }
-
-    val isSuccess = Random.nextDouble() < baseSuccessRate
-    val wasCaught = Random.nextDouble() < (1.0 - baseSuccessRate) * 1.2 // Higher chance of being caught for high severity crimes
-
-    val moneyGained = if (isSuccess) {
-        when (crimeType) {
-            CrimeType.THEFT -> Random.nextInt(100, 1001)
-            CrimeType.ASSAULT -> 200
-            CrimeType.FRAUD -> Random.nextInt(500, 5001)
-            CrimeType.DRUG_POSSESSION -> 100
-            CrimeType.DRUG_DEALING -> Random.nextInt(1000, 10001)
-            CrimeType.MURDER -> 5000
-            CrimeType.EXTORTION -> Random.nextInt(200, 2001)
-            CrimeType.VANDALISM -> Random.nextInt(50, 501)
-        }
-    } else {
-        0
-    }
-
-    val descriptions = when {
-        isSuccess && !wasCaught -> listOf(
-            "Perfect execution! Nobody saw a thing.",
-            "Smooth operation, clean getaway.",
-            "That went better than expected!",
-            "Nailed it! Time to enjoy the spoils.",
-            "Flawless! The money is now yours.",
-            "Success! You're getting good at this."
+fun getCrimeScenario(crimeType: CrimeViewModel.CrimeType): String {
+    val scenarios = when (crimeType) {
+        CrimeViewModel.CrimeType.PICKPOCKETING -> listOf(
+            "You spot a distracted shopper fumbling for their phone.",
+            "A tourist stops to take a photo, bag open on their shoulder.",
+            "A gambler counts his winnings openly in the street."
         )
-        isSuccess && wasCaught -> listOf(
-            "You got the money but they called the cops!",
-            "Success, but you left evidence behind.",
-            "Good haul, but you're probably on camera.",
-            "They got a good look at you - better lay low.",
-            "The money is yours but at what cost?",
-            "You pulled it off, but witnesses saw everything!"
+        CrimeViewModel.CrimeType.SHOPLIFTING -> listOf(
+            "You notice a blind spot in the store's camera coverage.",
+            "The fitting rooms are unattended.",
+            "Someone else triggers a loud commotion."
         )
-        !isSuccess && !wasCaught -> listOf(
-            "You messed up but at least nobody noticed.",
-            "Failed attempt, but no witnesses.",
-            "That didn't work out, luckily nobody saw.",
-            "Operation botched, but you escaped cleanly.",
-            "Everything went wrong, but no one saw.",
-            "Failed miserably, but managed to escape."
+        CrimeViewModel.CrimeType.VANDALISM -> listOf(
+            "A rival gang's mural taunts your crew.",
+            "A politician's poster becomes your canvas.",
+            "You tag over a rival's graffiti."
         )
-        else -> listOf(
-            "Complete failure and you got caught!",
-            "Everything went wrong and they saw your face!",
-            "Disaster! You failed and got arrested.",
-            "Mission failed! Police are on their way.",
-            "You failed and left clear evidence behind.",
-            "Catastrophe! Witnesses saw everything!"
+        CrimeViewModel.CrimeType.PETTY_SCAM -> listOf(
+            "You \"find\" a gold ring and offer to sell it cheap.",
+            "You sell fake raffle tickets at a busy market.",
+            "You pose as a charity collector."
+        )
+        CrimeViewModel.CrimeType.MUGGING -> listOf(
+            "You corner a lone businessman in a dark alley.",
+            "A jogger stops to catch their breath, headphones in.",
+            "A tourist wanders into the wrong neighborhood."
+        )
+        CrimeViewModel.CrimeType.BREAKING_AND_ENTERING -> listOf(
+            "You spot a home with lights off and mail piling up.",
+            "A back window is left unlocked.",
+            "A shopkeeper leaves the rear door ajar."
+        )
+        CrimeViewModel.CrimeType.DRUG_DEALING -> listOf(
+            "A regular customer asks for a bigger order than usual.",
+            "You meet a new buyer at a busy park.",
+            "A bar patron discreetly approaches you."
+        )
+        CrimeViewModel.CrimeType.COUNTERFEIT_GOODS -> listOf(
+            "A flea market vendor agrees to move your goods.",
+            "Tourists crowd around your street stall.",
+            "A nightclub promoter buys bulk for giveaways."
+        )
+        CrimeViewModel.CrimeType.BURGLARY -> listOf(
+            "You disable a small shop's alarm system.",
+            "A mansion is left unattended for the weekend.",
+            "You find a warehouse with lax security."
+        )
+        CrimeViewModel.CrimeType.FRAUD -> listOf(
+            "You set up a fake charity donation site.",
+            "You skim credit cards at a gas station.",
+            "You forge a cashier's check."
+        )
+        CrimeViewModel.CrimeType.ARMS_SMUGGLING -> listOf(
+            "You move a shipment through a border checkpoint.",
+            "You sell to a biker gang out of state.",
+            "You load crates into a cargo van at night."
+        )
+        CrimeViewModel.CrimeType.DRUG_TRAFFICKING -> listOf(
+            "You drive a van across the state line.",
+            "A shipment arrives hidden in produce crates.",
+            "You use a fishing boat to transport packages."
+        )
+        CrimeViewModel.CrimeType.ARMED_ROBBERY -> listOf(
+            "You storm a jewelry store during peak hours.",
+            "You hit an armored truck in transit.",
+            "You rob a high-stakes poker game."
+        )
+        CrimeViewModel.CrimeType.EXTORTION -> listOf(
+            "You threaten to leak sensitive photos.",
+            "You demand \"protection\" money from a nightclub.",
+            "You blackmail a corporate executive."
+        )
+        CrimeViewModel.CrimeType.KIDNAPPING_FOR_RANSOM -> listOf(
+            "You grab a wealthy child outside a school.",
+            "You abduct a celebrity's assistant.",
+            "You take a local politician's spouse."
+        )
+        CrimeViewModel.CrimeType.PONZI_SCHEME -> listOf(
+            "You launch a fake investment firm.",
+            "You promise impossible returns to investors.",
+            "You use new deposits to pay earlier victims."
+        )
+        CrimeViewModel.CrimeType.CONTRACT_KILLING -> listOf(
+            "You accept a hit on a rival gang leader.",
+            "You take out a cheating spouse's lover.",
+            "You ambush a target in a parking garage."
+        )
+        CrimeViewModel.CrimeType.DARK_WEB_SALES -> listOf(
+            "You sell stolen bank credentials.",
+            "You auction off hacking tools.",
+            "You ship counterfeit passports overseas."
+        )
+        CrimeViewModel.CrimeType.ART_THEFT -> listOf(
+            "You steal a masterpiece during an exhibition.",
+            "You swap a gallery piece for a replica.",
+            "You break into a private collection."
+        )
+        CrimeViewModel.CrimeType.DIAMOND_HEIST -> listOf(
+            "You rob a diamond exchange vault.",
+            "You hit a guarded transport truck.",
+            "You infiltrate a mining company's storage."
         )
     }
+    return scenarios.random()
+}
 
-    val resultTitle = when {
-        isSuccess && !wasCaught -> "Success!"
-        isSuccess && wasCaught -> "Partial Success"
-        !isSuccess && !wasCaught -> "Operation Failed"
-        else -> "Caught!"
+fun getCrimeRiskTier(crimeType: CrimeViewModel.CrimeType): RiskTier {
+    return when (crimeType) {
+        // LOW RISK
+        CrimeViewModel.CrimeType.PICKPOCKETING,
+        CrimeViewModel.CrimeType.SHOPLIFTING,
+        CrimeViewModel.CrimeType.VANDALISM,
+        CrimeViewModel.CrimeType.PETTY_SCAM -> RiskTier.LOW_RISK
+
+        // MEDIUM RISK
+        CrimeViewModel.CrimeType.MUGGING,
+        CrimeViewModel.CrimeType.BREAKING_AND_ENTERING,
+        CrimeViewModel.CrimeType.DRUG_DEALING,
+        CrimeViewModel.CrimeType.COUNTERFEIT_GOODS -> RiskTier.MEDIUM_RISK
+
+        // HIGH RISK
+        CrimeViewModel.CrimeType.BURGLARY,
+        CrimeViewModel.CrimeType.FRAUD,
+        CrimeViewModel.CrimeType.ARMS_SMUGGLING,
+        CrimeViewModel.CrimeType.DRUG_TRAFFICKING -> RiskTier.HIGH_RISK
+
+        // EXTREME RISK
+        CrimeViewModel.CrimeType.ARMED_ROBBERY,
+        CrimeViewModel.CrimeType.EXTORTION,
+        CrimeViewModel.CrimeType.KIDNAPPING_FOR_RANSOM,
+        CrimeViewModel.CrimeType.PONZI_SCHEME,
+        CrimeViewModel.CrimeType.CONTRACT_KILLING,
+        CrimeViewModel.CrimeType.DARK_WEB_SALES,
+        CrimeViewModel.CrimeType.ART_THEFT,
+        CrimeViewModel.CrimeType.DIAMOND_HEIST -> RiskTier.EXTREME_RISK
     }
+}
+
+fun getCrimeNotorietyRequired(crimeType: CrimeViewModel.CrimeType): Int {
+    return getCrimeRiskTier(crimeType).notorietyRequired
+}
+
+fun getCrimeSuccessChance(crimeType: CrimeViewModel.CrimeType): Double {
+    return when (getCrimeRiskTier(crimeType)) {
+        RiskTier.LOW_RISK -> 0.7
+        RiskTier.MEDIUM_RISK -> 0.55
+        RiskTier.HIGH_RISK -> 0.45
+        RiskTier.EXTREME_RISK -> 0.3
+    }
+}
+
+fun getCrimePayoutMin(crimeType: CrimeViewModel.CrimeType): Int {
+    return when (crimeType) {
+        CrimeViewModel.CrimeType.PICKPOCKETING -> 20
+        CrimeViewModel.CrimeType.SHOPLIFTING -> 50
+        CrimeViewModel.CrimeType.VANDALISM -> 10
+        CrimeViewModel.CrimeType.PETTY_SCAM -> 30
+        CrimeViewModel.CrimeType.MUGGING -> 100
+        CrimeViewModel.CrimeType.BREAKING_AND_ENTERING -> 500
+        CrimeViewModel.CrimeType.DRUG_DEALING -> 200
+        CrimeViewModel.CrimeType.COUNTERFEIT_GOODS -> 300
+        CrimeViewModel.CrimeType.BURGLARY -> 1000
+        CrimeViewModel.CrimeType.FRAUD -> 2000
+        CrimeViewModel.CrimeType.ARMS_SMUGGLING -> 5000
+        CrimeViewModel.CrimeType.DRUG_TRAFFICKING -> 10000
+        CrimeViewModel.CrimeType.ARMED_ROBBERY -> 20000
+        CrimeViewModel.CrimeType.EXTORTION -> 5000
+        CrimeViewModel.CrimeType.KIDNAPPING_FOR_RANSOM -> 50000
+        CrimeViewModel.CrimeType.PONZI_SCHEME -> 90000
+        CrimeViewModel.CrimeType.CONTRACT_KILLING -> 25000
+        CrimeViewModel.CrimeType.DARK_WEB_SALES -> 12000
+        CrimeViewModel.CrimeType.ART_THEFT -> 110000
+        CrimeViewModel.CrimeType.DIAMOND_HEIST -> 500000
+    }
+}
+
+fun getCrimePayoutMax(crimeType: CrimeViewModel.CrimeType): Int {
+    return when (crimeType) {
+        CrimeViewModel.CrimeType.PICKPOCKETING -> 200
+        CrimeViewModel.CrimeType.SHOPLIFTING -> 300
+        CrimeViewModel.CrimeType.VANDALISM -> 150
+        CrimeViewModel.CrimeType.PETTY_SCAM -> 250
+        CrimeViewModel.CrimeType.MUGGING -> 800
+        CrimeViewModel.CrimeType.BREAKING_AND_ENTERING -> 2000
+        CrimeViewModel.CrimeType.DRUG_DEALING -> 1800
+        CrimeViewModel.CrimeType.COUNTERFEIT_GOODS -> 1500
+        CrimeViewModel.CrimeType.BURGLARY -> 8000
+        CrimeViewModel.CrimeType.FRAUD -> 12000
+        CrimeViewModel.CrimeType.ARMS_SMUGGLING -> 22000
+        CrimeViewModel.CrimeType.DRUG_TRAFFICKING -> 45000
+        CrimeViewModel.CrimeType.ARMED_ROBBERY -> 120000
+        CrimeViewModel.CrimeType.EXTORTION -> 40000
+        CrimeViewModel.CrimeType.KIDNAPPING_FOR_RANSOM -> 400000
+        CrimeViewModel.CrimeType.PONZI_SCHEME -> 900000
+        CrimeViewModel.CrimeType.CONTRACT_KILLING -> 450000
+        CrimeViewModel.CrimeType.DARK_WEB_SALES -> 220000
+        CrimeViewModel.CrimeType.ART_THEFT -> 4800000
+        CrimeViewModel.CrimeType.DIAMOND_HEIST -> 9500000
+    }
+}
+
+fun generateCrimeResult(crimeType: CrimeViewModel.CrimeType): CrimeResult {
+    // Generate random outcomes for demonstration
+    val isSuccess = Random.nextBoolean()
+    val wasCaught = Random.nextBoolean()
+    val moneyGained = if (isSuccess) Random.nextInt(100, 10000) else 0
+    val moneySeized = if (wasCaught && isSuccess) Random.nextInt(0, moneyGained/2) else 0
+    val jailTime = if (wasCaught) Random.nextInt(1, 30) else 0
+    val notorietyChange = if (isSuccess) Random.nextInt(1, 5) else -Random.nextInt(1, 5)
 
     return CrimeResult(
-        title = resultTitle,
-        description = descriptions.random(),
-        moneyGained = if (isSuccess) moneyGained else 0,
+        title = when {
+            isSuccess && !wasCaught -> "Clean Getaway!"
+            isSuccess && wasCaught -> "Messy Job!"
+            else -> "Busted!"
+        },
+        description = when {
+            isSuccess && !wasCaught -> "Everything went according to plan — no one will know until it's too late."
+            isSuccess && wasCaught -> "You got the money, but not without attracting unwanted attention."
+            else -> "You slipped up — now you're paying the price."
+        },
+        moneyGained = moneyGained,
+        moneySeized = moneySeized,
         isSuccess = isSuccess,
-        wasCaught = wasCaught
+        wasCaught = wasCaught,
+        jailTime = jailTime,
+        notorietyChange = notorietyChange
     )
 }
