@@ -10,6 +10,7 @@ import com.liveongames.data.repository.EventRepositoryImpl
 import com.liveongames.data.repository.SaveRepositoryImpl
 import com.liveongames.data.repository.ScenarioRepositoryImpl
 import com.liveongames.data.repository.PlayerRepositoryImpl
+import com.liveongames.data.repository.EducationRepositoryImpl
 import com.liveongames.domain.repository.CharacterRepository
 import com.liveongames.domain.repository.CrimeRepository
 import com.liveongames.domain.repository.PetRepository
@@ -17,6 +18,7 @@ import com.liveongames.domain.repository.EventRepository
 import com.liveongames.domain.repository.SaveRepository
 import com.liveongames.domain.repository.ScenarioRepository
 import com.liveongames.domain.repository.PlayerRepository
+import com.liveongames.domain.repository.EducationRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -72,6 +74,12 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideSaveRepository(impl: SaveRepositoryImpl): SaveRepository {
+        return impl
+    }
+
+    @Provides
+    @Singleton
+    fun provideEducationRepository(impl: EducationRepositoryImpl): EducationRepository {
         return impl
     }
 }

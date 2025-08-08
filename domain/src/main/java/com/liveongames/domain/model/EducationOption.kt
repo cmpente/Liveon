@@ -1,3 +1,4 @@
+// domain/src/main/java/com/liveongames/domain/model/EducationOption.kt
 package com.liveongames.domain.model
 
 data class EducationOption(
@@ -7,5 +8,7 @@ data class EducationOption(
     val cost: Int,
     val duration: Int,
     val skillIncrease: Int,
-    val minimumAge: Int
+    val minimumAge: Int,
+    val minimumGPA: Double = 0.0,
+    val prerequisites: List<String> = emptyList()
 )

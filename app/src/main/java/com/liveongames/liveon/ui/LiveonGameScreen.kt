@@ -41,55 +41,31 @@ fun LiveonGameScreen(
     settingsViewModel: SettingsViewModel = hiltViewModel(),
     onNavigateToCrime: () -> Unit = {},
     onNavigateToPets: () -> Unit = {},
+    onNavigateToEducation: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val density = LocalDensity.current
     val uiState by gameViewModel.uiState.collectAsState()
-
-    // Get selected theme from SettingsViewModel
     val selectedThemeIndex by settingsViewModel.selectedThemeIndex.collectAsState()
     val currentTheme = AllGameThemes.getOrElse(selectedThemeIndex) { AllGameThemes[0] }
 
-// PANEL CONTROLS - TAP TO OPEN/CLOSE
-
-// HEIGHT: Full height for stats panel when closed (shows ALL stats)
-    val closedVisibleHeight = 160  // <-- FULL height - shows all stats
-
-// OPEN STATE: Controls whether popup menu is visible
-    var isMenuOpen by remember { mutableStateOf(false) } // <-- FALSE = stats only, TRUE = full menu
-
-// Position where stats panel rests when closed (affects vertical placement)
-// LOWERING: Increase value to move panel DOWN (away from top edge)
-// RAISING: Decrease value to move panel UP (toward top edge)
-// TIP: Low values (5-10) keep panel pinned to bottom of screen
-    val panelRestPosition = 5 // <-- CONTROLS resting position on screen
-
-    // Persistent storage for Lifebook entries
-    var lifeHistoryEntries by rememberSaveable {
-        mutableStateOf(listOf<String>())
-    }
-
-    // Entry animations
-    val entryAlphas = remember(lifeHistoryEntries.size) {
-        List(lifeHistoryEntries.size) { mutableStateOf(1f) }
-    }
-
-    // Cooldown state after aging
+    // Game state
+    var isMenuOpen by remember { mutableStateOf(false) }
+    var lifeHistoryEntries by rememberSaveable { mutableStateOf(listOf<String>()) }
+    val entryAlphas = remember(lifeHistoryEntries.size) { List(lifeHistoryEntries.size) { mutableStateOf(1f) } }
     var isCooldown by remember { mutableStateOf(false) }
     var cooldownProgress by remember { mutableStateOf(0f) }
+    val lifebookScrollState = rememberScrollState()
+    val randomEvents = remember(context) { loadRandomEventsFromAssets(context) }
+    var lastAge by remember { mutableStateOf<Int?>(null) }
 
-    // Hourglass rotation animation
     val hourglassRotation by animateFloatAsState(
         targetValue = if (isCooldown) 360f * 3 else 0f,
-        animationSpec = if (isCooldown) tween(
-            durationMillis = 3000,
-            easing = LinearEasing
-        ) else spring(),
+        animationSpec = if (isCooldown) tween(durationMillis = 3000, easing = LinearEasing) else spring(),
         label = "hourglassRotation"
     )
 
-    // Animated glow for Age Up button
     val glowAnimation by animateFloatAsState(
         targetValue = if (isCooldown) 1.2f else 1f,
         animationSpec = infiniteRepeatable(
@@ -99,16 +75,7 @@ fun LiveonGameScreen(
         label = "glowAnimation"
     )
 
-    // Scroll state for Lifebook
-    val lifebookScrollState = rememberScrollState()
-
-    // Load random events from JSON assets
-    val randomEvents = remember(context) {
-        loadRandomEventsFromAssets(context)
-    }
-
-    // Generate random life events when aging up
-    var lastAge by remember { mutableStateOf<Int?>(null) }
+    // Handle aging logic
     LaunchedEffect(uiState.playerStats?.age) {
         val currentAge = uiState.playerStats?.age ?: 0
         if (lastAge != null && currentAge > lastAge!!) {
@@ -141,547 +108,623 @@ fun LiveonGameScreen(
         lastAge = currentAge
     }
 
+    LaunchedEffect(lifeHistoryEntries.size) {
+        // Scroll to bottom of lifebook
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(currentTheme.background)
     ) {
-        Column(
+        // Main game content
+        GameContent(
+            uiState = uiState,
+            currentTheme = currentTheme,
+            lifebookScrollState = lifebookScrollState,
+            lifeHistoryEntries = lifeHistoryEntries,
+            entryAlphas = entryAlphas,
+            isCooldown = isCooldown,
+            hourglassRotation = hourglassRotation,
+            glowAnimation = glowAnimation,
+            gameViewModel = gameViewModel
+        )
+
+        // Stats panel (always visible at bottom)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+        ) {
+            StatsPanel(
+                uiState = uiState,
+                currentTheme = currentTheme,
+                onMenuOpen = { isMenuOpen = true }
+            )
+        }
+
+        // Popup menu (appears when menu is open)
+        if (isMenuOpen) {
+            PopupMenu(
+                uiState = uiState,
+                currentTheme = currentTheme,
+                onDismiss = { isMenuOpen = false },
+                onNavigateToCrime = onNavigateToCrime,
+                onNavigateToPets = onNavigateToPets,
+                onNavigateToEducation = onNavigateToEducation,
+                onNavigateToSettings = onNavigateToSettings
+            )
+        }
+
+        // Event dialogs
+        EventDialogs(
+            uiState = uiState,
+            currentTheme = currentTheme,
+            gameViewModel = gameViewModel
+        )
+    }
+}
+
+// ==================== MAIN CONTENT ====================
+@Composable
+fun GameContent(
+    uiState: com.liveongames.liveon.ui.viewmodel.GameUiState,
+    currentTheme: LiveonTheme,
+    lifebookScrollState: ScrollState,
+    lifeHistoryEntries: List<String>,
+    entryAlphas: List<MutableState<Float>>,
+    isCooldown: Boolean,
+    hourglassRotation: Float,
+    glowAnimation: Float,
+    gameViewModel: GameViewModel
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Header
+        GameHeader(currentTheme = currentTheme)
+
+        // Lifebook Section with Age Up Button
+        LifebookSection(
+            uiState = uiState,
+            currentTheme = currentTheme,
+            lifebookScrollState = lifebookScrollState,
+            lifeHistoryEntries = lifeHistoryEntries,
+            entryAlphas = entryAlphas,
+            isCooldown = isCooldown,
+            hourglassRotation = hourglassRotation,
+            glowAnimation = glowAnimation,
+            gameViewModel = gameViewModel
+        )
+
+        Spacer(modifier = Modifier.height(160.dp)) // Space for stats panel
+    }
+}
+
+@Composable
+fun GameHeader(currentTheme: LiveonTheme) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp, bottom = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Liveon",
+            style = MaterialTheme.typography.displaySmall,
+            color = currentTheme.primary,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = "Life Without Limits",
+            style = MaterialTheme.typography.bodyMedium,
+            color = currentTheme.accent
+        )
+    }
+}
+
+@Composable
+fun LifebookSection(
+    uiState: com.liveongames.liveon.ui.viewmodel.GameUiState,
+    currentTheme: LiveonTheme,
+    lifebookScrollState: ScrollState,
+    lifeHistoryEntries: List<String>,
+    entryAlphas: List<MutableState<Float>>,
+    isCooldown: Boolean,
+    hourglassRotation: Float,
+    glowAnimation: Float,
+    gameViewModel: GameViewModel
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(400.dp)
+    ) {
+        Card(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(bottom = 25.dp), // Reduced padding to allow overlap
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(containerColor = currentTheme.surface)
         ) {
-            // Liveon Title Header
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp, bottom = 8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxSize()
+                    .padding(12.dp)
             ) {
-                Text(
-                    text = "Liveon",
-                    style = MaterialTheme.typography.displaySmall,
-                    color = currentTheme.primary,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "Life Without Limits",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = currentTheme.accent
-                )
-            }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_yearbook),
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                        tint = currentTheme.primary
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "Lifebook",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = currentTheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.weight(1.0f))
+                    Text(
+                        text = currentTheme.name,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = currentTheme.accent,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
 
-            // Lifebook Section with Age Up Button Overlay - Increased height
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(400.dp)
-            ) {
-                Card(
+                Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(bottom = 55.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = currentTheme.surface)
+                        .fillMaxWidth()
+                        .weight(1.0f)
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(12.dp)
+                            .verticalScroll(lifebookScrollState)
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_yearbook),
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp),
-                                tint = currentTheme.primary
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
+                        if (lifeHistoryEntries.isEmpty()) {
                             Text(
-                                text = "Lifebook",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = currentTheme.primary,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            // Current theme indicator
-                            Text(
-                                text = currentTheme.name,
-                                style = MaterialTheme.typography.bodySmall,
+                                text = "Your life story will appear here...",
+                                style = MaterialTheme.typography.bodyMedium,
                                 color = currentTheme.accent,
-                                modifier = Modifier.padding(end = 8.dp)
+                                modifier = Modifier.padding(horizontal = 16.dp)
                             )
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f)
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .verticalScroll(lifebookScrollState)
-                            ) {
-                                if (lifeHistoryEntries.isEmpty()) {
-                                    Text(
-                                        text = "Your life story will appear here...",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = currentTheme.accent,
-                                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                                    )
-                                } else {
-                                    lifeHistoryEntries.forEachIndexed { index, entry ->
-                                        LifebookEntryItem(
-                                            entry = entry,
-                                            alpha = if (index < entryAlphas.size) entryAlphas[index].value else 1f,
-                                            theme = currentTheme
-                                        )
-                                        if (index < lifeHistoryEntries.size - 1) {
-                                            Spacer(modifier = Modifier.height(4.dp))
-                                        }
-                                    }
+                        } else {
+                            lifeHistoryEntries.forEachIndexed { index, entry ->
+                                LifebookEntryItem(
+                                    entry = entry,
+                                    alpha = if (index < entryAlphas.size) entryAlphas[index].value else 1f,
+                                    theme = currentTheme
+                                )
+                                if (index < lifeHistoryEntries.size - 1) {
+                                    Spacer(modifier = Modifier.height(4.dp))
                                 }
                             }
                         }
-
-                        LaunchedEffect(lifeHistoryEntries.size) {
-                            delay(100)
-                            lifebookScrollState.animateScrollTo(lifebookScrollState.maxValue)
-                        }
-                    }
-                }
-
-                // Age Up Button with Gradient Glow - Moved further down
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .offset(y = 27.dp)
-                ) {
-                    // Gradient Glow Background
-                    Box(
-                        modifier = Modifier
-                            .size(100.dp)
-                            .graphicsLayer(scaleY = glowAnimation, scaleX = glowAnimation)
-                            .background(
-                                brush = androidx.compose.ui.graphics.Brush.radialGradient(
-                                    listOf(
-                                        currentTheme.primary.copy(alpha = 0.3f),
-                                        currentTheme.primary.copy(alpha = 0.1f),
-                                        androidx.compose.ui.graphics.Color.Transparent
-                                    )
-                                ),
-                                shape = CircleShape
-                            )
-                    )
-
-                    // Actual Button
-                    IconButton(
-                        onClick = {
-                            if (!isCooldown) {
-                                gameViewModel.ageUp()
-                            }
-                        },
-                        modifier = Modifier
-                            .size(70.dp)
-                            .clip(CircleShape)
-                            .background(currentTheme.primary)
-                            .border(2.dp, currentTheme.accent, CircleShape),
-                        enabled = !isCooldown,
-                        colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = androidx.compose.ui.graphics.Color.Transparent,
-                            contentColor = currentTheme.text
-                        )
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_hourglass),
-                            contentDescription = "Advance Time",
-                            modifier = Modifier
-                                .size(28.dp)
-                                .graphicsLayer(rotationZ = hourglassRotation),
-                            tint = androidx.compose.ui.graphics.Color.Unspecified
-                        )
                     }
                 }
             }
-
-            // DEBUG BUTTONS - ADD THIS SECTION
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            ) {
-                Text(
-                    text = "Debug Tools",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(bottom = 4.dp)
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    Button(
-                        onClick = { gameViewModel.debugCharacter() },
-                        modifier = Modifier.padding(2.dp)
-                    ) {
-                        Text("Debug Char", fontSize = 10.sp)
-                    }
-
-                    Button(
-                        onClick = { gameViewModel.testCreateCharacter() },
-                        modifier = Modifier.padding(2.dp)
-                    ) {
-                        Text("Test Create", fontSize = 10.sp)
-                    }
-
-                    Button(
-                        onClick = { gameViewModel.testDirectDatabaseWrite() },
-                        modifier = Modifier.padding(2.dp)
-                    ) {
-                        Text("Test DB", fontSize = 10.sp)
-                    }
-
-                    Button(
-                        onClick = { gameViewModel.showCurrentState() },
-                        modifier = Modifier.padding(2.dp)
-                    ) {
-                        Text("Show State", fontSize = 10.sp)
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(72.dp))
         }
 
-        // FULL STATS PANEL (always visible - shows ALL stats)
+        // Age Up Button - positioned at bottom, overlapping lifebook
         Box(
             modifier = Modifier
-                .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .height(closedVisibleHeight.dp)
-                .offset(y = (-panelRestPosition).dp)
-                .background(currentTheme.surface)
+                .align(Alignment.BottomCenter)
+                .offset(y = (35).dp)
+                .height(70.dp),
+            contentAlignment = Alignment.TopCenter
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize()
+            AgeUpButton(
+                isCooldown = isCooldown,
+                hourglassRotation = hourglassRotation,
+                glowAnimation = glowAnimation,
+                currentTheme = currentTheme,
+                onAgeUp = { gameViewModel.ageUp() }
+            )
+        }
+    }
+}
+
+@Composable
+fun AgeUpButton(
+    isCooldown: Boolean,
+    hourglassRotation: Float,
+    glowAnimation: Float,
+    currentTheme: LiveonTheme,
+    onAgeUp: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .size(70.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        // Gradient Glow Background
+        Box(
+            modifier = Modifier
+                .size(100.dp)
+                .graphicsLayer {
+                    scaleX = glowAnimation
+                    scaleY = glowAnimation
+                }
+                .background(
+                    brush = androidx.compose.ui.graphics.Brush.radialGradient(
+                        listOf(
+                            currentTheme.primary.copy(alpha = 0.3f),
+                            currentTheme.primary.copy(alpha = 0.1f),
+                            androidx.compose.ui.graphics.Color.Transparent
+                        )
+                    ),
+                    shape = CircleShape
+                )
+        )
+
+        // Actual Button
+        IconButton(
+            onClick = { if (!isCooldown) onAgeUp() },
+            modifier = Modifier
+                .size(70.dp)
+                .clip(CircleShape)
+                .background(currentTheme.primary)
+                .border(2.dp, currentTheme.accent, CircleShape),
+            enabled = !isCooldown,
+            colors = IconButtonDefaults.iconButtonColors(
+                containerColor = androidx.compose.ui.graphics.Color.Transparent,
+                contentColor = currentTheme.text
+            )
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_hourglass),
+                contentDescription = "Advance Time",
+                modifier = Modifier
+                    .size(28.dp)
+                    .graphicsLayer {
+                        rotationZ = hourglassRotation
+                    },
+                tint = androidx.compose.ui.graphics.Color.Unspecified
+            )
+        }
+    }
+}
+
+@Composable
+fun StatsPanel(
+    uiState: com.liveongames.liveon.ui.viewmodel.GameUiState,
+    currentTheme: LiveonTheme,
+    onMenuOpen: () -> Unit
+) {
+    val closedVisibleHeight = 160
+    val panelRestPosition = 5
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(closedVisibleHeight.dp)
+            .offset(y = (-panelRestPosition).dp)
+            .background(currentTheme.surface)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Life Management Header
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .background(currentTheme.primary)
+                    .clickable { onMenuOpen() },
+                contentAlignment = Alignment.Center
             ) {
-                // Life Management Header - Tappable to open menu
-                Box(
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_settings),
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                        tint = currentTheme.text
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "Life Management",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = currentTheme.text,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            // Stats Content
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1.0f)
+                    .background(currentTheme.surface)
+                    .padding(vertical = 6.dp)
+            ) {
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
-                        .background(currentTheme.primary)
-                        .clickable { isMenuOpen = true }, // <-- TAP TO OPEN FULL MENU
-                    contentAlignment = Alignment.Center
+                        .fillMaxSize()
+                        .padding(horizontal = 10.dp)
                 ) {
                     Row(
+                        modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_settings),
+                            painter = painterResource(id = R.drawable.ic_person),
                             contentDescription = null,
-                            modifier = Modifier.size(20.dp),
-                            tint = currentTheme.text
+                            modifier = Modifier.size(16.dp),
+                            tint = currentTheme.primary
                         )
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "Life Management",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = currentTheme.text,
+                            text = "Stats",
+                            style = MaterialTheme.typography.titleSmall,
+                            color = currentTheme.primary,
                             fontWeight = FontWeight.Bold
                         )
                     }
-                }
 
-                // Stats Content - Always fully visible
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .background(currentTheme.surface)
-                        .padding(vertical = 6.dp),
-                    contentAlignment = Alignment.TopCenter
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 10.dp)
-                    ) {
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Column(modifier = Modifier.fillMaxWidth()) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_person),
-                                contentDescription = null,
-                                modifier = Modifier.size(16.dp),
-                                tint = currentTheme.primary
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = "Stats",
-                                style = MaterialTheme.typography.titleSmall,
-                                color = currentTheme.primary,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(4.dp))
-
-                        Column(modifier = Modifier.fillMaxWidth()) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                CompactStatItem("Age", uiState.playerStats?.age?.toString() ?: "0", R.drawable.ic_yearbook, currentTheme.primary, currentTheme)
-                                CompactStatItem("Health", uiState.playerStats?.health?.toString() ?: "0", R.drawable.ic_health, Color(0xFF4CAF50), currentTheme)
-                                CompactStatItem("Happiness", uiState.playerStats?.happiness?.toString() ?: "0", R.drawable.ic_happiness_new, Color(0xFFFF9800), currentTheme)
-                            }
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                CompactStatItem("Intelligence", uiState.playerStats?.intelligence?.toString() ?: "0", R.drawable.ic_brain, Color(0xFF2196F3), currentTheme)
-                                CompactStatItem("Money", "$${uiState.playerStats?.money?.toString() ?: "0"}", R.drawable.ic_money, Color(0xFF9E9E9E), currentTheme)
-                                CompactStatItem("Social", uiState.playerStats?.social?.toString() ?: "0", R.drawable.ic_people, Color(0xFFF44336), currentTheme)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // POPUP MENU (appears when isMenuOpen = true)
-        if (isMenuOpen) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.0f)) // <-- NO DIMMED BACKGROUND
-                    .clickable { isMenuOpen = false } // <-- TAP BACKGROUND TO CLOSE
-            ) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.7f) // <-- TAKES 70% OF SCREEN HEIGHT
-                        .background(currentTheme.surface) // <-- POPUP BACKGROUND
-                        .clickable(enabled = false) { } // <-- PREVENT BACKGROUND CLICKS FROM CLOSING
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp)
-                    ) {
-                        // HEADER WITH CLOSE ICON BUTTON
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 16.dp),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(
-                                text = "Life Management",
-                                style = MaterialTheme.typography.headlineSmall,
-                                modifier = Modifier.weight(1f)
-                            )
-                            IconButton(
-                                onClick = { isMenuOpen = false }
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_collapse),
-                                    contentDescription = "Close",
-                                    tint = currentTheme.text
-                                )
-                            }
+                            CompactStatItem("Age", uiState.playerStats?.age?.toString() ?: "0", R.drawable.ic_yearbook, currentTheme.primary, currentTheme)
+                            CompactStatItem("Health", uiState.playerStats?.health?.toString() ?: "0", R.drawable.ic_health, Color(0xFF4CAF50), currentTheme)
+                            CompactStatItem("Happiness", uiState.playerStats?.happiness?.toString() ?: "0", R.drawable.ic_happiness_new, Color(0xFFFF9800), currentTheme)
                         }
-
-                        // STAT DISPLAY (same as closed panel but in popup)
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 16.dp)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(12.dp)
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_person),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(16.dp),
-                                        tint = currentTheme.primary
-                                    )
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(
-                                        text = "Current Stats",
-                                        style = MaterialTheme.typography.titleSmall,
-                                        color = currentTheme.primary,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
-
-                                Spacer(modifier = Modifier.height(8.dp))
-
-                                Column(modifier = Modifier.fillMaxWidth()) {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        CompactStatItem("Age", uiState.playerStats?.age?.toString() ?: "0", R.drawable.ic_yearbook, currentTheme.primary, currentTheme)
-                                        CompactStatItem("Health", uiState.playerStats?.health?.toString() ?: "0", R.drawable.ic_health, Color(0xFF4CAF50), currentTheme)
-                                        CompactStatItem("Happiness", uiState.playerStats?.happiness?.toString() ?: "0", R.drawable.ic_happiness_new, Color(0xFFFF9800), currentTheme)
-                                    }
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        CompactStatItem("Intelligence", uiState.playerStats?.intelligence?.toString() ?: "0", R.drawable.ic_brain, Color(0xFF2196F3), currentTheme)
-                                        CompactStatItem("Money", "$${uiState.playerStats?.money?.toString() ?: "0"}", R.drawable.ic_money, Color(0xFF9E9E9E), currentTheme)
-                                        CompactStatItem("Social", uiState.playerStats?.social?.toString() ?: "0", R.drawable.ic_people, Color(0xFFF44336), currentTheme)
-                                    }
-                                }
-                            }
-                        }
-
-                        // MENU ITEMS
-                        Text(
-                            text = "Menu Options:",
-                            style = MaterialTheme.typography.titleMedium,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-
-                        // Life Management Menu - Scrollable List
-                        val menuItems = listOf(
-                            MenuItemData(R.drawable.ic_business, "Career", "Manage your professional life", currentTheme) { },
-                            MenuItemData(R.drawable.ic_people, "Social", "Manage relationships", currentTheme) { },
-                            MenuItemData(R.drawable.ic_law, "Criminal Activities", "View criminal activities.", currentTheme) {
-                                isMenuOpen = false
-                                onNavigateToCrime()
-                            },
-                            MenuItemData(R.drawable.ic_band, "Pet Management", "Adopt companions", currentTheme) {
-                                isMenuOpen = false
-                                onNavigateToPets()
-                            },
-                            MenuItemData(R.drawable.ic_education, "Education", "Manage schooling", currentTheme) { },
-                            MenuItemData(R.drawable.ic_relationship, "Relationships", "View connections", currentTheme) { },
-                            MenuItemData(R.drawable.ic_health, "Healthcare", "View medical history and seek care", currentTheme) { },
-                            MenuItemData(R.drawable.ic_travel, "Travel Log", "View places visited", currentTheme) { },
-                            MenuItemData(R.drawable.ic_save, "Save Game", "Manage saves", currentTheme) { },
-                            MenuItemData(R.drawable.ic_settings, "Settings", "Game preferences including theme selection", currentTheme) {
-                                isMenuOpen = false
-                                onNavigateToSettings()
-                            }
-                        )
-
-                        LazyColumn(
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            items(menuItems) { item ->
-                                MenuItemRow(item = item)
-                                HorizontalDivider(
-                                    modifier = Modifier.padding(vertical = 3.dp),
-                                    thickness = 1.dp,
-                                    color = currentTheme.surfaceVariant
-                                )
-                            }
+                            CompactStatItem("Intelligence", uiState.playerStats?.intelligence?.toString() ?: "0", R.drawable.ic_brain, Color(0xFF2196F3), currentTheme)
+                            CompactStatItem("Money", "$${uiState.playerStats?.money?.toString() ?: "0"}", R.drawable.ic_money, Color(0xFF9E9E9E), currentTheme)
+                            CompactStatItem("Social", uiState.playerStats?.social?.toString() ?: "0", R.drawable.ic_people, Color(0xFFF44336), currentTheme)
                         }
                     }
                 }
             }
         }
+    }
+}
 
-        // Event dialog with stat effects
-        uiState.activeEvents
-            .filterIsInstance<GameEvent>()
-            .filter { event ->
-                !event.title.contains("Age", ignoreCase = true) &&
-                        !event.title.contains("Year", ignoreCase = true) &&
-                        !event.title.contains("Birthday", ignoreCase = true)
-            }
-            .firstOrNull()
-            ?.let { firstEvent ->
-                EventDialogComposable(
-                    event = firstEvent,
-                    onChoiceSelected = { choiceId ->
-                        gameViewModel.makeChoice(firstEvent.id, choiceId)
-                    },
-                    onDismiss = {
-                        gameViewModel.dismissEvent(firstEvent.id)
-                    },
-                    theme = currentTheme
+// ==================== POPUP MENU ====================
+@Composable
+fun PopupMenu(
+    uiState: com.liveongames.liveon.ui.viewmodel.GameUiState,
+    currentTheme: LiveonTheme,
+    onDismiss: () -> Unit,
+    onNavigateToCrime: () -> Unit,
+    onNavigateToPets: () -> Unit,
+    onNavigateToEducation: () -> Unit,
+    onNavigateToSettings: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.5f))
+            .clickable { onDismiss() }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.7f)
+                .background(currentTheme.surface)
+                .align(Alignment.BottomCenter)
+        ) {
+            // Header with close button
+            PopupMenuHeader(
+                currentTheme = currentTheme,
+                onDismiss = onDismiss
+            )
+
+            // Current stats display
+            CurrentStatsCard(
+                uiState = uiState,
+                currentTheme = currentTheme
+            )
+
+            // Menu options
+            MenuOptionsSection(
+                currentTheme = currentTheme,
+                onNavigateToCrime = onNavigateToCrime,
+                onNavigateToPets = onNavigateToPets,
+                onNavigateToEducation = onNavigateToEducation,
+                onNavigateToSettings = onNavigateToSettings
+            )
+        }
+    }
+}
+
+@Composable
+fun PopupMenuHeader(
+    currentTheme: LiveonTheme,
+    onDismiss: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "Life Management",
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.weight(1.0f)
+        )
+        IconButton(
+            onClick = onDismiss
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_collapse),
+                contentDescription = "Close",
+                tint = currentTheme.text
+            )
+        }
+    }
+}
+
+@Composable
+fun CurrentStatsCard(
+    uiState: com.liveongames.liveon.ui.viewmodel.GameUiState,
+    currentTheme: LiveonTheme
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_person),
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = currentTheme.primary
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "Current Stats",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = currentTheme.primary,
+                    fontWeight = FontWeight.Bold
                 )
             }
-    }
-}
 
-// Load random events from JSON assets
-fun loadRandomEventsFromAssets(context: Context): Map<String, List<String>> {
-    return try {
-        val jsonString = context.assets.open("random_events.json").bufferedReader().use { it.readText() }
-        val jsonObject = JSONObject(jsonString)
+            Spacer(modifier = Modifier.height(8.dp))
 
-        val categories = listOf(
-            "world_events", "local_events", "social_events",
-            "personal_events", "travel_events", "pop_culture_events",
-            "career_events", "random_events"
-        )
-
-        categories.associateWith { category ->
-            val jsonArray = jsonObject.getJSONArray(category)
-            val events = mutableListOf<String>()
-            for (i in 0 until jsonArray.length()) {
-                events.add(jsonArray.getString(i))
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    CompactStatItem("Age", uiState.playerStats?.age?.toString() ?: "0", R.drawable.ic_yearbook, currentTheme.primary, currentTheme)
+                    CompactStatItem("Health", uiState.playerStats?.health?.toString() ?: "0", R.drawable.ic_health, Color(0xFF4CAF50), currentTheme)
+                    CompactStatItem("Happiness", uiState.playerStats?.happiness?.toString() ?: "0", R.drawable.ic_happiness_new, Color(0xFFFF9800), currentTheme)
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    CompactStatItem("Intelligence", uiState.playerStats?.intelligence?.toString() ?: "0", R.drawable.ic_brain, Color(0xFF2196F3), currentTheme)
+                    CompactStatItem("Money", "$${uiState.playerStats?.money?.toString() ?: "0"}", R.drawable.ic_money, Color(0xFF9E9E9E), currentTheme)
+                    CompactStatItem("Social", uiState.playerStats?.social?.toString() ?: "0", R.drawable.ic_people, Color(0xFFF44336), currentTheme)
+                }
             }
-            events
         }
-    } catch (e: Exception) {
-        Log.e("Lifebook", "Error loading random events: ${e.message}")
-        mapOf(
-            "world_events" to listOf("A major breakthrough in renewable energy was announced globally."),
-            "local_events" to listOf("The local community center held its annual summer fair."),
-            "social_events" to listOf("Your childhood friend sent you a thoughtful message."),
-            "personal_events" to listOf("You felt a new sense of clarity about your future."),
-            "travel_events" to listOf("You discovered an interesting travel documentary."),
-            "pop_culture_events" to listOf("A new indie band released a catchy single."),
-            "career_events" to listOf("You learned a new skill that could help your career."),
-            "random_events" to listOf("You found a lucky coin on the sidewalk.")
+    }
+}
+
+@Composable
+fun MenuOptionsSection(
+    currentTheme: LiveonTheme,
+    onNavigateToCrime: () -> Unit,
+    onNavigateToPets: () -> Unit,
+    onNavigateToEducation: () -> Unit,
+    onNavigateToSettings: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        Text(
+            text = "Menu Options:",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(bottom = 8.dp)
         )
-    }
-}
 
-// Generate random life events when aging up
-fun generateRandomLifeEvents(eventsMap: Map<String, List<String>>, eventCount: Int): List<String> {
-    val events = mutableListOf<String>()
+        val menuItems = listOf(
+            MenuItemData(R.drawable.ic_business, "Career", "Manage your professional life", currentTheme) { },
+            MenuItemData(R.drawable.ic_people, "Social", "Manage relationships", currentTheme) { },
+            MenuItemData(R.drawable.ic_law, "Criminal Activities", "View criminal activities.", currentTheme) {
+                onNavigateToCrime()
+            },
+            MenuItemData(R.drawable.ic_band, "Pet Management", "Adopt companions", currentTheme) {
+                onNavigateToPets()
+            },
+            MenuItemData(R.drawable.ic_education, "Education", "Manage schooling", currentTheme) {
+                onNavigateToEducation()
+            },
+            MenuItemData(R.drawable.ic_relationship, "Relationships", "View connections", currentTheme) { },
+            MenuItemData(R.drawable.ic_health, "Healthcare", "View medical history and seek care", currentTheme) { },
+            MenuItemData(R.drawable.ic_travel, "Travel Log", "View places visited", currentTheme) { },
+            MenuItemData(R.drawable.ic_save, "Save Game", "Manage saves", currentTheme) { },
+            MenuItemData(R.drawable.ic_settings, "Settings", "Game preferences including theme selection", currentTheme) {
+                onNavigateToSettings()
+            }
+        )
 
-    repeat(eventCount) {
-        val categories = eventsMap.keys.toList()
-        val category = categories.random()
-
-        val categoryEvents = eventsMap[category] ?: emptyList()
-        if (categoryEvents.isNotEmpty()) {
-            events.add(categoryEvents.random())
+        LazyColumn(
+            modifier = Modifier.weight(1.0f)
+        ) {
+            items(menuItems) { item ->
+                MenuItemRow(item = item)
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 3.dp),
+                    thickness = 1.dp,
+                    color = currentTheme.surfaceVariant
+                )
+            }
         }
     }
-
-    return events.distinct()
 }
 
-// Lifebook Entry Item Composable with smaller text
+// ==================== EVENT DIALOGS ====================
+@Composable
+fun EventDialogs(
+    uiState: com.liveongames.liveon.ui.viewmodel.GameUiState,
+    currentTheme: LiveonTheme,
+    gameViewModel: GameViewModel
+) {
+    uiState.activeEvents
+        .filterIsInstance<GameEvent>()
+        .filter { event ->
+            !event.title.contains("Age", ignoreCase = true) &&
+                    !event.title.contains("Year", ignoreCase = true) &&
+                    !event.title.contains("Birthday", ignoreCase = true)
+        }
+        .firstOrNull()
+        ?.let { firstEvent ->
+            EventDialogComposable(
+                event = firstEvent,
+                onChoiceSelected = { choiceId ->
+                    gameViewModel.makeChoice(firstEvent.id, choiceId)
+                },
+                onDismiss = {
+                    gameViewModel.dismissEvent(firstEvent.id)
+                },
+                theme = currentTheme
+            )
+        }
+}
+
+// ==================== UTILITY COMPONENTS ====================
 @Composable
 fun LifebookEntryItem(
     entry: String,
@@ -792,7 +835,7 @@ fun MenuItemRow(item: MenuItemData) {
 
             Spacer(modifier = Modifier.width(10.dp))
 
-            Column(modifier = Modifier.weight(1f)) {
+            Column(modifier = Modifier.weight(1.0f)) {
                 Text(
                     text = item.title,
                     style = MaterialTheme.typography.titleSmall,
@@ -880,4 +923,55 @@ fun EventDialogComposable(
         },
         containerColor = theme.surface
     )
+}
+
+// ==================== UTILITY FUNCTIONS ====================
+fun loadRandomEventsFromAssets(context: Context): Map<String, List<String>> {
+    return try {
+        val jsonString = context.assets.open("random_events.json").bufferedReader().use { it.readText() }
+        val jsonObject = JSONObject(jsonString)
+
+        val categories = listOf(
+            "world_events", "local_events", "social_events",
+            "personal_events", "travel_events", "pop_culture_events",
+            "career_events", "random_events"
+        )
+
+        categories.associateWith { category ->
+            val jsonArray = jsonObject.getJSONArray(category)
+            val events = mutableListOf<String>()
+            for (i in 0 until jsonArray.length()) {
+                events.add(jsonArray.getString(i))
+            }
+            events
+        }
+    } catch (e: Exception) {
+        Log.e("Lifebook", "Error loading random events: ${e.message}")
+        mapOf(
+            "world_events" to listOf("A major breakthrough in renewable energy was announced globally."),
+            "local_events" to listOf("The local community center held its annual summer fair."),
+            "social_events" to listOf("Your childhood friend sent you a thoughtful message."),
+            "personal_events" to listOf("You felt a new sense of clarity about your future."),
+            "travel_events" to listOf("You discovered an interesting travel documentary."),
+            "pop_culture_events" to listOf("A new indie band released a catchy single."),
+            "career_events" to listOf("You learned a new skill that could help your career."),
+            "random_events" to listOf("You found a lucky coin on the sidewalk.")
+        )
+    }
+}
+
+fun generateRandomLifeEvents(eventsMap: Map<String, List<String>>, eventCount: Int): List<String> {
+    val events = mutableListOf<String>()
+
+    repeat(eventCount) {
+        val categories = eventsMap.keys.toList()
+        val category = categories.random()
+
+        val categoryEvents = eventsMap[category] ?: emptyList()
+        if (categoryEvents.isNotEmpty()) {
+            events.add(categoryEvents.random())
+        }
+    }
+
+    return events.distinct()
 }

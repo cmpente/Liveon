@@ -16,6 +16,8 @@ import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.random.Random
 import javax.inject.Inject
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 
 @HiltViewModel
 class CrimeViewModel @Inject constructor(
@@ -26,7 +28,54 @@ class CrimeViewModel @Inject constructor(
     companion object {
         private const val CHARACTER_ID = "player_character"
         private const val TAG = "CrimeViewModel"
+
+        // Cooldown durations in milliseconds
+        object CrimeCooldownDurationsMs {
+            const val LOW = 25_000L
+            const val MEDIUM = 35_000L
+            const val HIGH = 50_000L
+            const val EXTREME = 70_000L
+        }
+
+        // Config flags
+        object CrimeCooldownConfig {
+            const val ENABLED = true
+            const val PARTIAL_SUCCESS_STARTS_COOLDOWN = false
+            const val REDUCED_MOTION_FALLBACK = true
+        }
+
+        // Helper function for cooldown duration by risk tier
+        fun cooldownForTier(tier: RiskTier): Long {
+            return when (tier) {
+                RiskTier.LOW_RISK -> CrimeCooldownDurationsMs.LOW
+                RiskTier.MEDIUM_RISK -> CrimeCooldownDurationsMs.MEDIUM
+                RiskTier.HIGH_RISK -> CrimeCooldownDurationsMs.HIGH
+                RiskTier.EXTREME_RISK -> CrimeCooldownDurationsMs.EXTREME
+            }
+        }
     }
+
+    // Add to CrimeViewModel class properties:
+    private val _cooldownUntil = MutableStateFlow<Long?>(null)
+    val cooldownUntil: StateFlow<Long?> = _cooldownUntil.asStateFlow()
+
+    // Add to CrimeViewModel class:
+    fun startGlobalCooldown(durationMs: Long) {
+        if (!CrimeCooldownConfig.ENABLED) return
+
+        viewModelScope.launch {
+            val endTime = System.currentTimeMillis() + durationMs
+            _cooldownUntil.value = endTime
+
+            // Update cooldown every 100ms until finished
+            while (System.currentTimeMillis() < endTime) {
+                delay(100)
+            }
+
+            _cooldownUntil.value = null
+        }
+
+}
 
     private val _crimes = MutableStateFlow<List<Crime>>(emptyList())
     val crimes: StateFlow<List<Crime>> = _crimes.asStateFlow()
@@ -71,7 +120,7 @@ class CrimeViewModel @Inject constructor(
         }
     }
 
-    fun commitCrime(type: CrimeType) {
+    fun commitCrime(type: CrimeViewModel.CrimeType) {
         Log.d(TAG, "Attempting to commit crime: $type")
         viewModelScope.launch {
             try {
@@ -102,13 +151,14 @@ class CrimeViewModel @Inject constructor(
                 var notorietyChange = 0
 
                 if (isSuccess) {
-                    // Successful crime - gain money
+                    // Successful crime - gain money and notoriety
                     moneyGained = Random.nextInt(baseCrime.payoutMin, baseCrime.payoutMax + 1)
                     notorietyChange = baseCrime.notorietyGain
-                    Log.d(TAG, "Crime successful, gained money: $moneyGained")
+                    Log.d(TAG, "Crime successful, gained money: $moneyGained, notoriety: $notorietyChange")
                 } else {
+                    // Failed crime - lose notoriety but no money
                     notorietyChange = baseCrime.notorietyLoss
-                    Log.d(TAG, "Crime failed, notoriety change: $notorietyChange")
+                    Log.d(TAG, "Crime failed, lost notoriety: $notorietyChange")
                 }
 
                 // Handle consequences if caught
@@ -133,12 +183,12 @@ class CrimeViewModel @Inject constructor(
                 crimeRepository.recordCrime(CHARACTER_ID, actualCrime)
 
                 // Apply money change to player if successful
-                if (moneyGained > 0) {
+                if (isSuccess && moneyGained > 0) {
                     playerRepository.updateMoney(CHARACTER_ID, moneyGained)
                     Log.d(TAG, "Updated player money by: $moneyGained")
                 }
 
-                // Apply notoriety change
+                // Apply notoriety change (always applied, positive or negative)
                 if (notorietyChange != 0) {
                     playerRepository.updateNotoriety(CHARACTER_ID, notorietyChange)
                     Log.d(TAG, "Updated player notoriety by: $notorietyChange")
@@ -180,7 +230,7 @@ class CrimeViewModel @Inject constructor(
                     jailMin = 1,
                     jailMax = 3,
                     notorietyGain = 2,
-                    notorietyLoss = -1,  // Reduced penalty
+                    notorietyLoss = 0,  // No notoriety loss on failure
                     iconDescription = "Gloved hand pulling a wallet from a back pocket",
                     scenario = scenarios.random()
                 )
@@ -203,7 +253,7 @@ class CrimeViewModel @Inject constructor(
                     jailMin = 2,
                     jailMax = 5,
                     notorietyGain = 2,
-                    notorietyLoss = -1,  // Reduced penalty
+                    notorietyLoss = 0,  // No notoriety loss on failure
                     iconDescription = "Shopping bag silhouette with hand pulling it away",
                     scenario = scenarios.random()
                 )
@@ -226,7 +276,7 @@ class CrimeViewModel @Inject constructor(
                     jailMin = 1,
                     jailMax = 2,
                     notorietyGain = 2,
-                    notorietyLoss = -1,  // Reduced penalty
+                    notorietyLoss = 0,  // No notoriety loss on failure
                     iconDescription = "Tilted spray paint can with mist cloud",
                     scenario = scenarios.random()
                 )
@@ -249,7 +299,7 @@ class CrimeViewModel @Inject constructor(
                     jailMin = 2,
                     jailMax = 4,
                     notorietyGain = 2,
-                    notorietyLoss = -1,  // Reduced penalty
+                    notorietyLoss = 0,  // No notoriety loss on failure
                     iconDescription = "Dollar bill with cartoon mask overlay",
                     scenario = scenarios.random()
                 )
@@ -267,14 +317,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Mugging",
                     description = "Robbery involving direct confrontation with victims",
                     riskTier = RiskTier.MEDIUM_RISK,
-                    notorietyRequired = 5,  // Reduced requirement
+                    notorietyRequired = 5,
                     baseSuccessChance = 0.55,
                     payoutMin = 100,
                     payoutMax = 800,
                     jailMin = 5,
                     jailMax = 14,
                     notorietyGain = 4,
-                    notorietyLoss = -2,  // Reduced penalty
+                    notorietyLoss = -1,  // Small notoriety loss on failure
                     iconDescription = "Fist silhouette with wallet overlay",
                     scenario = scenarios.random()
                 )
@@ -290,14 +340,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Breaking and Entering",
                     description = "Unlawful entry into buildings or homes",
                     riskTier = RiskTier.MEDIUM_RISK,
-                    notorietyRequired = 5,  // Reduced requirement
+                    notorietyRequired = 5,
                     baseSuccessChance = 0.5,
                     payoutMin = 500,
                     payoutMax = 2000,
                     jailMin = 10,
                     jailMax = 20,
                     notorietyGain = 4,
-                    notorietyLoss = -2,  // Reduced penalty
+                    notorietyLoss = -1,  // Small notoriety loss on failure
                     iconDescription = "House silhouette with broken door outline",
                     scenario = scenarios.random()
                 )
@@ -313,14 +363,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Drug Dealing",
                     description = "Selling illegal substances for profit",
                     riskTier = RiskTier.MEDIUM_RISK,
-                    notorietyRequired = 10,  // Reduced requirement
+                    notorietyRequired = 10,
                     baseSuccessChance = 0.6,
                     payoutMin = 200,
                     payoutMax = 1800,
                     jailMin = 7,
                     jailMax = 15,
                     notorietyGain = 4,
-                    notorietyLoss = -2,  // Reduced penalty
+                    notorietyLoss = -1,  // Small notoriety loss on failure
                     iconDescription = "Pill bottle with dollar sign overlay",
                     scenario = scenarios.random()
                 )
@@ -336,14 +386,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Counterfeit Goods",
                     description = "Selling fake or reproduction items illegally",
                     riskTier = RiskTier.MEDIUM_RISK,
-                    notorietyRequired = 10,  // Reduced requirement
+                    notorietyRequired = 10,
                     baseSuccessChance = 0.65,
                     payoutMin = 300,
                     payoutMax = 1500,
                     jailMin = 8,
                     jailMax = 18,
                     notorietyGain = 4,
-                    notorietyLoss = -2,  // Reduced penalty
+                    notorietyLoss = -1,  // Small notoriety loss on failure
                     iconDescription = "Designer handbag with \"fake\" stamp icon",
                     scenario = scenarios.random()
                 )
@@ -361,14 +411,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Burglary",
                     description = "Breaking into homes or businesses to steal valuable items",
                     riskTier = RiskTier.HIGH_RISK,
-                    notorietyRequired = 20,  // Reduced requirement
+                    notorietyRequired = 20,
                     baseSuccessChance = 0.45,
                     payoutMin = 1000,
                     payoutMax = 8000,
                     jailMin = 60,
                     jailMax = 150,
                     notorietyGain = 7,
-                    notorietyLoss = -3,  // Reduced penalty
+                    notorietyLoss = -2,  // Medium notoriety loss on failure
                     iconDescription = "Crowbar over house silhouette",
                     scenario = scenarios.random()
                 )
@@ -384,14 +434,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Fraud",
                     description = "Deceiving people or institutions for financial gain",
                     riskTier = RiskTier.HIGH_RISK,
-                    notorietyRequired = 20,  // Reduced requirement
+                    notorietyRequired = 20,
                     baseSuccessChance = 0.5,
                     payoutMin = 2000,
                     payoutMax = 12000,
                     jailMin = 90,
                     jailMax = 210,
                     notorietyGain = 7,
-                    notorietyLoss = -3,  // Reduced penalty
+                    notorietyLoss = -2,  // Medium notoriety loss on failure
                     iconDescription = "Credit card with warning symbol",
                     scenario = scenarios.random()
                 )
@@ -407,14 +457,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Arms Smuggling",
                     description = "Illegally transporting weapons across borders",
                     riskTier = RiskTier.HIGH_RISK,
-                    notorietyRequired = 25,  // Reduced requirement
+                    notorietyRequired = 25,
                     baseSuccessChance = 0.4,
                     payoutMin = 5000,
                     payoutMax = 22000,
                     jailMin = 150,
                     jailMax = 270,
                     notorietyGain = 7,
-                    notorietyLoss = -3,  // Reduced penalty
+                    notorietyLoss = -2,  // Medium notoriety loss on failure
                     iconDescription = "Rifle silhouette in crate",
                     scenario = scenarios.random()
                 )
@@ -430,14 +480,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Drug Trafficking",
                     description = "Large-scale distribution of illegal substances",
                     riskTier = RiskTier.HIGH_RISK,
-                    notorietyRequired = 25,  // Reduced requirement
+                    notorietyRequired = 25,
                     baseSuccessChance = 0.35,
                     payoutMin = 10000,
                     payoutMax = 45000,
                     jailMin = 180,
                     jailMax = 365,
                     notorietyGain = 7,
-                    notorietyLoss = -3,  // Reduced penalty
+                    notorietyLoss = -2,  // Medium notoriety loss on failure
                     iconDescription = "Truck icon with pill/bag symbol",
                     scenario = scenarios.random()
                 )
@@ -455,14 +505,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Armed Robbery",
                     description = "Robbery involving weapons and significant violence",
                     riskTier = RiskTier.EXTREME_RISK,
-                    notorietyRequired = 40,  // Reduced requirement
+                    notorietyRequired = 40,
                     baseSuccessChance = 0.3,
                     payoutMin = 20000,
                     payoutMax = 120000,
                     jailMin = 1460,
                     jailMax = 4380,
                     notorietyGain = 10,
-                    notorietyLoss = -5,  // Reduced penalty
+                    notorietyLoss = -3,  // Large notoriety loss on failure
                     iconDescription = "Masked head with pistol silhouette",
                     scenario = scenarios.random()
                 )
@@ -478,14 +528,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Extortion",
                     description = "Forcing victims to provide money through threats",
                     riskTier = RiskTier.EXTREME_RISK,
-                    notorietyRequired = 40,  // Reduced requirement
+                    notorietyRequired = 40,
                     baseSuccessChance = 0.4,
                     payoutMin = 5000,
                     payoutMax = 40000,
                     jailMin = 730,
                     jailMax = 2190,
                     notorietyGain = 10,
-                    notorietyLoss = -5,  // Reduced penalty
+                    notorietyLoss = -3,  // Large notoriety loss on failure
                     iconDescription = "Envelope with dollar sign and warning triangle",
                     scenario = scenarios.random()
                 )
@@ -501,14 +551,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Kidnapping for Ransom",
                     description = "Abducting people for financial gain",
                     riskTier = RiskTier.EXTREME_RISK,
-                    notorietyRequired = 50,  // Reduced requirement
+                    notorietyRequired = 50,
                     baseSuccessChance = 0.25,
                     payoutMin = 50000,
                     payoutMax = 400000,
                     jailMin = 2190,
                     jailMax = 5475,
                     notorietyGain = 10,
-                    notorietyLoss = -5,  // Reduced penalty
+                    notorietyLoss = -3,  // Large notoriety loss on failure
                     iconDescription = "Bound person silhouette",
                     scenario = scenarios.random()
                 )
@@ -524,14 +574,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Ponzi Scheme",
                     description = "Complex fraud involving false investment returns",
                     riskTier = RiskTier.EXTREME_RISK,
-                    notorietyRequired = 50,  // Reduced requirement
+                    notorietyRequired = 50,
                     baseSuccessChance = 0.35,
                     payoutMin = 90000,
                     payoutMax = 900000,
                     jailMin = 1095,
                     jailMax = 3650,
                     notorietyGain = 10,
-                    notorietyLoss = -5,  // Reduced penalty
+                    notorietyLoss = -3,  // Large notoriety loss on failure
                     iconDescription = "Stacked coins forming a pyramid",
                     scenario = scenarios.random()
                 )
@@ -547,14 +597,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Contract Killing",
                     description = "Professional assassination for hire",
                     riskTier = RiskTier.EXTREME_RISK,
-                    notorietyRequired = 60,  // Reduced requirement
+                    notorietyRequired = 60,
                     baseSuccessChance = 0.3,
                     payoutMin = 25000,
                     payoutMax = 450000,
                     jailMin = 3650,
                     jailMax = 7300,
                     notorietyGain = 10,
-                    notorietyLoss = -5,  // Reduced penalty
+                    notorietyLoss = -3,  // Large notoriety loss on failure
                     iconDescription = "Silenced pistol silhouette",
                     scenario = scenarios.random()
                 )
@@ -570,14 +620,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Dark Web Sales",
                     description = "Selling illegal goods and services online",
                     riskTier = RiskTier.EXTREME_RISK,
-                    notorietyRequired = 40,  // Reduced requirement
+                    notorietyRequired = 40,
                     baseSuccessChance = 0.4,
                     payoutMin = 12000,
                     payoutMax = 220000,
                     jailMin = 730,
                     jailMax = 2920,
                     notorietyGain = 10,
-                    notorietyLoss = -5,  // Reduced penalty
+                    notorietyLoss = -3,  // Large notoriety loss on failure
                     iconDescription = "Laptop with skull icon",
                     scenario = scenarios.random()
                 )
@@ -593,14 +643,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Art Theft",
                     description = "Stealing high-value artwork",
                     riskTier = RiskTier.EXTREME_RISK,
-                    notorietyRequired = 50,  // Reduced requirement
+                    notorietyRequired = 50,
                     baseSuccessChance = 0.2,
                     payoutMin = 110000,
                     payoutMax = 4800000,
                     jailMin = 1825,
                     jailMax = 5475,
                     notorietyGain = 10,
-                    notorietyLoss = -5,  // Reduced penalty
+                    notorietyLoss = -3,  // Large notoriety loss on failure
                     iconDescription = "Painting frame with cut-out center",
                     scenario = scenarios.random()
                 )
@@ -616,14 +666,14 @@ class CrimeViewModel @Inject constructor(
                     name = "Diamond Heist",
                     description = "Major theft involving high-value gems",
                     riskTier = RiskTier.EXTREME_RISK,
-                    notorietyRequired = 60,  // Reduced requirement
+                    notorietyRequired = 60,
                     baseSuccessChance = 0.15,
                     payoutMin = 500000,
                     payoutMax = 9500000,
                     jailMin = 2920,
                     jailMax = 7300,
                     notorietyGain = 10,
-                    notorietyLoss = -5,  // Reduced penalty
+                    notorietyLoss = -3,  // Large notoriety loss on failure
                     iconDescription = "Diamond silhouette in spotlight",
                     scenario = scenarios.random()
                 )

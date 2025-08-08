@@ -25,10 +25,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
-import kotlin.random.Random
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import java.util.*
 
 @Composable
 fun CrimeScreen(
@@ -44,8 +45,67 @@ fun CrimeScreen(
     var showClearDialog by remember { mutableStateOf(false) }
     var showCrimeDialog by remember { mutableStateOf<CrimeDialogData?>(null) }
     var showCrimeResult by remember { mutableStateOf<CrimeResult?>(null) }
+    var pendingCrimeType by remember { mutableStateOf<CrimeViewModel.CrimeType?>(null) }
 
     Log.d("CrimeScreen", "CrimeScreen recomposed, crimes count: ${crimes.size}")
+
+    // Global cooldown state
+    val (cooldownActive, cooldownSeconds) = rememberCooldownState(viewModel)
+
+    // Place this LaunchedEffect right after your variable declarations:
+    LaunchedEffect(crimes) {
+        if (pendingCrimeType != null && crimes.isNotEmpty()) {
+            // Find the crime we just committed (match by type and recent timestamp)
+            val recentCrimes = crimes.filter {
+                System.currentTimeMillis() - it.timestamp < 5000 // Within last 5 seconds
+            }
+
+            val matchingCrime = recentCrimes.find { crime ->
+                val crimeType = pendingCrimeType
+                crimeType != null && getCrimeName(crimeType) == crime.name
+            } ?: recentCrimes.maxByOrNull { it.timestamp }
+
+            if (matchingCrime != null) {
+                val crimeType = pendingCrimeType
+                if (crimeType != null) {
+                    showCrimeResult = CrimeResult(
+                        title = when {
+                            matchingCrime.success == true && matchingCrime.caught == true -> "Messy Job!"
+                            matchingCrime.success == true && matchingCrime.caught == false -> "Clean Getaway!"
+                            else -> "Busted!"
+                        },
+                        description = when {
+                            matchingCrime.success == true && matchingCrime.caught == true -> "You got the money, but not without attracting unwanted attention."
+                            matchingCrime.success == true && matchingCrime.caught == false -> "Everything went according to plan — no one will know until it's too late."
+                            else -> "You slipped up — now you're paying the price."
+                        },
+                        moneyGained = matchingCrime.moneyGained ?: 0,
+                        moneySeized = if (matchingCrime.caught == true && matchingCrime.success == false)
+                            -(matchingCrime.moneyGained ?: 0) else 0,
+                        isSuccess = matchingCrime.success ?: false,
+                        wasCaught = matchingCrime.caught ?: false,
+                        jailTime = matchingCrime.actualJailTime ?: 0,
+                        notorietyChange = if (matchingCrime.success == true) {
+                            when (getCrimeRiskTier(crimeType)) {
+                                RiskTier.LOW_RISK -> 2
+                                RiskTier.MEDIUM_RISK -> 4
+                                RiskTier.HIGH_RISK -> 7
+                                RiskTier.EXTREME_RISK -> 10
+                            }
+                        } else {
+                            when (getCrimeRiskTier(crimeType)) {
+                                RiskTier.LOW_RISK -> 0
+                                RiskTier.MEDIUM_RISK -> -1
+                                RiskTier.HIGH_RISK -> -2
+                                RiskTier.EXTREME_RISK -> -3
+                            }
+                        }
+                    )
+                    pendingCrimeType = null
+                }
+            }
+        }
+    }
 
     // Full screen modal overlay for crime screen
     Box(
@@ -88,6 +148,38 @@ fun CrimeScreen(
                     }
                 }
 
+                // Cooldown banner
+                if (cooldownActive) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = androidx.compose.ui.res.painterResource(id = android.R.drawable.ic_lock_idle_lock),
+                                contentDescription = "Cooldown active",
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                            Text(
+                                text = "Cooling down — lay low for ${String.format(Locale.getDefault(), "0:%02d", cooldownSeconds)}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+
                 // Player stats bar
                 Card(
                     colors = CardDefaults.cardColors(containerColor = currentTheme.surfaceVariant),
@@ -114,7 +206,7 @@ fun CrimeScreen(
                         }
                         // Progress bar for notoriety
                         LinearProgressIndicator(
-                            progress = { playerNotoriety / 100f },
+                            progress = { (playerNotoriety.coerceIn(0, 100)) / 100f },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 8.dp),
@@ -146,20 +238,24 @@ fun CrimeScreen(
                         ),
                         theme = currentTheme,
                         playerNotoriety = playerNotoriety,
+                        cooldownActive = cooldownActive,
+                        cooldownSeconds = cooldownSeconds,
                         onCrimeSelected = { crimeType ->
-                            showCrimeDialog = CrimeDialogData(
-                                type = crimeType,
-                                title = getCrimeName(crimeType),
-                                message = getCrimeScenario(crimeType),
-                                confirmText = "Proceed",
-                                cancelText = "Nevermind",
-                                riskTier = getCrimeRiskTier(crimeType),
-                                notorietyRequired = getCrimeNotorietyRequired(crimeType),
-                                playerNotoriety = playerNotoriety,
-                                successChance = getCrimeSuccessChance(crimeType),
-                                payoutMin = getCrimePayoutMin(crimeType),
-                                payoutMax = getCrimePayoutMax(crimeType)
-                            )
+                            if (canCommitCrime(crimeType, playerNotoriety)) {
+                                showCrimeDialog = CrimeDialogData(
+                                    type = crimeType,
+                                    title = getCrimeName(crimeType),
+                                    message = getCrimeScenario(crimeType),
+                                    confirmText = "Proceed",
+                                    cancelText = "Nevermind",
+                                    riskTier = getCrimeRiskTier(crimeType),
+                                    notorietyRequired = getCrimeNotorietyRequired(crimeType),
+                                    playerNotoriety = playerNotoriety,
+                                    successChance = getCrimeSuccessChance(crimeType),
+                                    payoutMin = getCrimePayoutMin(crimeType),
+                                    payoutMax = getCrimePayoutMax(crimeType)
+                                )
+                            }
                         }
                     )
 
@@ -174,20 +270,24 @@ fun CrimeScreen(
                         ),
                         theme = currentTheme,
                         playerNotoriety = playerNotoriety,
+                        cooldownActive = cooldownActive,
+                        cooldownSeconds = cooldownSeconds,
                         onCrimeSelected = { crimeType ->
-                            showCrimeDialog = CrimeDialogData(
-                                type = crimeType,
-                                title = getCrimeName(crimeType),
-                                message = getCrimeScenario(crimeType),
-                                confirmText = "Proceed",
-                                cancelText = "Nevermind",
-                                riskTier = getCrimeRiskTier(crimeType),
-                                notorietyRequired = getCrimeNotorietyRequired(crimeType),
-                                playerNotoriety = playerNotoriety,
-                                successChance = getCrimeSuccessChance(crimeType),
-                                payoutMin = getCrimePayoutMin(crimeType),
-                                payoutMax = getCrimePayoutMax(crimeType)
-                            )
+                            if (canCommitCrime(crimeType, playerNotoriety)) {
+                                showCrimeDialog = CrimeDialogData(
+                                    type = crimeType,
+                                    title = getCrimeName(crimeType),
+                                    message = getCrimeScenario(crimeType),
+                                    confirmText = "Proceed",
+                                    cancelText = "Nevermind",
+                                    riskTier = getCrimeRiskTier(crimeType),
+                                    notorietyRequired = getCrimeNotorietyRequired(crimeType),
+                                    playerNotoriety = playerNotoriety,
+                                    successChance = getCrimeSuccessChance(crimeType),
+                                    payoutMin = getCrimePayoutMin(crimeType),
+                                    payoutMax = getCrimePayoutMax(crimeType)
+                                )
+                            }
                         }
                     )
 
@@ -202,20 +302,24 @@ fun CrimeScreen(
                         ),
                         theme = currentTheme,
                         playerNotoriety = playerNotoriety,
+                        cooldownActive = cooldownActive,
+                        cooldownSeconds = cooldownSeconds,
                         onCrimeSelected = { crimeType ->
-                            showCrimeDialog = CrimeDialogData(
-                                type = crimeType,
-                                title = getCrimeName(crimeType),
-                                message = getCrimeScenario(crimeType),
-                                confirmText = "Proceed",
-                                cancelText = "Nevermind",
-                                riskTier = getCrimeRiskTier(crimeType),
-                                notorietyRequired = getCrimeNotorietyRequired(crimeType),
-                                playerNotoriety = playerNotoriety,
-                                successChance = getCrimeSuccessChance(crimeType),
-                                payoutMin = getCrimePayoutMin(crimeType),
-                                payoutMax = getCrimePayoutMax(crimeType)
-                            )
+                            if (canCommitCrime(crimeType, playerNotoriety)) {
+                                showCrimeDialog = CrimeDialogData(
+                                    type = crimeType,
+                                    title = getCrimeName(crimeType),
+                                    message = getCrimeScenario(crimeType),
+                                    confirmText = "Proceed",
+                                    cancelText = "Nevermind",
+                                    riskTier = getCrimeRiskTier(crimeType),
+                                    notorietyRequired = getCrimeNotorietyRequired(crimeType),
+                                    playerNotoriety = playerNotoriety,
+                                    successChance = getCrimeSuccessChance(crimeType),
+                                    payoutMin = getCrimePayoutMin(crimeType),
+                                    payoutMax = getCrimePayoutMax(crimeType)
+                                )
+                            }
                         }
                     )
 
@@ -230,20 +334,24 @@ fun CrimeScreen(
                         ),
                         theme = currentTheme,
                         playerNotoriety = playerNotoriety,
+                        cooldownActive = cooldownActive,
+                        cooldownSeconds = cooldownSeconds,
                         onCrimeSelected = { crimeType ->
-                            showCrimeDialog = CrimeDialogData(
-                                type = crimeType,
-                                title = getCrimeName(crimeType),
-                                message = getCrimeScenario(crimeType),
-                                confirmText = "Proceed",
-                                cancelText = "Nevermind",
-                                riskTier = getCrimeRiskTier(crimeType),
-                                notorietyRequired = getCrimeNotorietyRequired(crimeType),
-                                playerNotoriety = playerNotoriety,
-                                successChance = getCrimeSuccessChance(crimeType),
-                                payoutMin = getCrimePayoutMin(crimeType),
-                                payoutMax = getCrimePayoutMax(crimeType)
-                            )
+                            if (canCommitCrime(crimeType, playerNotoriety)) {
+                                showCrimeDialog = CrimeDialogData(
+                                    type = crimeType,
+                                    title = getCrimeName(crimeType),
+                                    message = getCrimeScenario(crimeType),
+                                    confirmText = "Proceed",
+                                    cancelText = "Nevermind",
+                                    riskTier = getCrimeRiskTier(crimeType),
+                                    notorietyRequired = getCrimeNotorietyRequired(crimeType),
+                                    playerNotoriety = playerNotoriety,
+                                    successChance = getCrimeSuccessChance(crimeType),
+                                    payoutMin = getCrimePayoutMin(crimeType),
+                                    payoutMax = getCrimePayoutMax(crimeType)
+                                )
+                            }
                         }
                     )
 
@@ -439,21 +547,20 @@ fun CrimeScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        if (dialogData.notorietyRequired <= dialogData.playerNotoriety) {
+                        if (canCommitCrime(dialogData.type, dialogData.playerNotoriety)) {
+                            pendingCrimeType = dialogData.type
                             viewModel.commitCrime(dialogData.type)
                             showCrimeDialog = null
-                            // Show result after a delay
+                            // Show result after a delay to allow DB update
                             CoroutineScope(Dispatchers.Main).launch {
-                                kotlinx.coroutines.delay(1000)
-                                val result = generateCrimeResult(dialogData.type)
-                                showCrimeResult = result
+                                kotlinx.coroutines.delay(1500)
                                 onCrimeCommitted()
                             }
                         }
                     },
-                    enabled = dialogData.notorietyRequired <= dialogData.playerNotoriety,
+                    enabled = canCommitCrime(dialogData.type, dialogData.playerNotoriety),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (dialogData.notorietyRequired <= dialogData.playerNotoriety)
+                        containerColor = if (canCommitCrime(dialogData.type, dialogData.playerNotoriety))
                             getRiskTierColor(dialogData.riskTier)
                         else
                             Color.Gray,
@@ -464,10 +571,10 @@ fun CrimeScreen(
                         .height(48.dp)
                 ) {
                     Text(
-                        text = if (dialogData.notorietyRequired > dialogData.playerNotoriety)
+                        text = if (!canCommitCrime(dialogData.type, dialogData.playerNotoriety))
                             "Need More Notoriety"
                         else
-                            dialogData.confirmText.uppercase(),
+                            dialogData.confirmText.uppercase(Locale.getDefault()),
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -486,7 +593,7 @@ fun CrimeScreen(
         )
     }
 
-    // Crime Result Dialog
+    // Crime Result Dialog - THIS IS NOW A STANDALONE DIALOG
     showCrimeResult?.let { result ->
         AlertDialog(
             onDismissRequest = { showCrimeResult = null },
@@ -496,7 +603,6 @@ fun CrimeScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    // Result icon based on success
                     Icon(
                         painter = androidx.compose.ui.res.painterResource(
                             id = when {
@@ -578,7 +684,7 @@ fun CrimeScreen(
                         )
                     }
 
-                    if (result.wasCaught && result.moneySeized > 0) {
+                    if (result.moneySeized != 0) {
                         Text(
                             text = "💰 Money Seized: $${result.moneySeized}",
                             style = MaterialTheme.typography.titleMedium,
@@ -686,6 +792,19 @@ fun CrimeScreen(
     }
 }
 
+// Helper function to determine if a crime can be committed
+fun canCommitCrime(crimeType: CrimeViewModel.CrimeType, playerNotoriety: Int): Boolean {
+    val requiredNotoriety = getCrimeNotorietyRequired(crimeType)
+
+    // Allow low-risk crimes even with negative notoriety (but not too negative)
+    if (getCrimeRiskTier(crimeType) == RiskTier.LOW_RISK) {
+        return playerNotoriety >= -10
+    }
+
+    // For other crimes, check normal requirement
+    return requiredNotoriety <= playerNotoriety
+}
+
 // Data classes
 data class CrimeDialogData(
     val type: CrimeViewModel.CrimeType,
@@ -698,7 +817,7 @@ data class CrimeDialogData(
     val playerNotoriety: Int,
     val successChance: Double,
     val payoutMin: Int,
-    val payoutMax: Int
+    val payoutMax: Int,
 )
 
 data class CrimeResult(
@@ -756,8 +875,8 @@ fun CompactCrimeHistoryEntry(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = java.text.SimpleDateFormat("MMM dd, yyyy", java.util.Locale.getDefault())
-                    .format(java.util.Date(crime.timestamp)),
+                text = java.text.SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+                    .format(Date(crime.timestamp)),
                 style = MaterialTheme.typography.bodySmall,
                 color = theme.accent
             )
@@ -806,6 +925,8 @@ fun CrimeCategorySection(
     crimes: List<Pair<CrimeViewModel.CrimeType, String>>,
     theme: com.liveongames.liveon.ui.theme.LiveonTheme,
     playerNotoriety: Int,
+    cooldownActive: Boolean,
+    cooldownSeconds: Int,
     onCrimeSelected: (CrimeViewModel.CrimeType) -> Unit = {}
 ) {
     Card(
@@ -835,31 +956,35 @@ fun CrimeCategorySection(
             )
 
             crimes.forEach { (crimeType, crimeDescription) ->
-                CrimeTypeCard(
-                    crimeType = crimeType,
-                    description = crimeDescription,
+                CrimeButton(
+                    text = "${getCrimeName(crimeType)} - ${crimeDescription}",
                     onClick = {
                         Log.d("CrimeScreen", "Crime ${getCrimeName(crimeType)} clicked")
                         onCrimeSelected(crimeType)
                     },
+                    cooldownActive = cooldownActive,
+                    cooldownSeconds = cooldownSeconds,
+                    riskTier = getCrimeRiskTier(crimeType),
                     theme = theme,
-                    isLocked = getCrimeNotorietyRequired(crimeType) > playerNotoriety
+                    isLocked = !canCommitCrime(crimeType, playerNotoriety)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
 }
-
 @Composable
-fun CrimeTypeCard(
-    crimeType: CrimeViewModel.CrimeType,
-    description: String,
+fun CrimeButton(
+    text: String,
     onClick: () -> Unit,
+    cooldownActive: Boolean,
+    cooldownSeconds: Int,
+    riskTier: RiskTier,
     theme: com.liveongames.liveon.ui.theme.LiveonTheme,
     isLocked: Boolean = false
 ) {
     var isPressed by remember { mutableStateOf(false) }
+    val sirenBrush = rememberSirenBrush(cooldownActive)
 
     val scale by animateFloatAsState(
         targetValue = if (isPressed) 0.96f else 1f,
@@ -875,7 +1000,7 @@ fun CrimeTypeCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(
-                enabled = !isLocked,
+                enabled = !isLocked && !cooldownActive,
                 onClick = {
                     isPressed = true
                     onClick()
@@ -886,73 +1011,115 @@ fun CrimeTypeCard(
                 }
             )
             .graphicsLayer(scaleX = scale, scaleY = scale),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isLocked) theme.surface.copy(alpha = 0.5f) else theme.surface
-        ),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(14.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = if (isPressed) 2.dp else 6.dp
         )
     ) {
-        Row(
+        // Create the background brush with proper type handling
+        val backgroundColor = if (isLocked || cooldownActive) {
+            if (cooldownActive) {
+                // For cooldown, we'll handle the animated brush separately
+                theme.surface.copy(alpha = 0.5f)
+            } else {
+                theme.surface.copy(alpha = 0.5f)
+            }
+        } else {
+            theme.surface
+        }
+
+        val useAnimatedBackground = cooldownActive && !isLocked
+
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .then(
+                    if (useAnimatedBackground) {
+                        Modifier.background(brush = sirenBrush, shape = RoundedCornerShape(14.dp))
+                    } else {
+                        Modifier.background(color = backgroundColor, shape = RoundedCornerShape(14.dp))
+                    }
+                )
+                .padding(16.dp)
         ) {
-            Column(
-                modifier = Modifier.weight(1f)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+                Column(
+                    modifier = Modifier.weight(1f)
                 ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = text.substringBefore(" - "),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = if (isLocked) theme.accent else theme.text,
+                            fontWeight = FontWeight.Medium
+                        )
+                        if (isLocked) {
+                            Icon(
+                                painter = androidx.compose.ui.res.painterResource(id = android.R.drawable.ic_lock_idle_lock),
+                                contentDescription = "Locked",
+                                modifier = Modifier
+                                    .size(16.dp)
+                                    .padding(start = 4.dp),
+                                tint = Color.Red
+                            )
+                        }
+                    }
                     Text(
-                        text = getCrimeName(crimeType),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = if (isLocked) theme.accent else theme.text,
-                        fontWeight = FontWeight.Medium
+                        text = text.substringAfter(" - "),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (isLocked) theme.accent.copy(alpha = 0.5f) else theme.accent
                     )
-                    if (isLocked) {
+
+                    // Risk tier badge
+                    Text(
+                        text = riskTier.displayName,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = getRiskTierColor(riskTier),
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier
+                            .padding(top = 4.dp)
+                            .background(
+                                getRiskTierColor(riskTier).copy(alpha = 0.1f),
+                                RoundedCornerShape(4.dp)
+                            )
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    )
+                }
+
+                if (cooldownActive) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Icon(
                             painter = androidx.compose.ui.res.painterResource(id = android.R.drawable.ic_lock_idle_lock),
-                            contentDescription = "Locked",
-                            modifier = Modifier
-                                .size(16.dp)
-                                .padding(start = 4.dp),
-                            tint = Color.Red
+                            contentDescription = "Cooldown active - $cooldownSeconds seconds remaining",
+                            modifier = Modifier.size(20.dp),
+                            tint = Color.White
+                        )
+                        Text(
+                            text = String.format(Locale.getDefault(), ":%02d", cooldownSeconds),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(start = 4.dp)
                         )
                     }
+                } else {
+                    Icon(
+                        painter = androidx.compose.ui.res.painterResource(id = android.R.drawable.ic_menu_compass),
+                        contentDescription = null,
+                        tint = getRiskTierColor(riskTier),
+                        modifier = Modifier
+                            .size(28.dp)
+                            .graphicsLayer(scaleX = iconScale, scaleY = iconScale)
+                    )
                 }
-                Text(
-                    text = description,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (isLocked) theme.accent.copy(alpha = 0.5f) else theme.accent
-                )
-
-                // Risk tier badge
-                Text(
-                    text = getCrimeRiskTier(crimeType).displayName,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = getRiskTierColor(getCrimeRiskTier(crimeType)),
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier
-                        .padding(top = 4.dp)
-                        .background(
-                            getRiskTierColor(getCrimeRiskTier(crimeType)).copy(alpha = 0.1f),
-                            RoundedCornerShape(4.dp)
-                        )
-                        .padding(horizontal = 6.dp, vertical = 2.dp)
-                )
             }
-
-            Icon(
-                painter = androidx.compose.ui.res.painterResource(id = android.R.drawable.ic_menu_compass),
-                contentDescription = null,
-                tint = getRiskTierColor(getCrimeRiskTier(crimeType)),
-                modifier = Modifier
-                    .size(28.dp)
-                    .graphicsLayer(scaleX = iconScale, scaleY = iconScale)
-            )
         }
     }
 }
@@ -1131,7 +1298,12 @@ fun getCrimeRiskTier(crimeType: CrimeViewModel.CrimeType): RiskTier {
 }
 
 fun getCrimeNotorietyRequired(crimeType: CrimeViewModel.CrimeType): Int {
-    return getCrimeRiskTier(crimeType).notorietyRequired
+    return when (getCrimeRiskTier(crimeType)) {
+        RiskTier.LOW_RISK -> 0
+        RiskTier.MEDIUM_RISK -> 5
+        RiskTier.HIGH_RISK -> 20
+        RiskTier.EXTREME_RISK -> 40
+    }
 }
 
 fun getCrimeSuccessChance(crimeType: CrimeViewModel.CrimeType): Double {
@@ -1193,31 +1365,56 @@ fun getCrimePayoutMax(crimeType: CrimeViewModel.CrimeType): Int {
     }
 }
 
-fun generateCrimeResult(crimeType: CrimeViewModel.CrimeType): CrimeResult {
-    // Generate random outcomes for demonstration
-    val isSuccess = Random.nextBoolean()
-    val wasCaught = Random.nextBoolean()
-    val moneyGained = if (isSuccess) Random.nextInt(100, 10000) else 0
-    val moneySeized = if (wasCaught && isSuccess) Random.nextInt(0, moneyGained/2) else 0
-    val jailTime = if (wasCaught) Random.nextInt(1, 30) else 0
-    val notorietyChange = if (isSuccess) Random.nextInt(1, 5) else -Random.nextInt(1, 5)
+// Cooldown helper functions
+@Composable
+fun rememberCooldownState(viewModel: CrimeViewModel): Pair<Boolean, Int> {
+    val cooldownUntil by viewModel.cooldownUntil.collectAsState()
+    val currentTime = System.currentTimeMillis()
 
-    return CrimeResult(
-        title = when {
-            isSuccess && !wasCaught -> "Clean Getaway!"
-            isSuccess && wasCaught -> "Messy Job!"
-            else -> "Busted!"
-        },
-        description = when {
-            isSuccess && !wasCaught -> "Everything went according to plan — no one will know until it's too late."
-            isSuccess && wasCaught -> "You got the money, but not without attracting unwanted attention."
-            else -> "You slipped up — now you're paying the price."
-        },
-        moneyGained = moneyGained,
-        moneySeized = moneySeized,
-        isSuccess = isSuccess,
-        wasCaught = wasCaught,
-        jailTime = jailTime,
-        notorietyChange = notorietyChange
+    return if (cooldownUntil != null && cooldownUntil!! > currentTime) {
+        val secondsRemaining = ((cooldownUntil!! - currentTime) / 1000).toInt()
+        true to secondsRemaining.coerceAtLeast(0)
+    } else {
+        false to 0
+    }
+}
+
+@Composable
+fun rememberSirenBrush(enabled: Boolean): Brush {
+    val colors = listOf(
+        androidx.compose.ui.graphics.Color(0xFF3A9BDC), // metallic blue
+        androidx.compose.ui.graphics.Color(0xFF9ED1FF), // highlight blue
+        androidx.compose.ui.graphics.Color(0xFF3A9BDC), // metallic blue
+        androidx.compose.ui.graphics.Color(0xFFFF4C4C), // metallic red
+        androidx.compose.ui.graphics.Color(0xFFFFA3A3), // highlight red
+        androidx.compose.ui.graphics.Color(0xFFFF4C4C), // metallic red
+        androidx.compose.ui.graphics.Color(0xFF3A9BDC), // back to blue
     )
+
+    return if (!enabled) {
+        // Static gradient when disabled
+        Brush.linearGradient(
+            colors = colors,
+            start = Offset.Zero,
+            end = Offset(100f, 100f)
+        )
+    } else {
+        // Animated sweep
+        val transition = rememberInfiniteTransition(label = "siren")
+        val offset by transition.animateFloat(
+            initialValue = 0f,
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(1400, easing = LinearEasing),
+                repeatMode = RepeatMode.Restart
+            ),
+            label = "sirenOffset"
+        )
+
+        Brush.linearGradient(
+            colors = colors,
+            start = Offset(offset * 200 - 200, 0f),
+            end = Offset(offset * 200, 200f)
+        )
+    }
 }
