@@ -21,9 +21,9 @@ import com.liveongames.data.db.entity.*
         SaveSlotEntity::class,
         ScenarioEntity::class,
         UnlockedAchievementEntity::class,
-        EducationEntity::class  // ADD THIS LINE
+        EducationEntity::class
     ],
-    version = 5,  // INCREMENT THIS VERSION
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -38,12 +38,12 @@ abstract class LiveonDatabase : RoomDatabase() {
     abstract fun saveSlotDao(): SaveSlotDao
     abstract fun scenarioDao(): ScenarioDao
     abstract fun unlockedAchievementDao(): UnlockedAchievementDao
-    abstract fun educationDao(): EducationDao  // ADD THIS LINE
+    abstract fun educationDao(): EducationDao
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                // Migration code
+                // Migration code for version 1 to 2
             }
         }
 
@@ -83,7 +83,6 @@ abstract class LiveonDatabase : RoomDatabase() {
             }
         }
 
-        // ADD THIS NEW MIGRATION
         val MIGRATION_3_4 = object : Migration(3, 4) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 // Create educations table
@@ -103,6 +102,12 @@ abstract class LiveonDatabase : RoomDatabase() {
                         PRIMARY KEY(`id`)
                     )
                 """.trimIndent())
+            }
+        }
+
+        val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Add any additional migrations for version 4 to 5
             }
         }
     }

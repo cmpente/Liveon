@@ -27,7 +27,6 @@ object DatabaseModule {
             .addMigrations(LiveonDatabase.MIGRATION_1_2)
             .addMigrations(LiveonDatabase.MIGRATION_2_3)
             .addMigrations(LiveonDatabase.MIGRATION_3_4)
-            .fallbackToDestructiveMigration() // Add this for development
             .build()
     }
 

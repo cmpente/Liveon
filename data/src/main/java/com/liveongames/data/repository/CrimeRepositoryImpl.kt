@@ -34,7 +34,7 @@ class CrimeRepositoryImpl @Inject constructor(
         Log.d(TAG, "recordCrime called for character: $characterId, crime: ${crime.name}")
         val crimeEntity = com.liveongames.data.db.entity.CrimeEntity(
             id = crime.id,
-            characterId = PLAYER_CHARACTER_ID,  // Use consistent character ID
+            characterId = PLAYER_CHARACTER_ID,
             name = crime.name,
             description = crime.description,
             riskTier = crime.riskTier.name,
