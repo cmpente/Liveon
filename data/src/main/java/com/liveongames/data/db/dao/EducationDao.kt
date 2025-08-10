@@ -1,4 +1,3 @@
-// app/src/main/java/com/liveongames/data/db/dao/EducationDao.kt
 package com.liveongames.data.db.dao
 
 import androidx.room.Dao
@@ -10,21 +9,55 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface EducationDao {
-    @Query("SELECT * FROM educations WHERE characterId = :characterId ORDER BY id DESC")
+
+    @Query("SELECT * FROM educations WHERE characterId = :characterId ORDER BY timestamp DESC")
     fun getEducationsForCharacter(characterId: String): Flow<List<EducationEntity>>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertEducation(education: EducationEntity)
-
-    @Query("DELETE FROM educations WHERE id = :educationId AND characterId = :characterId")
-    suspend fun removeEducation(educationId: String, characterId: String)
-
-    @Query("DELETE FROM educations WHERE characterId = :characterId")
-    suspend fun clearEducationsForCharacter(characterId: String)
-
-    @Query("SELECT * FROM educations WHERE characterId = :characterId AND id = :educationId")
-    suspend fun getEducationById(characterId: String, educationId: String): EducationEntity?
 
     @Query("SELECT * FROM educations WHERE characterId = :characterId")
     suspend fun getEducationsForCharacterSync(characterId: String): List<EducationEntity>
+
+    @Query("SELECT * FROM educations WHERE characterId = :characterId AND id = :educationId LIMIT 1")
+    suspend fun getEducationById(characterId: String, educationId: String): EducationEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsert(education: EducationEntity)
+
+    @Query("DELETE FROM educations WHERE characterId = :characterId AND id = :educationId")
+    suspend fun deleteById(characterId: String, educationId: String)
+
+    @Query("DELETE FROM educations WHERE characterId = :characterId")
+    suspend fun clear(characterId: String)
+
+    // Convenience helpers for state changes
+    @Query("UPDATE educations SET isActive = 0 WHERE characterId = :characterId")
+    suspend fun deactivateAll(characterId: String)
+
+    @Query("""
+        UPDATE educations
+        SET currentGpa = :gpa,
+            attendClassCount = :attendCount,
+            doHomeworkCount = :homeworkCount,
+            studyCount = :studyCount
+        WHERE characterId = :characterId AND id = :educationId
+    """)
+    suspend fun updateProgress(
+        characterId: String,
+        educationId: String,
+        gpa: Double,
+        attendCount: Int,
+        homeworkCount: Int,
+        studyCount: Int
+    )
+
+    @Query("""
+        UPDATE educations
+        SET isActive = :isActive, completionDate = :completionDate
+        WHERE characterId = :characterId AND id = :educationId
+    """)
+    suspend fun updateStatus(
+        characterId: String,
+        educationId: String,
+        isActive: Boolean,
+        completionDate: Long?
+    )
 }

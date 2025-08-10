@@ -2,28 +2,20 @@ package com.liveongames.liveon.ui.screens.education
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import com.liveongames.liveon.ui.theme.LiveonTheme
 
 @Composable
-fun GpaInfoDialog(theme: LiveonTheme, onDismiss: () -> Unit) {
+fun GpaInfoDialog(show: Boolean, onDismiss: () -> Unit) {
+    if (!show) return
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = {
-            Text("GPA System", style = MaterialTheme.typography.headlineSmall, color = theme.primary)
-        },
+        title = { Text("GPA Details") },
         text = {
             Text(
-                "Your GPA changes with actions (minute cooldown, zero returns after 3 consecutive taps):\n\n" +
-                        "• Attend Lecture: small boost\n" +
-                        "• Homework: small boost\n" +
-                        "• Study: small boost\n\n" +
-                        "Returns diminish after 3 consecutive uses of the same action.",
-                color = theme.text
+                "Your GPA rises when you attend class (+0.10), do homework (+0.15), and study (+0.20). " +
+                        "Only the first three uses of the same action before you age up grant benefit (diminishing returns). " +
+                        "GPA is clamped between 0.00 and 4.00."
             )
         },
-        confirmButton = {
-            TextButton(onClick = onDismiss) { Text("OK", color = theme.primary) }
-        },
-        containerColor = theme.surface
+        confirmButton = { TextButton(onClick = onDismiss) { Text("OK") } }
     )
 }
