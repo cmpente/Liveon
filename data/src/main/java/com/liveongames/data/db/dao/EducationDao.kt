@@ -11,16 +11,16 @@ import kotlinx.coroutines.flow.Flow
 interface EducationDao {
 
     @Query("SELECT * FROM educations WHERE characterId = :characterId ORDER BY timestamp DESC")
-    fun getEducationsForCharacter(characterId: String): Flow<List<EducationEntity>>
+    fun observeForCharacter(characterId: String): Flow<List<EducationEntity>>
 
     @Query("SELECT * FROM educations WHERE characterId = :characterId")
-    suspend fun getEducationsForCharacterSync(characterId: String): List<EducationEntity>
+    suspend fun getForCharacter(characterId: String): List<EducationEntity>
 
     @Query("SELECT * FROM educations WHERE characterId = :characterId AND id = :educationId LIMIT 1")
-    suspend fun getEducationById(characterId: String, educationId: String): EducationEntity?
+    suspend fun getById(characterId: String, educationId: String): EducationEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsert(education: EducationEntity)
+    suspend fun upsert(entity: EducationEntity)
 
     @Query("DELETE FROM educations WHERE characterId = :characterId AND id = :educationId")
     suspend fun deleteById(characterId: String, educationId: String)
@@ -28,36 +28,12 @@ interface EducationDao {
     @Query("DELETE FROM educations WHERE characterId = :characterId")
     suspend fun clear(characterId: String)
 
-    // Convenience helpers for state changes
     @Query("UPDATE educations SET isActive = 0 WHERE characterId = :characterId")
     suspend fun deactivateAll(characterId: String)
 
-    @Query("""
-        UPDATE educations
-        SET currentGpa = :gpa,
-            attendClassCount = :attendCount,
-            doHomeworkCount = :homeworkCount,
-            studyCount = :studyCount
-        WHERE characterId = :characterId AND id = :educationId
-    """)
-    suspend fun updateProgress(
-        characterId: String,
-        educationId: String,
-        gpa: Double,
-        attendCount: Int,
-        homeworkCount: Int,
-        studyCount: Int
-    )
+    @Query("UPDATE educations SET currentGpa = :gpa WHERE characterId = :characterId AND id = :educationId")
+    suspend fun updateGpa(characterId: String, educationId: String, gpa: Double)
 
-    @Query("""
-        UPDATE educations
-        SET isActive = :isActive, completionDate = :completionDate
-        WHERE characterId = :characterId AND id = :educationId
-    """)
-    suspend fun updateStatus(
-        characterId: String,
-        educationId: String,
-        isActive: Boolean,
-        completionDate: Long?
-    )
+    @Query("UPDATE educations SET isActive = :isActive, completionDate = :completionDate WHERE characterId = :characterId AND id = :educationId")
+    suspend fun updateStatus(characterId: String, educationId: String, isActive: Boolean, completionDate: Long?)
 }

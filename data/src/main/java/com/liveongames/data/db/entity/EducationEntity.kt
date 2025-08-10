@@ -5,31 +5,26 @@ import androidx.room.PrimaryKey
 import com.liveongames.domain.model.Education
 import com.liveongames.domain.model.EducationLevel
 
-/**
- * One enrollment/track for the player. We store per-track GPA and action counters.
- * Diminishing returns counters are reset by the ViewModel on age-up (and can also be reset here if desired).
- */
 @Entity(tableName = "educations")
 data class EducationEntity(
-    @PrimaryKey val id: String,           // courseId (stable, from JSON)
-    val characterId: String,              // "player_character" (for now)
+    @PrimaryKey val id: String,
+    val characterId: String,
     val name: String,
     val description: String,
-    val level: String,                    // enum name of EducationLevel
+    val level: String,
     val cost: Int,
     val durationMonths: Int,
     val requiredGpa: Double,
-    val currentGpa: Double = 0.0,         // 0.0 .. 4.0
+    val currentGpa: Double = 0.0,
     val isActive: Boolean = false,
     val timestamp: Long = System.currentTimeMillis(),
-    val completionDate: Long? = null,     // null if not completed
-    // diminishing-returns counters for the current age period
+    val completionDate: Long? = null,
     val attendClassCount: Int = 0,
     val doHomeworkCount: Int = 0,
     val studyCount: Int = 0
 )
 
-fun EducationEntity.toEducation(): Education = Education(
+fun EducationEntity.toDomain(): Education = Education(
     id = id,
     name = name,
     description = description,

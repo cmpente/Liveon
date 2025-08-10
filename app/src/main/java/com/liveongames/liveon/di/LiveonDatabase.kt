@@ -15,15 +15,17 @@ import com.liveongames.data.db.entity.*
         CareerEntity::class,
         CharacterEntity::class,
         CrimeEntity::class,
+        EducationActionStateEntity::class,
+        EducationEntity::class,
         EventEntity::class,
         PetEntity::class,
         RelationshipEntity::class,
         SaveSlotEntity::class,
         ScenarioEntity::class,
+        TermStateEntity::class,
         UnlockedAchievementEntity::class,
-        EducationEntity::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -39,6 +41,8 @@ abstract class LiveonDatabase : RoomDatabase() {
     abstract fun scenarioDao(): ScenarioDao
     abstract fun unlockedAchievementDao(): UnlockedAchievementDao
     abstract fun educationDao(): EducationDao
+    abstract fun educationActionStateDao(): EducationActionStateDao
+    abstract fun termStateDao(): TermStateDao
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {

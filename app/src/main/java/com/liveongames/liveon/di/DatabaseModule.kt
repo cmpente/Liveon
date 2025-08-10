@@ -27,6 +27,7 @@ object DatabaseModule {
             .addMigrations(LiveonDatabase.MIGRATION_1_2)
             .addMigrations(LiveonDatabase.MIGRATION_2_3)
             .addMigrations(LiveonDatabase.MIGRATION_3_4)
+            .addMigrations(LiveonDatabase.MIGRATION_4_5)
             .build()
     }
 
@@ -65,4 +66,14 @@ object DatabaseModule {
     fun provideEducationDao(database: LiveonDatabase): EducationDao {
         return database.educationDao()
     }
+
+
+@Provides @Singleton
+fun provideEducationActionStateDao(database: LiveonDatabase): EducationActionStateDao =
+    database.educationActionStateDao()
+
+@Provides @Singleton
+fun provideTermStateDao(database: LiveonDatabase): TermStateDao =
+    database.termStateDao()
+
 }

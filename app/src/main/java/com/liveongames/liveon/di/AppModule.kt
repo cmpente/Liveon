@@ -16,17 +16,10 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    @Provides
-    @Singleton
-    fun provideGson(): Gson {
-        return GsonBuilder()
-            .setPrettyPrinting()
-            .create()
-    }
+    @Provides @Singleton
+    fun provideGson(): Gson = GsonBuilder().create()
 
-    @Provides
-    @Singleton
-    fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
-        return context.getSharedPreferences("liveon_prefs", Context.MODE_PRIVATE)
-    }
+    @Provides @Singleton
+    fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences =
+        context.getSharedPreferences("liveon_prefs", Context.MODE_PRIVATE)
 }

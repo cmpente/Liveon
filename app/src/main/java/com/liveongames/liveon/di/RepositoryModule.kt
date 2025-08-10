@@ -1,85 +1,38 @@
 // app/src/main/java/com/liveongames/liveon/di/RepositoryModule.kt
 package com.liveongames.liveon.di
 
-import com.liveongames.data.db.dao.CharacterDao
-import com.liveongames.data.db.dao.CrimeDao
-import com.liveongames.data.repository.CharacterRepositoryImpl
-import com.liveongames.data.repository.CrimeRepositoryImpl
-import com.liveongames.data.repository.PetRepositoryImpl
-import com.liveongames.data.repository.EventRepositoryImpl
-import com.liveongames.data.repository.SaveRepositoryImpl
-import com.liveongames.data.repository.ScenarioRepositoryImpl
-import com.liveongames.data.repository.PlayerRepositoryImpl
-import com.liveongames.data.repository.EducationRepositoryImpl
-import com.liveongames.domain.repository.CharacterRepository
 import com.liveongames.domain.repository.CrimeRepository
-import com.liveongames.domain.repository.PetRepository
 import com.liveongames.domain.repository.EventRepository
-import com.liveongames.domain.repository.SaveRepository
-import com.liveongames.domain.repository.ScenarioRepository
+import com.liveongames.domain.repository.PetRepository
 import com.liveongames.domain.repository.PlayerRepository
 import com.liveongames.domain.repository.EducationRepository
+import com.liveongames.data.repository.CrimeRepositoryImpl
+import com.liveongames.data.repository.EventRepositoryImpl
+import com.liveongames.data.repository.PetRepositoryImpl
+import com.liveongames.data.repository.PlayerRepositoryImpl
+import com.liveongames.data.repository.EducationRepositoryImpl
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object RepositoryModule {
+abstract class RepositoryModule {
 
-    @Provides
-    @Singleton
-    fun provideScenarioRepository(): ScenarioRepository {
-        return ScenarioRepositoryImpl()
-    }
+    @Binds @Singleton
+    abstract fun bindEventRepository(impl: EventRepositoryImpl): EventRepository
 
-    @Provides
-    @Singleton
-    fun provideCrimeRepository(
-        crimeDao: CrimeDao
-    ): CrimeRepository {
-        return CrimeRepositoryImpl(crimeDao)
-    }
+    @Binds @Singleton
+    abstract fun bindCrimeRepository(impl: CrimeRepositoryImpl): CrimeRepository
 
-    @Provides
-    @Singleton
-    fun provideCharacterRepository(
-        characterDao: CharacterDao
-    ): CharacterRepository {
-        return CharacterRepositoryImpl(characterDao)
-    }
+    @Binds @Singleton
+    abstract fun bindPlayerRepository(impl: PlayerRepositoryImpl): PlayerRepository
 
-    @Provides
-    @Singleton
-    fun providePlayerRepository(
-        characterDao: CharacterDao
-    ): PlayerRepository {
-        return PlayerRepositoryImpl(characterDao)
-    }
+    @Binds @Singleton
+    abstract fun bindPetRepository(impl: PetRepositoryImpl): PetRepository
 
-    @Provides
-    @Singleton
-    fun providePetRepository(impl: PetRepositoryImpl): PetRepository {
-        return impl
-    }
-
-    @Provides
-    @Singleton
-    fun provideEventRepository(impl: EventRepositoryImpl): EventRepository {
-        return impl
-    }
-
-    @Provides
-    @Singleton
-    fun provideSaveRepository(impl: SaveRepositoryImpl): SaveRepository {
-        return impl
-    }
-
-    @Provides
-    @Singleton
-    fun provideEducationRepository(impl: EducationRepositoryImpl): EducationRepository {
-        return impl
-    }
+    @Binds @Singleton
+    abstract fun bindEducationRepository(impl: EducationRepositoryImpl): EducationRepository
 }

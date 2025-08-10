@@ -1,33 +1,29 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!-- app/src/main/res/values/colors.xml -->
 <resources>
-    <color name="black">#FF000000</color>
+    <!-- Existing palette (kept) -->
+    <color name="slate_950">#0B1220</color>
+    <color name="slate_900">#111827</color>
+    <color name="slate_800">#1F2937</color>
+    <color name="slate_700">#374151</color>
+    <color name="indigo_500">#6366F1</color>
+    <color name="indigo_300">#A5B4FC</color>
+    <color name="gold_600">#D97706</color>
     <color name="white">#FFFFFFFF</color>
-    
-    <!-- Masculine/Neutral Color Scheme -->
-    <color name="primary_color">#2C3E50</color>      <!-- Dark Blue-Grey -->
-    <color name="primary_dark">#1a252f</color>      <!-- Darker Blue-Grey -->
-    <color name="primary_light">#34495e</color>     <!-- Lighter Blue-Grey -->
-    <color name="secondary_color">#3498db</color>   <!-- Steel Blue -->
-    <color name="accent_color">#e74c3c</color>      <!-- Deep Red (accents) -->
-    
-    <color name="background_color">#f8f9fa</color>  <!-- Light neutral background -->
-    <color name="card_background">#ffffff</color>   <!-- White cards -->
-    <color name="text_primary">#2c3e50</color>      <!-- Dark text -->
-    <color name="text_secondary">#7f8c8d</color>    <!-- Muted text -->
-    <color name="divider_color">#ecf0f1</color>     <!-- Light dividers -->
-    <color name="progress_background">#ecf0f1</color> <!-- Progress bar background -->
-    
-    <!-- Stat Colors (more neutral/masculine) -->
-    <color name="health_color">#27ae60</color>      <!-- Forest Green -->
-    <color name="happiness_color">#f39c12</color>   <!-- Amber/Orange -->
-    <color name="intelligence_color">#3498db</color> <!-- Steel Blue -->
-    <color name="money_color">#2c3e50</color>       <!-- Dark Blue-Grey -->
-    <color name="social_color">#8e44ad</color>      <!-- Purple -->
-    
-    <!-- Material 3 Colors -->
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
+
+    <!-- Required by themes.xml -->
+    <color name="primary_color">#6366F1</color>        <!-- matches indigo_500 -->
+    <color name="primary_light">#A5B4FC</color>        <!-- matches indigo_300 -->
+    <color name="secondary_color">#D97706</color>      <!-- matches gold_600 -->
+    <color name="background_color">#0B1220</color>     <!-- slate_950 -->
+    <color name="card_background">#111827</color>      <!-- slate_900 -->
+    <color name="text_primary">#FFFFFFFF</color>       <!-- white on dark surfaces -->
+    <color name="text_secondary">#B3FFFFFF</color>
+    <color name="divider_color">#1FFFFFFF</color>
+
+    <color name="progress_background">#1FFFFFFF</color>   <!-- ~12% white for track -->
+    <color name="health_color">#EF4444</color>           <!-- red-500 -->
+    <color name="happiness_color">#F59E0B</color>        <!-- amber-500 -->
+    <color name="intelligence_color">#6366F1</color>     <!-- indigo_500 (matches your palette) -->
+    <color name="money_color">#10B981</color>            <!-- emerald-500 -->
+    <color name="social_color">#3B82F6</color> <!-- blue 500; fits the slate/indigo theme -->
 </resources>
