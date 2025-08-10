@@ -1,6 +1,4 @@
-// domain/src/main/java/com/liveongames/domain/model/Education.kt
 package com.liveongames.domain.model
-
 
 data class Education(
     val id: String,
@@ -8,7 +6,7 @@ data class Education(
     val description: String,
     val level: EducationLevel,
     val cost: Int,
-    val duration: Int,
+    val duration: Int,          // months
     val requiredGPA: Double,
     val currentGPA: Double = 0.0,
     val isActive: Boolean = false,
@@ -25,5 +23,6 @@ enum class EducationLevel(val displayName: String) {
     ASSOCIATE("Associate Degree"),
     BACHELOR("Bachelor's Degree"),
     MASTER("Master's Degree"),
+    DOCTORATE("Doctorate"),
     CERTIFICATION("Certification")
 }

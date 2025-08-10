@@ -1,0 +1,92 @@
+<!-- res/drawable/ic_hourglass_animated.xml -->
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector
+            android:width="70dp"
+            android:height="70dp"
+            android:viewportWidth="70"
+            android:viewportHeight="70">
+            <group>
+                <path
+                    android:pathData="M35,5L25,15L25,25L35,35L45,25L45,15L35,5Z"
+                    android:fillColor="#D4AF37"
+                    android:strokeColor="#B8860B"
+                    android:strokeWidth="1"/>
+                <path
+                    android:pathData="M35,65L25,55L25,45L35,35L45,45L45,55L35,65Z"
+                    android:fillColor="#D4AF37"
+                    android:strokeColor="#B8860B"
+                    android:strokeWidth="1"/>
+                <!-- Glass effect -->
+                <path
+                    android:pathData="M35,10L30,15L30,20L35,25L40,20L40,15L35,10Z"
+                    android:fillColor="#FFFFFF"
+                    android:fillAlpha="0.3"/>
+                <path
+                    android:pathData="M35,60L30,55L30,50L35,45L40,50L40,55L35,60Z"
+                    android:fillColor="#FFFFFF"
+                    android:fillAlpha="0.3"/>
+                <!-- Sand particles -->
+                <group android:name="sand_particles">
+                    <!-- Top sand particles -->
+                    <path android:name="sand1" android:pathData="M33,20m-1,0a1,1 0,1 1,2 0a1,1 0,1 1,-2 0" android:fillColor="#D4AF37"/>
+                    <path android:name="sand2" android:pathData="M37,18m-1,0a1,1 0,1 1,2 0a1,1 0,1 1,-2 0" android:fillColor="#D4AF37"/>
+                    <path android:name="sand3" android:pathData="M35,22m-1,0a1,1 0,1 1,2 0a1,1 0,1 1,-2 0" android:fillColor="#D4AF37"/>
+                    <!-- Bottom sand particles -->
+                    <path android:name="sand4" android:pathData="M33,50m-1,0a1,1 0,1 1,2 0a1,1 0,1 1,-2 0" android:fillColor="#D4AF37"/>
+                    <path android:name="sand5" android:pathData="M37,52m-1,0a1,1 0,1 1,2 0a1,1 0,1 1,-2 0" android:fillColor="#D4AF37"/>
+                    <path android:name="sand6" android:pathData="M35,48m-1,0a1,1 0,1 1,2 0a1,1 0,1 1,-2 0" android:fillColor="#D4AF37"/>
+                </group>
+                <!-- Metallic frame -->
+                <path
+                    android:pathData="M35,5L25,15L25,25L35,35L45,25L45,15L35,5Z"
+                    android:fillColor="#00000000"
+                    android:strokeColor="#B8860B"
+                    android:strokeWidth="1"/>
+                <path
+                    android:pathData="M35,65L25,55L25,45L35,35L45,45L45,55L35,65Z"
+                    android:fillColor="#00000000"
+                    android:strokeColor="#B8860B"
+                    android:strokeWidth="1"/>
+            </group>
+        </vector>
+    </aapt:attr>
+    
+    <!-- Sand flow animations -->
+    <target android:name="sand1">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="pathData"
+                android:duration="2000"
+                android:valueFrom="M33,20m-1,0a1,1 0,1 1,2 0a1,1 0,1 1,-2 0"
+                android:valueTo="M33,50m-1,0a1,1 0,1 1,2 0a1,1 0,1 1,-2 0"
+                android:valueType="pathType"
+                android:interpolator="@android:interpolator/fast_out_slow_in"/>
+        </aapt:attr>
+    </target>
+    
+    <target android:name="sand2">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="pathData"
+                android:duration="2200"
+                android:valueFrom="M37,18m-1,0a1,1 0,1 1,2 0a1,1 0,1 1,-2 0"
+                android:valueTo="M37,52m-1,0a1,1 0,1 1,2 0a1,1 0,1 1,-2 0"
+                android:valueType="pathType"
+                android:interpolator="@android:interpolator/fast_out_slow_in"/>
+        </aapt:attr>
+    </target>
+    
+    <target android:name="sand3">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="pathData"
+                android:duration="1800"
+                android:valueFrom="M35,22m-1,0a1,1 0,1 1,2 0a1,1 0,1 1,-2 0"
+                android:valueTo="M35,48m-1,0a1,1 0,1 1,2 0a1,1 0,1 1,-2 0"
+                android:valueType="pathType"
+                android:interpolator="@android:interpolator/fast_out_slow_in"/>
+        </aapt:attr>
+    </target>
+</animated-vector>

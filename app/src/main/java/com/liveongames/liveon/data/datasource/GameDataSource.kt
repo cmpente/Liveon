@@ -4,6 +4,7 @@ import android.content.Context
 import com.liveongames.domain.model.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.liveongames.domain.model.EducationOption
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.InputStreamReader
 import javax.inject.Inject
