@@ -1,19 +1,16 @@
-// domain/build.gradle.kts
 plugins {
-    alias(libs.plugins.kotlinJvm)
+    id("org.jetbrains.kotlin.jvm")
 }
 
-kotlin {
-    jvmToolchain(17)
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 dependencies {
-    // Core coroutines for domain module
     implementation(libs.coroutines.core)
-
-    // For dependency injection in pure Kotlin modules, use javax.inject
+    implementation(libs.gson)
     implementation(libs.javax.inject)
 
-    // Test dependencies
     testImplementation(libs.junit)
 }

@@ -26,6 +26,7 @@ object DatabaseModule {
         )
             .addMigrations(LiveonDatabase.MIGRATION_1_2)
             .addMigrations(LiveonDatabase.MIGRATION_2_3)
+            .addMigrations(LiveonDatabase.MIGRATION_3_4)
             .fallbackToDestructiveMigration() // Add this for development
             .build()
     }
@@ -58,5 +59,11 @@ object DatabaseModule {
     @Singleton
     fun provideCharacterDao(database: LiveonDatabase): CharacterDao {
         return database.characterDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideEducationDao(database: LiveonDatabase): EducationDao {
+        return database.educationDao()
     }
 }

@@ -30,6 +30,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import java.util.*
+import androidx.compose.ui.draw.alpha
 
 @Composable
 fun CrimeScreen(
@@ -996,17 +997,38 @@ fun CrimeButton(
         animationSpec = tween(durationMillis = 100), label = ""
     )
 
+    // Police light flashing animation
+    val infiniteTransition = rememberInfiniteTransition(label = "policeLights")
+    val flashAnimation by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = keyframes {
+                durationMillis = 1000
+                0f at 0
+                1f at 500
+                0f at 1000
+            },
+            repeatMode = RepeatMode.Restart
+        ), label = "flash"
+    )
+
+    // Determine if button should be enabled
+    val isEnabled = !isLocked && !cooldownActive
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(
-                enabled = !isLocked && !cooldownActive,
+                enabled = isEnabled,
                 onClick = {
-                    isPressed = true
-                    onClick()
-                    CoroutineScope(Dispatchers.Main).launch {
-                        kotlinx.coroutines.delay(150)
-                        isPressed = false
+                    if (isEnabled) {
+                        isPressed = true
+                        onClick()
+                        CoroutineScope(Dispatchers.Main).launch {
+                            kotlinx.coroutines.delay(150)
+                            isPressed = false
+                        }
                     }
                 }
             )
@@ -1016,16 +1038,10 @@ fun CrimeButton(
             defaultElevation = if (isPressed) 2.dp else 6.dp
         )
     ) {
-        // Create the background brush with proper type handling
-        val backgroundColor = if (isLocked || cooldownActive) {
-            if (cooldownActive) {
-                // For cooldown, we'll handle the animated brush separately
-                theme.surface.copy(alpha = 0.5f)
-            } else {
-                theme.surface.copy(alpha = 0.5f)
-            }
-        } else {
-            theme.surface
+        // Background handling
+        val backgroundColor = when {
+            !isEnabled -> theme.surface.copy(alpha = 0.5f)
+            else -> theme.surface
         }
 
         val useAnimatedBackground = cooldownActive && !isLocked
@@ -1040,6 +1056,8 @@ fun CrimeButton(
                         Modifier.background(color = backgroundColor, shape = RoundedCornerShape(14.dp))
                     }
                 )
+                // Police light flashing effect - only apply when in cooldown
+                .alpha(if (cooldownActive) 0.7f + 0.3f * flashAnimation else 1f)
                 .padding(16.dp)
         ) {
             Row(
@@ -1055,24 +1073,43 @@ fun CrimeButton(
                         Text(
                             text = text.substringBefore(" - "),
                             style = MaterialTheme.typography.titleMedium,
-                            color = if (isLocked) theme.accent else theme.text,
+                            color = when {
+                                isLocked -> theme.accent.copy(alpha = 0.7f)
+                                cooldownActive -> theme.accent.copy(alpha = 0.8f)
+                                else -> theme.text
+                            },
                             fontWeight = FontWeight.Medium
                         )
-                        if (isLocked) {
-                            Icon(
-                                painter = androidx.compose.ui.res.painterResource(id = android.R.drawable.ic_lock_idle_lock),
-                                contentDescription = "Locked",
-                                modifier = Modifier
-                                    .size(16.dp)
-                                    .padding(start = 4.dp),
-                                tint = Color.Red
-                            )
+                        when {
+                            isLocked -> {
+                                Icon(
+                                    painter = androidx.compose.ui.res.painterResource(id = android.R.drawable.ic_lock_idle_lock),
+                                    contentDescription = "Locked",
+                                    modifier = Modifier
+                                        .size(16.dp)
+                                        .padding(start = 4.dp),
+                                    tint = Color.Red
+                                )
+                            }
+                            cooldownActive -> {
+                                Icon(
+                                    painter = androidx.compose.ui.res.painterResource(id = android.R.drawable.ic_lock_idle_lock),
+                                    contentDescription = "Cooldown",
+                                    modifier = Modifier
+                                        .size(16.dp)
+                                        .padding(start = 4.dp),
+                                    tint = Color(0xFFFF9800)
+                                )
+                            }
                         }
                     }
                     Text(
                         text = text.substringAfter(" - "),
                         style = MaterialTheme.typography.bodySmall,
-                        color = if (isLocked) theme.accent.copy(alpha = 0.5f) else theme.accent
+                        color = when {
+                            isLocked || cooldownActive -> theme.accent.copy(alpha = 0.5f)
+                            else -> theme.accent
+                        }
                     )
 
                     // Risk tier badge
@@ -1099,12 +1136,12 @@ fun CrimeButton(
                             painter = androidx.compose.ui.res.painterResource(id = android.R.drawable.ic_lock_idle_lock),
                             contentDescription = "Cooldown active - $cooldownSeconds seconds remaining",
                             modifier = Modifier.size(20.dp),
-                            tint = Color.White
+                            tint = Color(0xFFFF9800)
                         )
                         Text(
                             text = String.format(Locale.getDefault(), ":%02d", cooldownSeconds),
                             style = MaterialTheme.typography.titleMedium,
-                            color = Color.White,
+                            color = Color(0xFFFF9800),
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(start = 4.dp)
                         )

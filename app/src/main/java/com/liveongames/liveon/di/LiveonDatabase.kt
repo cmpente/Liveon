@@ -20,9 +20,10 @@ import com.liveongames.data.db.entity.*
         RelationshipEntity::class,
         SaveSlotEntity::class,
         ScenarioEntity::class,
-        UnlockedAchievementEntity::class
+        UnlockedAchievementEntity::class,
+        EducationEntity::class  // ADD THIS LINE
     ],
-    version = 3,
+    version = 5,  // INCREMENT THIS VERSION
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -37,6 +38,7 @@ abstract class LiveonDatabase : RoomDatabase() {
     abstract fun saveSlotDao(): SaveSlotDao
     abstract fun scenarioDao(): ScenarioDao
     abstract fun unlockedAchievementDao(): UnlockedAchievementDao
+    abstract fun educationDao(): EducationDao  // ADD THIS LINE
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -78,6 +80,29 @@ abstract class LiveonDatabase : RoomDatabase() {
                 try {
                     database.execSQL("ALTER TABLE characters ADD COLUMN notoriety INTEGER NOT NULL DEFAULT 0")
                 } catch (e: Exception) {}
+            }
+        }
+
+        // ADD THIS NEW MIGRATION
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Create educations table
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `educations` (
+                        `id` TEXT NOT NULL,
+                        `characterId` TEXT NOT NULL,
+                        `name` TEXT NOT NULL,
+                        `description` TEXT NOT NULL,
+                        `level` TEXT NOT NULL,
+                        `cost` INTEGER NOT NULL,
+                        `duration` INTEGER NOT NULL,
+                        `requiredNotoriety` INTEGER NOT NULL,
+                        `completionDate` INTEGER,
+                        `isActive` INTEGER NOT NULL,
+                        `timestamp` INTEGER NOT NULL,
+                        PRIMARY KEY(`id`)
+                    )
+                """.trimIndent())
             }
         }
     }
