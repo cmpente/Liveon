@@ -1,15 +1,29 @@
+// app/src/main/java/com/liveongames/liveon/ui/screens/education/ActiveEducationActionBar.kt
 package com.liveongames.liveon.ui.screens.education
 
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -17,86 +31,158 @@ import androidx.compose.ui.unit.dp
 import com.liveongames.liveon.R
 import com.liveongames.liveon.model.EducationActionDef
 import com.liveongames.liveon.model.EducationCourse
+import com.liveongames.liveon.ui.theme.LiveonTheme
 import com.liveongames.liveon.viewmodel.EducationViewModel
+import kotlin.math.ceil
 
 @Composable
 fun ActiveEducationActionBar(
-    actions: List<EducationActionDef>,
+    viewModel: EducationViewModel,
     course: EducationCourse,
-    isActionLocked: (EducationActionDef) -> EducationViewModel.ActionLock,
-    isOnCooldown: (EducationActionDef) -> Boolean,
-    cooldownProgress: (EducationActionDef) -> Float,
-    capRemaining: (EducationActionDef) -> Int,
-    onActionClick: (EducationActionDef) -> Unit,
+    theme: LiveonTheme,
     modifier: Modifier = Modifier
 ) {
-    val cardBg = colorResource(id = R.color.slate_900)
-    val text = colorResource(id = R.color.white)
+    val edu by viewModel.activeEducation.collectAsState()
+    val actions by viewModel.actions.collectAsState()
 
-    Card(modifier = modifier, colors = CardDefaults.cardColors(containerColor = cardBg), shape = RoundedCornerShape(20.dp)) {
-        Column(Modifier.padding(12.dp)) {
-            Text("Study Actions", color = text, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-            Spacer(Modifier.height(8.dp))
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(theme.surface, RoundedCornerShape(16.dp))
+            .padding(12.dp)
+    ) {
+        Text(
+            text = "Study Actions",
+            style = MaterialTheme.typography.titleMedium,
+            color = theme.text,
+            fontWeight = FontWeight.SemiBold
+        )
+        Spacer(Modifier.height(8.dp))
 
-            val sorted = actions.sortedBy { it.cooldownSeconds }
-            val perRow = 3
-            sorted.chunked(perRow).forEach { row ->
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    row.forEach { def ->
-                        ActionChip(def = def, locked = isActionLocked(def).locked, onCooldown = isOnCooldown(def), progress = cooldownProgress(def), capLeft = capRemaining(def), onClick = { onActionClick(def) }, modifier = Modifier.weight(1f).padding(4.dp))
-                    }
-                    repeat(kotlin.math.max(0, perRow - row.size)) { Spacer(Modifier.weight(1f).padding(4.dp)) }
-                }
-                Spacer(Modifier.height(6.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            actions.forEach { def ->
+                val lockInfo = viewModel.isActionLocked(course, def)
+                val onCooldown = edu?.let { e -> viewModel.isOnCooldown(e.id, def) } ?: false
+                val disabled = lockInfo.locked || onCooldown || edu == null
+
+                val progress = if (onCooldown && edu != null) {
+                    viewModel.cooldownProgress(edu.id, def)
+                } else 0f
+
+                ActionChip(
+                    title = def.name,
+                    summary = shortSummary(def),
+                    iconRes = def.iconRes,
+                    enabled = !disabled,
+                    theme = theme,
+                    progress = progress,
+                    lockReason = when {
+                        lockInfo.locked -> (lockInfo.reason ?: "Locked")
+                        onCooldown      -> "Cooling down"
+                        edu == null     -> "No active course"
+                        else            -> null
+                    },
+                    onClick = { viewModel.performAction(def) }
+                )
             }
         }
     }
+}
+
+private fun shortSummary(def: EducationActionDef): String {
+    // Base delta is the *unmodified* GPA gain before tier/focus/term multipliers.
+    // Show minutes/seconds nicely.
+    val secs = def.cooldownSeconds
+    val cd = if (secs < 60) "${secs}s" else "${ceil(secs / 60.0).toInt()}m"
+    val cap = def.capPerAge
+    return "+${"%.2f".format(def.baseDelta)} GPA • $cd • cap $cap"
 }
 
 @Composable
-private fun ActionChip(def: EducationActionDef, locked: Boolean, onCooldown: Boolean, progress: Float, capLeft: Int, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    val chipBg = colorResource(id = R.color.slate_800)
-    val text = colorResource(id = R.color.white)
-    val disabled = locked || onCooldown
+private fun ActionChip(
+    title: String,
+    summary: String,
+    iconRes: Int,
+    enabled: Boolean,
+    progress: Float,
+    theme: LiveonTheme,
+    lockReason: String?,
+    onClick: () -> Unit,
+) {
+    val base = if (enabled) theme.primary else colorResource(R.color.indigo_400)
+    val textColor = if (enabled) colorResource(R.color.indigo_100) else colorResource(R.color.indigo_200)
 
-    Surface(modifier = modifier, shape = RoundedCornerShape(16.dp), color = chipBg, onClick = { if (!disabled) onClick() }, enabled = !disabled) {
-        Box(modifier = Modifier.height(84.dp).padding(10.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.align(Alignment.CenterStart)) {
-                Icon(painter = painterResource(id = actionIconFor(def)), contentDescription = def.name, tint = text)
-                Spacer(Modifier.width(8.dp))
-                Column {
-                    Text(def.name, color = text, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
-                    val deltaText = if (def.baseDelta > 0.0) "+${"%.2f".format(def.baseDelta)} GPA" else "Utility"
-                    Text(deltaText, color = text.copy(alpha = 0.85f), style = MaterialTheme.typography.bodySmall)
-                }
-            }
-            if (onCooldown) {
-                Canvas(modifier = Modifier.size(40.dp).align(Alignment.CenterEnd)) {
-                    val stroke = 6f
-                    drawArc(color = text.copy(alpha = 0.25f), startAngle = -90f, sweepAngle = 360f, useCenter = false, size = Size(size.width, size.height), style = Stroke(width = stroke, cap = StrokeCap.Round))
-                    drawArc(color = text, startAngle = -90f, sweepAngle = progress.coerceIn(0f,1f) * 360f, useCenter = false, size = Size(size.width, size.height), style = Stroke(width = stroke, cap = StrokeCap.Round))
-                }
-            } else if (capLeft >= 0) {
-                AssistChip(onClick = {}, label = { Text("Cap $capLeft") }, enabled = false, modifier = Modifier.align(Alignment.CenterEnd))
-            }
-            if (locked) Text("Locked", color = colorResource(id = R.color.indigo_300), modifier = Modifier.align(Alignment.BottomEnd), style = MaterialTheme.typography.labelSmall)
+    Column(
+        modifier = Modifier
+            .weight(1f)
+            .background(theme.surfaceElevated, RoundedCornerShape(14.dp))
+            .padding(10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(
+            onClick = onClick,
+            enabled = enabled,
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = base),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(
+                painter = painterResource(id = iconRes),
+                contentDescription = null,
+                tint = textColor,
+                modifier = Modifier.size(18.dp)
+            )
+            Text(
+                text = title,
+                modifier = Modifier.padding(start = 8.dp),
+                color = textColor,
+                fontWeight = FontWeight.SemiBold
+            )
         }
-    }
-}
 
-private fun actionIconFor(def: EducationActionDef): Int {
-    val id = def.id.lowercase()
-    return when {
-        "quiz" in id || def.minigame?.type == EducationActionDef.MiniGameType.QUIZ -> R.drawable.ic_quiz
-        "tim" in id || def.minigame?.type == EducationActionDef.MiniGameType.TIMING -> R.drawable.ic_timing
-        "mem" in id || def.minigame?.type == EducationActionDef.MiniGameType.MEMORY -> R.drawable.ic_memory
-        "lab" in id -> R.drawable.ic_lab
-        "tutor" in id -> R.drawable.ic_tutor
-        "research" in id -> R.drawable.ic_research
-        "presentation" in id -> R.drawable.ic_presentation
-        "planner" in id -> R.drawable.ic_planner
-        "nap" in id -> R.drawable.ic_nap
-        "walk" in id -> R.drawable.ic_walk
-        else -> R.drawable.ic_education
+        if (!enabled && lockReason != null) {
+            Text(
+                text = lockReason,
+                color = colorResource(R.color.indigo_200),
+                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier
+                    .padding(top = 6.dp)
+                    .alpha(0.9f)
+            )
+        } else {
+            Text(
+                text = summary,
+                color = colorResource(R.color.indigo_100),
+                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier.padding(top = 6.dp)
+            )
+        }
+
+        if (progress in 0f..0.999f) {
+            Row(
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator(
+                    progress = { progress },
+                    modifier = Modifier.size(18.dp),
+                    strokeWidth = 2.dp,
+                    color = theme.accent,
+                    trackColor = Color.Transparent
+                )
+                Text(
+                    text = "Cooling down",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = colorResource(R.color.indigo_200),
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+        }
     }
 }

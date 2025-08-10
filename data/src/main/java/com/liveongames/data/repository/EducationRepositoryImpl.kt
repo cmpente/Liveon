@@ -1,5 +1,7 @@
+// app/src/main/java/com/liveongames/data/repository/EducationRepositoryImpl.kt
 package com.liveongames.data.repository
 
+import android.util.Log
 import com.liveongames.data.db.dao.EducationActionStateDao
 import com.liveongames.data.db.dao.EducationDao
 import com.liveongames.data.db.dao.TermStateDao
@@ -9,8 +11,11 @@ import com.liveongames.data.db.entity.toDomain
 import com.liveongames.data.db.entity.toEntity
 import com.liveongames.domain.model.Education
 import com.liveongames.domain.repository.EducationRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 import kotlin.math.max
 import kotlin.math.min
@@ -24,7 +29,13 @@ class EducationRepositoryImpl @Inject constructor(
     companion object { private const val PLAYER = "player_character" }
 
     override fun getEducations(): Flow<List<Education>> =
-        educationDao.observeForCharacter(PLAYER).map { it.map { e -> e.toDomain() } }
+        educationDao.observeForCharacter(PLAYER)
+            .map { it.map { e -> e.toDomain() } }
+            .catch { e ->
+                Log.e("EducationRepo", "observe educations failed", e)
+                emit(emptyList())
+            }
+            .flowOn(Dispatchers.IO)
 
     override suspend fun getEducationById(educationId: String): Education? =
         educationDao.getById(PLAYER, educationId)?.toDomain()
@@ -68,7 +79,14 @@ class EducationRepositoryImpl @Inject constructor(
     suspend fun resetActionCapsForAge(educationId: String) =
         actionStateDao.resetUsedThisAge(PLAYER, educationId)
 
-    fun observeTermState(): Flow<TermStateEntity?> = termStateDao.observe(PLAYER)
+    fun observeTermState(): Flow<TermStateEntity?> =
+        termStateDao.observe(PLAYER)
+            .catch { e ->
+                Log.e("EducationRepo", "observe term state failed", e)
+                emit(null)
+            }
+            .flowOn(Dispatchers.IO)
+
     suspend fun getTermState(): TermStateEntity? = termStateDao.get(PLAYER)
     suspend fun upsertTermState(state: TermStateEntity) = termStateDao.upsert(state)
     suspend fun updateTermState(focus: Int, streakDays: Int, professorRelationship: Int, weekIndex: Int, coursePhase: String) =
