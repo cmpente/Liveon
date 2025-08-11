@@ -6,7 +6,10 @@
     <color name="slate_800">#1F2937</color>
     <color name="slate_700">#374151</color>
     <color name="indigo_500">#6366F1</color>
+    <color name="indigo_400">#6366F1</color>
     <color name="indigo_300">#A5B4FC</color>
+    <color name="indigo_100">#C7D2FE</color>
+    <color name="indigo_200">#A5B4FC</color>
     <color name="gold_600">#D97706</color>
     <color name="white">#FFFFFFFF</color>
 

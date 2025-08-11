@@ -5,6 +5,7 @@ import com.liveongames.domain.model.EducationLevel
 data class EducationActionDef(
     val id: String,
     val name: String,
+    val iconRes: Int = 0,
     val baseDelta: Double,
     val cooldownSeconds: Int,
     val capPerAge: Int,

@@ -1,3 +1,4 @@
+// domain/src/main/java/com/liveongames/domain/model/Education.kt
 package com.liveongames.domain.model
 
 data class Education(

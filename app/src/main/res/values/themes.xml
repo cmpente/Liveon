@@ -20,6 +20,11 @@
         <!-- Additional Material3 attributes -->
         <item name="colorPrimaryContainer">@color/primary_light</item>
         <item name="colorOnPrimaryContainer">@color/white</item>
+
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+
     </style>
 
     <!-- Full screen theme -->

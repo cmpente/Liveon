@@ -97,6 +97,8 @@ class EducationViewModel @Inject constructor(
 
     data class ActionLock(val locked: Boolean, val reason: String? = null)
 
+    fun capRemaining(actionDef: EducationActionDef): Int = Int.MAX_VALUE
+
     fun courseLockInfo(course: EducationCourse): ActionLock {
         val gpaOk = overallGpa.value >= course.requiredGpa
         if (!gpaOk) return ActionLock(true, "Requires GPA %s".format("%.2f".format(course.requiredGpa)))
@@ -109,11 +111,17 @@ class EducationViewModel @Inject constructor(
     fun isActionLocked(course: EducationCourse, def: EducationActionDef): ActionLock {
         val activeGpa = activeEducation.value?.currentGPA ?: overallGpa.value
         if (activeGpa < def.minGpa) return ActionLock(true, "Needs GPA ${"%.2f".format(def.minGpa)}")
-        if (def.allowedLevels.isNotEmpty() && course.level !in def.allowedLevels) return ActionLock(true, "Unavailable at ${course.level.displayName}")
+
+                if (!def.allowedLevels.isNullOrEmpty() && course.level !in def.allowedLevels)
+            return ActionLock(true, "Unavailable at ${course.level.displayName}")
+
         val phase = termState.value?.coursePhase ?: "EARLY"
         val wanted = def.availability?.phase?.name
         if (wanted != null && wanted != phase) return ActionLock(true, "Available in $wanted")
-        if (def.requiresMilestonesAny.isNotEmpty() && !course.milestones.any { it in def.requiresMilestonesAny }) return ActionLock(true, "Requires milestone: ${def.requiresMilestonesAny.joinToString()}")
+
+                if (!def.requiresMilestonesAny.isNullOrEmpty() && !course.milestones.any { it in def.requiresMilestonesAny })
+            return ActionLock(true, "Requires milestone: ${def.requiresMilestonesAny.joinToString()}")
+
         return ActionLock(false)
     }
 

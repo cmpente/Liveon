@@ -25,6 +25,7 @@ import com.liveongames.liveon.ui.screens.EducationScreen
 import com.liveongames.liveon.ui.screens.PetsScreen
 import com.liveongames.liveon.ui.screens.SettingsScreen
 import com.liveongames.liveon.ui.LiveonGameScreen
+import com.liveongames.liveon.ui.theme.PremiumSleek
 import com.liveongames.liveon.ui.viewmodel.GameViewModel
 import com.liveongames.liveon.viewmodel.CrimeViewModel
 import com.liveongames.liveon.viewmodel.EducationViewModel
@@ -102,6 +103,7 @@ fun LiveonApp() {
                 PetsScreen(
                     viewModel = petsViewModel,
                     settingsViewModel = settingsViewModel
+                    // Removed theme parameter since it might not be expected
                 )
             }
 
@@ -116,6 +118,7 @@ fun LiveonApp() {
             CrimeScreen(
                 viewModel = crimeViewModel,
                 settingsViewModel = settingsViewModel,
+                // Removed theme parameter since it might not be expected
                 onCrimeCommitted = {
                     // Force immediate refresh of the shared GameViewModel
                     sharedGameViewModel.refreshPlayerStats()
@@ -133,12 +136,13 @@ fun LiveonApp() {
         // Education screen as modal overlay
         if (showEducationScreen) {
             val educationViewModel: EducationViewModel = hiltViewModel()
+            // app/src/main/java/com/liveongames/liveon/MainActivity.kt (Truncated for relevant part)
+
             EducationScreen(
                 viewModel = educationViewModel,
-                settingsViewModel = settingsViewModel,
+                theme = PremiumSleek,
                 onEducationCompleted = {
                     sharedGameViewModel.refreshPlayerStats()
-
                     CoroutineScope(Dispatchers.Main).launch {
                         delay(1000)
                         sharedGameViewModel.refreshPlayerStats()
