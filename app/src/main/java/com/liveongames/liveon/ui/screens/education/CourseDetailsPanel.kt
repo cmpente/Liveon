@@ -1,3 +1,4 @@
+// app/src/main/java/com/liveongames/liveon/ui/screens/education/CourseDetailsPanel.kt
 package com.liveongames.liveon.ui.screens.education
 
 import androidx.compose.foundation.background
@@ -9,13 +10,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.liveongames.liveon.model.EducationCourse
-import com.liveongames.liveon.model.EducationLockInfo
+import com.liveongames.domain.model.EducationProgram
+import com.liveongames.data.model.education.EducationLockInfo // Import the correct LockInfo
 import com.liveongames.liveon.ui.theme.LiveonTheme
 
 @Composable
 fun CourseDetailsPanel(
-    course: EducationCourse,
+    course: EducationProgram,
     lockInfo: EducationLockInfo,
     theme: LiveonTheme,
     onEnroll: () -> Unit,
@@ -28,10 +29,10 @@ fun CourseDetailsPanel(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(course.name, fontWeight = FontWeight.Bold, color = theme.text)
+            Text(course.title, fontWeight = FontWeight.Bold, color = theme.text)
             Spacer(Modifier.height(8.dp))
-            Text("Cost: \$${course.cost}", color = theme.text)
-            Text("Level: ${course.level.displayName}", color = theme.text)
+            Text("Cost: \$${course.tuition}", color = theme.text)
+            Text("Level: ${course.tier.name}", color = theme.text)
             Spacer(Modifier.height(8.dp))
             if (lockInfo.locked) {
                 Text("Cannot enroll: ${lockInfo.reason}", color = theme.secondary)

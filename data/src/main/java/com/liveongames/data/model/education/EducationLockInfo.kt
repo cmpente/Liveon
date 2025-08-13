@@ -1,4 +1,4 @@
-package com.liveongames.liveon.model
+package com.liveongames.data.model.education
 
 data class EducationLockInfo(
     val locked: Boolean,

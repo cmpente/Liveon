@@ -1,9 +1,9 @@
-package com.liveongames.liveon.assets.events
+package com.liveongames.data.assets.events
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.liveongames.domain.model.GameEvent
-import com.liveongames.liveon.assets.common.RawAssetReader
+import com.liveongames.data.assets.common.RawAssetReader
 
 class EventsAssetLoader(
     private val reader: RawAssetReader,

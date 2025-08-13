@@ -1,4 +1,4 @@
-package com.liveongames.liveon.assets.scenarios
+package com.liveongames.data.assets.scenarios
 
 data class ScenarioAsset(
     val id: String,

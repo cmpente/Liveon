@@ -3,7 +3,7 @@ package com.liveongames.liveon.di
 import android.content.Context
 import androidx.room.Room
 import com.liveongames.data.db.LiveonDatabase
-import com.liveongames.data.db.LiveonMigrations
+import com.liveongames.liveon.data.db.LiveonMigrations
 import com.liveongames.data.db.dao.*
 import dagger.Module
 import dagger.Provides

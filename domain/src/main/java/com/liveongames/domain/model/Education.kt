@@ -1,14 +1,15 @@
-// domain/src/main/java/com/liveongames/domain/model/Education.kt
+// domain/model/Education.kt (Potentially with deprecation)
 package com.liveongames.domain.model
 
+@Deprecated("Use Enrollment and EducationProgram for educational actions logic.")
 data class Education(
     val id: String,
     val name: String,
     val description: String,
-    val level: EducationLevel,
+    val level: EducationLevel, // Legacy enum
     val cost: Int,
-    val duration: Int,          // months
-    val requiredGPA: Double,
+    val duration: Int,         // months
+    val requiredGPA: Double,   // Static GPA requirement from catalog/profiles, not dynamic GPA
     val currentGPA: Double = 0.0,
     val isActive: Boolean = false,
     val timestamp: Long = 0L,
@@ -17,13 +18,3 @@ data class Education(
     val doHomeworkCount: Int = 0,
     val studyCount: Int = 0
 )
-
-enum class EducationLevel(val displayName: String) {
-    BASIC("Basic Education"),
-    HIGH_SCHOOL("High School"),
-    ASSOCIATE("Associate Degree"),
-    BACHELOR("Bachelor's Degree"),
-    MASTER("Master's Degree"),
-    DOCTORATE("Doctorate"),
-    CERTIFICATION("Certification")
-}

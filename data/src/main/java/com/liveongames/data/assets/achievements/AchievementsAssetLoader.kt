@@ -1,9 +1,8 @@
-package com.liveongames.liveon.assets.achievements
+package com.liveongames.data.assets.achievements
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.liveongames.liveon.assets.common.RawAssetReader
-import com.liveongames.liveon.assets.scenarios.ScenariosAssetLoader
+import com.liveongames.data.assets.common.RawAssetReader
 
 class AchievementsAssetLoader(
     private val reader: RawAssetReader,

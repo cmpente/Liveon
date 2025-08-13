@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.liveongames.data.model.education.EducationCourse
 import com.liveongames.domain.model.Education
 import com.liveongames.liveon.R
 import com.liveongames.liveon.ui.theme.LiveonTheme
@@ -22,7 +23,7 @@ fun EducationAchievementsShelf(
     completed: List<Education>,
     theme: LiveonTheme,
     modifier: Modifier = Modifier,
-    courseResolver: (String) -> com.liveongames.liveon.model.EducationCourse?
+    courseResolver: (String) -> EducationCourse?
 ) {
     Column(modifier = modifier) {
         Text("Diplomas", fontWeight = FontWeight.Bold, color = theme.text)

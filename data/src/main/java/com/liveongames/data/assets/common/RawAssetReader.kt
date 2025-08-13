@@ -1,11 +1,10 @@
-package com.liveongames.liveon.assets.common
+package com.liveongames.data.assets.common
 
 import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
-import com.google.gson.reflect.TypeToken
 import java.io.InputStreamReader
 import java.lang.reflect.Type
 

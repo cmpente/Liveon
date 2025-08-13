@@ -1,3 +1,4 @@
+// data/db/dao/EducationDao.kt
 package com.liveongames.data.db.dao
 
 import androidx.room.Dao
@@ -31,8 +32,13 @@ interface EducationDao {
     @Query("UPDATE educations SET isActive = 0 WHERE characterId = :characterId")
     suspend fun deactivateAll(characterId: String)
 
+    // --- EXISTING ---
     @Query("UPDATE educations SET currentGpa = :gpa WHERE characterId = :characterId AND id = :educationId")
     suspend fun updateGpa(characterId: String, educationId: String, gpa: Double)
+
+    // --- NEW METHOD TO UPDATE PROGRESS ---
+    @Query("UPDATE educations SET progressPct = :progress WHERE characterId = :characterId AND id = :educationId")
+    suspend fun updateProgress(characterId: String, educationId: String, progress: Int)
 
     @Query("UPDATE educations SET isActive = :isActive, completionDate = :completionDate WHERE characterId = :characterId AND id = :educationId")
     suspend fun updateStatus(characterId: String, educationId: String, isActive: Boolean, completionDate: Long?)

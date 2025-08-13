@@ -1,5 +1,5 @@
 
-package com.liveongames.data.db
+package com.liveongames.liveon.data.db
 
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase

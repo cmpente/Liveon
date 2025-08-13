@@ -20,17 +20,18 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.liveongames.liveon.ui.screens.CrimeScreen
-import com.liveongames.liveon.ui.screens.EducationScreen
-import com.liveongames.liveon.ui.screens.PetsScreen
-import com.liveongames.liveon.ui.screens.SettingsScreen
+import com.liveongames.liveon.ui.screens.education.EducationScreen // <-- Corrected import path (if in /education subfolder)
 import com.liveongames.liveon.ui.LiveonGameScreen
-import com.liveongames.liveon.ui.theme.PremiumSleek
 import com.liveongames.liveon.ui.viewmodel.GameViewModel
 import com.liveongames.liveon.viewmodel.CrimeViewModel
 import com.liveongames.liveon.viewmodel.EducationViewModel
 import com.liveongames.liveon.viewmodel.PetsViewModel
 import com.liveongames.liveon.viewmodel.SettingsViewModel
+import com.liveongames.liveon.ui.screens.CrimeScreen
+import com.liveongames.liveon.ui.screens.PetsScreen // Assuming these are in this package
+import com.liveongames.liveon.ui.screens.SettingsScreen // Assuming these are in this package
+import com.liveongames.liveon.ui.theme.LiveonTheme // Import the theme wrapper composable
+import com.liveongames.liveon.ui.theme.PremiumSleek // Import a default theme instance
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -42,12 +43,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Enable fullscreen mode AFTER setContentView
         setContent {
-            LiveonApp()
+            LiveonTheme(liveonTheme = PremiumSleek) { // Wrap with theme
+                LiveonApp()
+            }
         }
-
-        // Call fullscreen after content is set
         enableFullScreen()
     }
 
@@ -78,10 +78,8 @@ fun LiveonApp() {
     var showCrimeScreen by remember { mutableStateOf(false) }
     var showEducationScreen by remember { mutableStateOf(false) }
 
-    // GET THE SAME GameViewModel INSTANCE FOR BOTH SCREENS
     val sharedGameViewModel: GameViewModel = hiltViewModel()
 
-    // Main app with optional crime screen overlay
     Box(modifier = Modifier.fillMaxSize()) {
         NavHost(
             navController = navController,
@@ -89,7 +87,7 @@ fun LiveonApp() {
         ) {
             composable("main") {
                 LiveonGameScreen(
-                    gameViewModel = sharedGameViewModel, // Use shared instance
+                    gameViewModel = sharedGameViewModel,
                     settingsViewModel = settingsViewModel,
                     onNavigateToCrime = { showCrimeScreen = true },
                     onNavigateToPets = { navController.navigate("pets") },
@@ -103,7 +101,6 @@ fun LiveonApp() {
                 PetsScreen(
                     viewModel = petsViewModel,
                     settingsViewModel = settingsViewModel
-                    // Removed theme parameter since it might not be expected
                 )
             }
 
@@ -112,20 +109,15 @@ fun LiveonApp() {
             }
         }
 
-        // Crime screen as modal overlay - USE THE SAME GameViewModel INSTANCE
         if (showCrimeScreen) {
             val crimeViewModel: CrimeViewModel = hiltViewModel()
             CrimeScreen(
                 viewModel = crimeViewModel,
                 settingsViewModel = settingsViewModel,
-                // Removed theme parameter since it might not be expected
                 onCrimeCommitted = {
-                    // Force immediate refresh of the shared GameViewModel
                     sharedGameViewModel.refreshPlayerStats()
-
-                    // Also do it with delay to ensure DB sync
                     CoroutineScope(Dispatchers.Main).launch {
-                        delay(1000) // Give time for DB operations
+                        delay(1000)
                         sharedGameViewModel.refreshPlayerStats()
                     }
                 },
@@ -133,22 +125,11 @@ fun LiveonApp() {
             )
         }
 
-        // Education screen as modal overlay
         if (showEducationScreen) {
             val educationViewModel: EducationViewModel = hiltViewModel()
-            // app/src/main/java/com/liveongames/liveon/MainActivity.kt (Truncated for relevant part)
 
             EducationScreen(
-                viewModel = educationViewModel,
-                theme = PremiumSleek,
-                onEducationCompleted = {
-                    sharedGameViewModel.refreshPlayerStats()
-                    CoroutineScope(Dispatchers.Main).launch {
-                        delay(1000)
-                        sharedGameViewModel.refreshPlayerStats()
-                    }
-                },
-                onDismiss = { showEducationScreen = false }
+                viewModel = educationViewModel
             )
         }
     }

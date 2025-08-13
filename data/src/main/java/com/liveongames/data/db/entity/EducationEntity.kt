@@ -1,60 +1,46 @@
+// data/src/main/java/com/liveongames/data/db/entity/EducationEntity.kt
 package com.liveongames.data.db.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.liveongames.domain.model.Education
-import com.liveongames.domain.model.EducationLevel
 
+/**
+ * Entity representing an instance of education progress for a character.
+ * This maps to the 'educations' table in the local Room database.
+ *
+ * !! IMPORTANT !! Ensure all fields used in `copy()` calls or accessed directly
+ * (like entity.id, entity.name) are constructor properties (`val` or `var`)
+ * defined in the primary constructor.
+ */
 @Entity(tableName = "educations")
 data class EducationEntity(
-    @PrimaryKey val id: String,
-    val characterId: String,
+    @PrimaryKey
+    val id: String,           // programId related to EducationProgram.id
+    val characterId: String,  // identifies which character this belongs to
+
+    // --- Basic Metadata ---
     val name: String,
     val description: String,
-    val level: String,
+    val level: String,        // Stored as a string value (to avoid enum issues)
+
+    // --- Costs & Timing ---
     val cost: Int,
-    val durationMonths: Int,
-    val requiredGpa: Double,
-    val currentGpa: Double = 0.0,
+    val durationMonths: Int,   // overall program duration in months
+
+    // --- Academic Requirements & Progress ---
+    val requiredGpa: Double,  // Static requirement from catalog
+    val currentGpa: Double = 0.0, // Current GPA earned by player (0.0 - 4.0)
+    val progressPct: Int = 0, // Current progress (%) through the program
+
+    // --- Status ---
     val isActive: Boolean = false,
-    val timestamp: Long = System.currentTimeMillis(),
-    val completionDate: Long? = null,
+
+    // --- Timestamps ---
+    val timestamp: Long = System.currentTimeMillis(), // Last activity time/action timestamp
+    val completionDate: Long? = null,                   // If set, indicates graduation
+
+    // --- Legacy Class/Action Counts ---
     val attendClassCount: Int = 0,
     val doHomeworkCount: Int = 0,
     val studyCount: Int = 0
-)
-
-fun EducationEntity.toDomain(): Education = Education(
-    id = id,
-    name = name,
-    description = description,
-    level = EducationLevel.valueOf(level),
-    cost = cost,
-    duration = durationMonths,
-    requiredGPA = requiredGpa,
-    currentGPA = currentGpa,
-    isActive = isActive,
-    timestamp = timestamp,
-    completionDate = completionDate,
-    attendClassCount = attendClassCount,
-    doHomeworkCount = doHomeworkCount,
-    studyCount = studyCount
-)
-
-fun Education.toEntity(characterId: String): EducationEntity = EducationEntity(
-    id = id,
-    characterId = characterId,
-    name = name,
-    description = description,
-    level = level.name,
-    cost = cost,
-    durationMonths = duration,
-    requiredGpa = requiredGPA,
-    currentGpa = currentGPA,
-    isActive = isActive,
-    timestamp = timestamp,
-    completionDate = completionDate,
-    attendClassCount = attendClassCount,
-    doHomeworkCount = doHomeworkCount,
-    studyCount = studyCount
 )

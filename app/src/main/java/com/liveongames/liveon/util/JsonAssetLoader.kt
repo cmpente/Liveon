@@ -1,3 +1,4 @@
+// app/src/main/java/com/liveongames/liveon/util/JsonAssetLoader.kt
 package com.liveongames.liveon.util
 
 import android.content.Context
@@ -7,18 +8,22 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
-import com.liveongames.domain.model.EducationLevel
+import com.liveongames.domain.model.AcademicSchema
+import com.liveongames.domain.model.EducationProgram
+import com.liveongames.domain.model.EduTier
 import com.liveongames.domain.model.GameEvent
-import com.liveongames.liveon.model.EducationActionDef
-import com.liveongames.liveon.model.EducationCourse
+import com.liveongames.data.model.education.EducationActionDef
 import java.io.InputStreamReader
-import com.liveongames.liveon.assets.achievements.AchievementAsset
+import com.liveongames.data.assets.achievements.AchievementAsset
 
 /**
  * Unified assets loader:
  * - Keeps existing loaders (events, scenarios, achievements).
  * - Adds Education loaders (courses + actions).
  * - Safe: returns empty defaults on failures.
+ *
+ * Updated to correctly parse and pass the 'schema' parameter
+ * for EducationProgram based on the provided data class.
  */
 class JsonAssetLoader(
     @PublishedApi internal val context: Context
@@ -154,26 +159,44 @@ class JsonAssetLoader(
     // -------------------------
 
     /** education_courses.json */
-    fun loadEducationCourses(): List<EducationCourse> = try {
+    fun loadEducationCourses(): List<EducationProgram> = try {
         context.assets.open("education_courses.json").use { input ->
             InputStreamReader(input).use { reader ->
                 val arr = JsonParser.parseReader(reader).asJsonArray
-                arr.map { el ->
-                    val obj = el.asJsonObject
-                    EducationCourse(
-                        id = obj["id"].asString,
-                        name = obj["name"].asString,
-                        tier = obj["tier"].asInt,
-                        level = EducationLevel.valueOf(obj["level"].asString),
-                        cost = obj["cost"].asInt,
-                        durationMonths = obj["durationMonths"].asInt,
-                        requiredGpa = obj["requiredGpa"].asDouble,
-                        prerequisites = obj["prerequisites"]?.asJsonArray?.map { it.asString } ?: emptyList(),
-                        careerBoosts = obj["careerBoosts"]?.asJsonArray?.map { it.asString } ?: emptyList(),
-                        flavorText = obj["flavorText"]?.asString ?: "",
-                        milestones = obj["milestones"]?.asJsonArray?.map { it.asString } ?: emptyList(),
-                        difficultyMod = obj["difficultyMod"]?.asDouble ?: 1.0
-                    )
+                arr.mapNotNull { el ->
+                    try {
+                        val obj = el.asJsonObject
+
+                        // Parse schema
+                        val schemaObj = obj.getAsJsonObject("schema") ?: return@mapNotNull null
+                        val schema = AcademicSchema(
+                            displayPeriodName = schemaObj.get("displayPeriodName")?.asString ?: "Period",
+                            periodsPerYear = schemaObj.get("periodsPerYear")?.asInt ?: 1,
+                            totalPeriods = schemaObj.get("totalPeriods")?.asInt ?: 1,
+                            groupingLabel = schemaObj.get("groupingLabel")?.asString
+                        )
+
+                        // Map tier string → EduTier enum
+                        val tierStr = obj.get("tier")?.asString ?: return@mapNotNull null
+                        val tier = EduTier.values().find { it.name.equals(tierStr, ignoreCase = true) }
+                            ?: EduTier.ELEMENTARY
+
+                        // Construct concrete implementation
+                        EducationProgramImpl(
+                            id = obj.get("id")?.asString ?: return@mapNotNull null,
+                            title = obj.get("title")?.asString ?: "Unnamed Program",
+                            description = obj.get("description")?.asString ?: "",
+                            tier = tier,
+                            schema = schema,
+                            minGpa = obj.get("minGpa")?.asDouble ?: 0.0,
+                            tuition = obj.get("tuition")?.asInt ?: 0,
+                            requirements = obj.getAsJsonArray("requirements")
+                                ?.mapNotNull { it?.asString }?.toSet() ?: emptySet()
+                        )
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        null
+                    }
                 }
             }
         }
@@ -182,6 +205,34 @@ class JsonAssetLoader(
         emptyList()
     }
 
+    /**
+     * Helper function to map JSON tier strings to integer IDs.
+     * This is necessary because your data class expects `tier: Int`.
+     * You should define a consistent mapping based on your game's tier system.
+     * Adjust the IDs as needed for your application.
+     * Tier IDs match `EduTier` enum ordinal values for clarity.
+     * ELEMENTARY(0), MIDDLE(1), HIGH(2), CERT(3), ASSOC(4), BACH(5), MAST(6), PHD(7)
+     */
+    private fun mapStringTierToInt(tierStr: String): Int {
+        // Use a `when` expression for clear mapping
+        return when (tierStr.uppercase()) {
+            "ELEMENTARY" -> 0 // EduTier.ELEMENTARY.ordinal
+            "MIDDLE" -> 1     // EduTier.MIDDLE.ordinal
+            "HIGH" -> 2       // EduTier.HIGH.ordinal
+            "CERT" -> 3       // EduTier.CERT.ordinal
+            "ASSOC" -> 4      // EduTier.ASSOC.ordinal
+            "BACH" -> 5       // EduTier.BACH.ordinal
+            "MAST" -> 6       // EduTier.MAST.ordinal
+            "PHD" -> 7        // EduTier.PHD.ordinal
+            else -> {
+                // Log a warning for unknown tiers and default to a base tier (e.g., ELEMENTARY)
+                println("Warning: Unknown tier string '$tierStr' encountered. Defaulting to ELEMENTARY (0).")
+                0 // Default to ELEMENTARY
+            }
+        }
+    }
+
+    // Existing actions loader (assumed to be working or for future implementation)
     /** education_actions.json */
     fun loadEducationActions(): List<EducationActionDef> = try {
         context.assets.open("education_actions.json").use { input ->
@@ -203,3 +254,21 @@ data class ScenarioAsset(
     val description: String? = null,
     val tags: List<String>? = null
 )
+
+// =====================
+// Local Implementation
+// =====================
+
+/**
+ * Data class implementing the EducationProgram interface.
+ */
+data class EducationProgramImpl(
+    override val id: String,
+    override val title: String,
+    override val description: String,
+    override val tier: EduTier,
+    override val schema: AcademicSchema,
+    override val minGpa: Double,
+    override val tuition: Int,
+    override val requirements: Set<String>
+) : EducationProgram

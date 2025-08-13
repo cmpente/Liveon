@@ -11,8 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.liveongames.liveon.model.EducationCourse
-import com.liveongames.liveon.model.EducationLockInfo
+import com.liveongames.data.model.education.EducationCourse
+import com.liveongames.data.model.education.EducationLockInfo
 import com.liveongames.liveon.ui.theme.LiveonTheme
 
 @Composable
@@ -46,7 +46,7 @@ fun EducationPathMap(
                         modifier = Modifier.padding(10.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(course.name, fontWeight = FontWeight.SemiBold, color = theme.text)
+                        Text(course.title, fontWeight = FontWeight.SemiBold, color = theme.text)
                         Spacer(Modifier.height(6.dp))
                         if (info.locked) {
                             Text("🔒 Locked", color = theme.accent)

@@ -1,6 +1,8 @@
 [versions]
 agp = "8.5.2"
 kotlin = "2.0.0"
+kotlinx-serialization = "1.6.0"
+kotlinx-serialization-plugin = "2.0.0"
 compose-plugin = "2.0.0"
 core-ktx = "1.13.1"
 junit = "4.13.2"
@@ -73,10 +75,14 @@ gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 # Hilt annotations for domain module
 javax-inject = { group = "javax.inject", name = "javax.inject", version = "1" }
 
+# Kotlinx Serialization
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinx-serialization-plugin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "compose-plugin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

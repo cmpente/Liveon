@@ -1,8 +1,9 @@
-package com.liveongames.liveon.assets.scenarios
+package com.liveongames.data.assets.scenarios
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.liveongames.liveon.assets.common.RawAssetReader
+import com.liveongames.data.assets.common.RawAssetReader
+import com.liveongames.data.assets.scenarios.ScenarioAsset // assuming exists
 
 class ScenariosAssetLoader(
     private val reader: RawAssetReader,

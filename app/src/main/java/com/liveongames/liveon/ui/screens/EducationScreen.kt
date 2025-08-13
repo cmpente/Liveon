@@ -1,177 +1,221 @@
-package com.liveongames.liveon.ui.screens
+// app/src/main/java/com/liveongames/liveon/ui/screens/education/EducationScreen.kt
+package com.liveongames.liveon.ui.screens.education
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
+import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.lazy.grid.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.liveongames.domain.model.EducationProgram
+import com.liveongames.data.model.education.EducationActionDef
+import com.liveongames.domain.model.Enrollment
+import com.liveongames.domain.model.groupFromPeriod
+import com.liveongames.domain.model.periodFromProgress
 import com.liveongames.liveon.R
-import com.liveongames.liveon.model.EducationActionDef
-import com.liveongames.liveon.model.EducationCourse
-import com.liveongames.liveon.model.EducationLockInfo
-import com.liveongames.liveon.model.toModel
-import com.liveongames.liveon.ui.screens.education.*
-import com.liveongames.liveon.ui.theme.LiveonTheme
+import com.liveongames.liveon.ui.components.FullScreenLoading
+import com.liveongames.liveon.ui.screens.education.components.*
+import com.liveongames.liveon.ui.theme.LocalLiveonTheme
+import com.liveongames.liveon.viewmodel.EducationEvent
 import com.liveongames.liveon.viewmodel.EducationViewModel
-import androidx.compose.material3.Text
-import androidx.compose.material3.SnackbarHost
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EducationScreen(
-    viewModel: EducationViewModel = hiltViewModel(),
-    theme: LiveonTheme,
-    onEducationCompleted: () -> Unit = {},
-    onDismiss: () -> Unit = {}
+    modifier: Modifier = Modifier,
+    viewModel: EducationViewModel = hiltViewModel()
 ) {
-    val catalog by viewModel.catalog.collectAsStateWithLifecycle(emptyList())
-    val actions by viewModel.actions.collectAsStateWithLifecycle(emptyList())
-    val educations by viewModel.educations.collectAsStateWithLifecycle(emptyList())
-    val active by viewModel.activeEducation.collectAsStateWithLifecycle(null)
-    val overallGpa by viewModel.overallGpa.collectAsStateWithLifecycle(0.0)
-    val termEntity by viewModel.termState.collectAsStateWithLifecycle(null)
-    val term = termEntity?.toModel()
+    val state by viewModel.uiState.collectAsState()
+    val theme = LocalLiveonTheme.current
 
-    val bg = colorResource(id = R.color.slate_950)
-    val snackHost = remember { SnackbarHostState() }
+    if (state.loading) {
+        FullScreenLoading()
+        return
+    }
 
-    var showGpaInfo by remember { mutableStateOf(false) }
-    var selectedCourse by remember { mutableStateOf<EducationCourse?>(null) }
-
-    var pendingAction by remember { mutableStateOf<EducationActionDef?>(null) }
-    var showTiming by remember { mutableStateOf(false) }
-    var showMemory by remember { mutableStateOf(false) }
-    var showQuiz by remember { mutableStateOf(false) }
-
-    Column(
-        Modifier
+    Box(
+        modifier = modifier
             .fillMaxSize()
-            .background(bg)
-            .verticalScroll(rememberScrollState())
-            .padding(12.dp)
+            .background(Brush.verticalGradient(listOf(theme.background, theme.surface)))
+            .padding(16.dp)
     ) {
-        EducationProfileCard(
-            overallGpa = overallGpa,
-            activeEducation = active,
-            termState = term,
-            theme = theme,
-            modifier = Modifier.fillMaxWidth(),
-            onInfoTap = { showGpaInfo = true },
-            onCompleteTap = {
-                viewModel.completeActiveIfAny()
-                onEducationCompleted()
-            }
-        )
-        Spacer(Modifier.height(12.dp))
+        Column(modifier = Modifier.fillMaxSize()) {
+            HeaderCard(
+                state = state,
+                onInfoClick = { viewModel.handleEvent(EducationEvent.ShowGpaInfo) }
+            )
 
-        active?.let { a ->
-            val course = catalog.firstOrNull { it.id == a.id }
+            Spacer(Modifier.height(16.dp))
 
-            if (course != null) {
-                ActiveEducationActionBar(
-                    actions = actions,
-                    course = course,
-                    isActionLocked = { def ->
-                        // ✅ Added safe check so viewmodel doesn't crash
-                        val lockInfo = viewModel.isActionLocked(course, def)
-                        lockInfo.locked
-                    },
-                    isOnCooldown = { def -> viewModel.isOnCooldown(a.id, def) },
-                    cooldownProgress = { def -> viewModel.cooldownProgress(a.id, def) },
-                    capRemaining = { def -> viewModel.capRemaining(def) },
-                    onActionClick = { def ->
-                        pendingAction = def
-                        when (def.minigame?.type) {
-                            EducationActionDef.MiniGameType.TIMING -> showTiming = true
-                            EducationActionDef.MiniGameType.MEMORY -> showMemory = true
-                            EducationActionDef.MiniGameType.QUIZ -> showQuiz = true
-                            EducationActionDef.MiniGameType.DRAG, null -> viewModel.performAction(def, tierMultiplier = 1.0)
-                        }
-                    },
-                    theme = theme,
-                    modifier = Modifier.fillMaxWidth()
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    "Study Actions",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = theme.text
                 )
-                Spacer(Modifier.height(16.dp))
-            } else {
-                Text("Education course not found.", color = theme.text)
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                items(state.actions) { action ->
+                    ActionChip(
+                        action = action,
+                        enrollment = state.enrollment,
+                        onClick = {
+                            viewModel.handleEvent(EducationEvent.DoAction(action.id, "default_choice"))
+                        }
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(24.dp))
+
+            Text(
+                "Programs",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = theme.text
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(state.programs) { program ->
+                    ProgramCard(
+                        course = program, // Changed from `course = course` to `course = program`
+                        onClick = { viewModel.handleEvent(EducationEvent.Enroll(program.id)) }
+                    )
+                }
             }
         }
 
-        EducationPathMap(
-            courses = catalog,
-            lockInfo = { course ->
-                val lock = viewModel.courseLockInfo(course)
-                EducationLockInfo(locked = lock.locked, reason = lock.reason ?: "")
-            },
-            onEnroll = { selectedCourse = it },
-            theme = theme,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(Modifier.height(12.dp))
+        if (state.showGpaInfo) {
+            GpaInfoSheet(onDismiss = { viewModel.handleEvent(EducationEvent.HideGpaInfo) })
+        }
 
-        EducationAchievementsShelf(
-            completed = educations.filter { it.completionDate != null },
-            theme = theme,
-            modifier = Modifier.fillMaxWidth(),
-            courseResolver = { id -> catalog.firstOrNull { it.id == id } }
-        )
-        Spacer(Modifier.height(100.dp))
-    }
+        if (state.showFailOrRetake) {
+            FailOrRetakeSheet(
+                onRetake = { viewModel.handleEvent(EducationEvent.ChooseFailOrRetake(true)) },
+                onFail = { viewModel.handleEvent(EducationEvent.ChooseFailOrRetake(false)) }
+            )
+        }
 
-    SnackbarHost(hostState = snackHost)
-
-    if (showGpaInfo) {
-        GpaInfoDialog(show = true, onDismiss = { showGpaInfo = false })
-    }
-
-    selectedCourse?.let { course ->
-        CourseDetailsPanel(
-            course = course,
-            lockInfo = run {
-                val lock = viewModel.courseLockInfo(course)
-                EducationLockInfo(locked = lock.locked, reason = lock.reason ?: "")
-            },
-            theme = theme,
-            onEnroll = {
-                viewModel.enroll(course)
-                selectedCourse = null
-            },
-            onDismiss = { selectedCourse = null }
-        )
-    }
-
-    if (showTiming && pendingAction != null) {
-        TimingTapMiniGame(
-            onClose = { showTiming = false; pendingAction = null },
-            onResult = { _, tierMul ->
-                pendingAction?.let { viewModel.performAction(it, tierMultiplier = tierMul) }
-                showTiming = false; pendingAction = null
+        val snackbarHostState = remember { SnackbarHostState() }
+        state.message?.let { msg ->
+            LaunchedEffect(msg) {
+                snackbarHostState.showSnackbar(msg)
             }
+        }
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
         )
     }
-    if (showMemory && pendingAction != null) {
-        MemoryMatchMiniGame(
-            onClose = { showMemory = false; pendingAction = null },
-            onResult = { _, tierMul ->
-                pendingAction?.let { viewModel.performAction(it, tierMultiplier = tierMul) }
-                showMemory = false; pendingAction = null
+}
+
+
+@Composable
+fun HeaderCard(
+    state: com.liveongames.liveon.viewmodel.EducationUiState,
+    onInfoClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val enrollment = state.enrollment
+    val theme = LocalLiveonTheme.current
+
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(24.dp)),
+        colors = CardDefaults.cardColors(containerColor = theme.surfaceElevated),
+        elevation = CardDefaults.cardElevation(8.dp)
+    ) {
+        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_education),
+                        contentDescription = null,
+                        modifier = Modifier.size(48.dp),
+                        tint = theme.primary
+                    )
+                    Spacer(Modifier.width(12.dp))
+                    val title = state.programs.firstOrNull { it.id == enrollment?.programId }?.title
+                        ?: enrollment?.programId ?: "Prestige Academia"
+
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = theme.text
+                    )
+                }
+
+                IconButton(onClick = onInfoClick) {
+                    Icon(
+                        imageVector = Icons.Default.Info,
+                        contentDescription = "GPA Info",
+                        tint = theme.text
+                    )
+                }
             }
-        )
-    }
-    if (showQuiz && pendingAction != null) {
-        QuickQuizMiniGame(
-            numQuestions = 5,
-            onClose = { showQuiz = false; pendingAction = null },
-            onResult = { _, tierMul ->
-                pendingAction?.let { viewModel.performAction(it, tierMultiplier = tierMul) }
-                showQuiz = false; pendingAction = null
+
+            Spacer(Modifier.height(8.dp))
+
+            if (enrollment == null) {
+                Text(
+                    "Enrolled: Not enrolled",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = theme.text.copy(alpha = 0.8f)
+                )
+            } else {
+                val p = periodFromProgress(enrollment.progressPct, enrollment.schema.totalPeriods)
+                val g = groupFromPeriod(p, enrollment.schema.periodsPerYear)
+                val groupLabel = enrollment.schema.groupingLabel ?: enrollment.schema.displayPeriodName
+                val programTitle =
+                    state.programs.firstOrNull { it.id == enrollment.programId }?.title ?: "Program"
+
+                Text(
+                    "Enrolled: $programTitle",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = theme.text.copy(alpha = 0.8f)
+                )
+                Text(
+                    "Term: $groupLabel $g • ${enrollment.schema.displayPeriodName} $p • Progress ${enrollment.progressPct}%",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = theme.text.copy(alpha = 0.8f)
+                )
             }
-        )
+
+            Spacer(Modifier.height(8.dp))
+            TimelineRail(
+                schema = enrollment?.schema,
+                progressPct = enrollment?.progressPct ?: 0
+            )
+        }
     }
 }

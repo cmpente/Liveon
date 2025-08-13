@@ -1,4 +1,4 @@
-package com.liveongames.liveon.assets.achievements
+package com.liveongames.data.assets.achievements
 
 data class AchievementAsset(
     val id: String,
