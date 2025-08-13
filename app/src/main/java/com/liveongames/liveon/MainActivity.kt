@@ -8,35 +8,24 @@ import android.view.WindowInsets
 import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.liveongames.liveon.ui.screens.EducationScreen
 import com.liveongames.liveon.ui.LiveonGameScreen
-import com.liveongames.liveon.viewmodel.GameViewModel
+import com.liveongames.liveon.ui.screens.CrimeScreen
+import com.liveongames.liveon.ui.screens.PetsScreen
+import com.liveongames.liveon.ui.screens.SettingsScreen
+import com.liveongames.liveon.ui.screens.education.EducationSheet
+import com.liveongames.liveon.ui.theme.LiveonTheme
+import com.liveongames.liveon.ui.theme.PremiumSleek
 import com.liveongames.liveon.viewmodel.CrimeViewModel
 import com.liveongames.liveon.viewmodel.EducationViewModel
+import com.liveongames.liveon.viewmodel.GameViewModel
 import com.liveongames.liveon.viewmodel.PetsViewModel
 import com.liveongames.liveon.viewmodel.SettingsViewModel
-import com.liveongames.liveon.ui.screens.CrimeScreen
-import com.liveongames.liveon.ui.screens.PetsScreen // Assuming these are in this package
-import com.liveongames.liveon.ui.screens.SettingsScreen // Assuming these are in this package
-import com.liveongames.liveon.ui.theme.LiveonTheme // Import the theme wrapper composable
-import com.liveongames.liveon.ui.theme.PremiumSleek // Import a default theme instance
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -44,7 +33,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            LiveonTheme(liveonTheme = PremiumSleek) { // Wrap with theme
+            LiveonTheme(liveonTheme = PremiumSleek) {
                 LiveonApp()
             }
         }
@@ -60,12 +49,12 @@ class MainActivity : ComponentActivity() {
         } else {
             @Suppress("DEPRECATION")
             window.decorView.systemUiVisibility = (
-                    View.SYSTEM_UI_FLAG_FULLSCREEN
-                            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                            or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    View.SYSTEM_UI_FLAG_FULLSCREEN or
+                            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                     )
         }
     }
@@ -87,7 +76,6 @@ fun LiveonApp() {
                 settingsViewModel = settingsViewModel,
                 onNavigateToCrime = { navController.navigate("crime") },
                 onNavigateToPets = { navController.navigate("pets") },
-                // OPEN THE POPUP HERE:
                 onNavigateToEducation = { navController.navigate("education_popup") },
                 onNavigateToSettings = { navController.navigate("settings") }
             )
@@ -98,27 +86,25 @@ fun LiveonApp() {
             CrimeScreen(
                 viewModel = crimeViewModel,
                 settingsViewModel = settingsViewModel,
-                onCrimeCommitted = {
-                    sharedGameViewModel.refreshPlayerStats()
-                },
+                onCrimeCommitted = { sharedGameViewModel.refreshPlayerStats() },
                 onDismiss = { navController.popBackStack() }
             )
         }
 
         composable("pets") {
             val petsViewModel: PetsViewModel = hiltViewModel()
-            // Removed `onBack = ...` because PetsScreen doesn't have that parameter
             PetsScreen(
                 viewModel = petsViewModel,
                 settingsViewModel = settingsViewModel
             )
         }
 
-        // Education POPUP destination
+        // Education POPUP destination -> show the new sheet
         composable("education_popup") {
-            EducationScreen(
-                showEducationModal = true,
-                onEducationModalDismiss = { navController.popBackStack() }
+            val eduVm: EducationViewModel = hiltViewModel()
+            EducationSheet(
+                onDismiss = { navController.popBackStack() },
+                viewModel = eduVm
             )
         }
 

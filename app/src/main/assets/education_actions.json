@@ -10,28 +10,184 @@
     "dialog": [
       {
         "id": "s1",
-        "text": "Short session. Pick a method.",
+        "text": "Short, intentional study window.",
         "choices": [
-          {
-            "id": "pom",
-            "label": "Pomodoro (25/5)",
-            "effects": {
-              "gpaMin": 0.01,
-              "gpaMax": 0.03,
-              "progress": 3
-            }
-          },
-          {
-            "id": "flow",
-            "label": "Deep flow (no breaks)",
-            "effects": {
-              "gpaMin": 0.00,
-              "gpaMax": 0.05,
-              "progress": 2,
-              "riskProb": 0.15,
-              "riskPenaltyGpa": 0.02
-            }
-          }
+          { "id": "pom", "label": "Pomodoro (25/5)", "effects": { "gpaMin": 0.01, "gpaMax": 0.03, "progress": 3 } },
+          { "id": "no_distractions", "label": "Phones off, tab block", "effects": { "gpaMin": 0.01, "gpaMax": 0.04, "progress": 2, "riskProb": 0.10, "riskPenaltyGpa": 0.01 } }
+        ]
+      }
+    ]
+  },
+
+  {
+    "id": "reading_log",
+    "title": "Reading Log",
+    "tiers": ["ELEMENTARY"],
+    "cooldownMinutes": 10,
+    "baseProgress": 3,
+    "gpaDeltaMin": 0.01,
+    "gpaDeltaMax": 0.03,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Time to read!",
+        "choices": [
+          { "id": "picture_books", "label": "Picture books", "effects": { "gpaMin": 0.01, "gpaMax": 0.02, "progress": 3 } },
+          { "id": "early_reader", "label": "Early reader book", "effects": { "gpaMin": 0.01, "gpaMax": 0.03, "progress": 2 } }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "spelling_practice",
+    "title": "Spelling Practice",
+    "tiers": ["ELEMENTARY"],
+    "cooldownMinutes": 8,
+    "baseProgress": 2,
+    "gpaDeltaMin": 0.01,
+    "gpaDeltaMax": 0.02,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Practice this week’s list.",
+        "choices": [
+          { "id": "write3x", "label": "Write each word 3x", "effects": { "gpaMin": 0.01, "gpaMax": 0.02, "progress": 2 } },
+          { "id": "quiz_parent", "label": "Quick quiz with adult", "effects": { "gpaMin": 0.01, "gpaMax": 0.02, "progress": 2 } }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "math_sheet",
+    "title": "Math Worksheet",
+    "tiers": ["ELEMENTARY"],
+    "cooldownMinutes": 12,
+    "baseProgress": 3,
+    "gpaDeltaMin": 0.01,
+    "gpaDeltaMax": 0.03,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Practice problems.",
+        "choices": [
+          { "id": "facts", "label": "Math facts", "effects": { "gpaMin": 0.01, "gpaMax": 0.02, "progress": 3 } },
+          { "id": "word_problems", "label": "Word problems", "effects": { "gpaMin": 0.01, "gpaMax": 0.03, "progress": 2 } }
+        ]
+      }
+    ]
+  },
+
+  {
+    "id": "vocab_builder",
+    "title": "Vocabulary Builder",
+    "tiers": ["MIDDLE", "HIGH"],
+    "cooldownMinutes": 7,
+    "baseProgress": 2,
+    "gpaDeltaMin": 0.01,
+    "gpaDeltaMax": 0.03,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Choose a set.",
+        "choices": [
+          { "id": "core_terms", "label": "Core terms", "effects": { "gpaMin": 0.01, "gpaMax": 0.02, "progress": 2 } },
+          { "id": "challenge_terms", "label": "Challenge terms", "effects": { "gpaMin": 0.01, "gpaMax": 0.03, "progress": 2 } }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "note_rewrite",
+    "title": "Rewrite Notes",
+    "tiers": ["MIDDLE", "HIGH"],
+    "cooldownMinutes": 10,
+    "baseProgress": 3,
+    "gpaDeltaMin": 0.01,
+    "gpaDeltaMax": 0.03,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Organize your notes.",
+        "choices": [
+          { "id": "cornell", "label": "Cornell method", "effects": { "gpaMin": 0.01, "gpaMax": 0.03, "progress": 3 } },
+          { "id": "mind_map", "label": "Mind map", "effects": { "gpaMin": 0.01, "gpaMax": 0.02, "progress": 4 } }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "practice_quiz",
+    "title": "Practice Quiz",
+    "tiers": ["MIDDLE", "HIGH"],
+    "cooldownMinutes": 15,
+    "baseProgress": 3,
+    "gpaDeltaMin": 0.01,
+    "gpaDeltaMax": 0.05,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Set difficulty.",
+        "choices": [
+          { "id": "warmup", "label": "Warm-up quiz", "effects": { "gpaMin": 0.01, "gpaMax": 0.03, "progress": 3 } },
+          { "id": "exam_level", "label": "Hard quiz", "effects": { "gpaMin": 0.02, "gpaMax": 0.05, "progress": 3, "riskProb": 0.10, "riskPenaltyGpa": 0.01 } }
+        ]
+      }
+    ]
+  },
+
+  {
+    "id": "sat_practice",
+    "title": "SAT/ACT Practice",
+    "tiers": ["HIGH"],
+    "cooldownMinutes": 30,
+    "baseProgress": 4,
+    "gpaDeltaMin": 0.02,
+    "gpaDeltaMax": 0.05,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Focus area.",
+        "choices": [
+          { "id": "math", "label": "Math section", "effects": { "gpaMin": 0.02, "gpaMax": 0.04, "progress": 4 } },
+          { "id": "reading", "label": "Reading & grammar", "effects": { "gpaMin": 0.02, "gpaMax": 0.05, "progress": 3 } }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "lab_hours",
+    "title": "Lab Practice",
+    "tiers": ["HIGH"],
+    "cooldownMinutes": 25,
+    "baseProgress": 4,
+    "gpaDeltaMin": 0.02,
+    "gpaDeltaMax": 0.05,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Lab focus.",
+        "choices": [
+          { "id": "prep", "label": "Prep & setup", "effects": { "gpaMin": 0.02, "gpaMax": 0.03, "progress": 4 } },
+          { "id": "analysis", "label": "Data analysis", "effects": { "gpaMin": 0.03, "gpaMax": 0.05, "progress": 3 } }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "essay_draft",
+    "title": "Essay Draft",
+    "tiers": ["HIGH"],
+    "cooldownMinutes": 20,
+    "baseProgress": 3,
+    "gpaDeltaMin": 0.02,
+    "gpaDeltaMax": 0.05,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Work on your essay.",
+        "choices": [
+          { "id": "outline", "label": "Outline + thesis", "effects": { "gpaMin": 0.02, "gpaMax": 0.04, "progress": 3 } },
+          { "id": "revise", "label": "Revise body paragraphs", "effects": { "gpaMin": 0.02, "gpaMax": 0.05, "progress": 2 } }
         ]
       }
     ]
@@ -39,34 +195,366 @@
   {
     "id": "group_study",
     "title": "Group Study",
-    "tiers": ["HIGH", "ASSOC", "BACH", "MAST", "PHD"],
-    "cooldownMinutes": 10,
+    "tiers": ["HIGH"],
+    "cooldownMinutes": 20,
+    "baseProgress": 5,
+    "gpaDeltaMin": 0.01,
+    "gpaDeltaMax": 0.05,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Pick the style.",
+        "choices": [
+          { "id": "quiet", "label": "Quiet library huddle", "effects": { "gpaMin": 0.02, "gpaMax": 0.04, "progress": 5 } },
+          { "id": "whiteboard", "label": "Whiteboard problems", "effects": { "gpaMin": 0.02, "gpaMax": 0.05, "progress": 4 } }
+        ]
+      }
+    ]
+  },
+
+  {
+    "id": "cert_practice_test",
+    "title": "Certification Practice Test",
+    "tiers": ["CERT"],
+    "cooldownMinutes": 35,
     "baseProgress": 4,
+    "gpaDeltaMin": 0.02,
+    "gpaDeltaMax": 0.06,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Exam mode.",
+        "choices": [
+          { "id": "timed", "label": "Timed mock", "effects": { "gpaMin": 0.02, "gpaMax": 0.05, "progress": 4 } },
+          { "id": "review", "label": "Practice + review", "effects": { "gpaMin": 0.03, "gpaMax": 0.06, "progress": 3 } }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "workshop_hours",
+    "title": "Workshop Hours",
+    "tiers": ["CERT"],
+    "cooldownMinutes": 30,
+    "baseProgress": 5,
+    "gpaDeltaMin": 0.02,
+    "gpaDeltaMax": 0.05,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Hands-on practice.",
+        "choices": [
+          { "id": "setup", "label": "Bench setup", "effects": { "gpaMin": 0.02, "gpaMax": 0.03, "progress": 5 } },
+          { "id": "task_run", "label": "Task repetition", "effects": { "gpaMin": 0.03, "gpaMax": 0.05, "progress": 4 } }
+        ]
+      }
+    ]
+  },
+
+  {
+    "id": "lecture_recap",
+    "title": "Lecture Recap",
+    "tiers": ["ASSOC", "BACH"],
+    "cooldownMinutes": 12,
+    "baseProgress": 3,
     "gpaDeltaMin": 0.01,
     "gpaDeltaMax": 0.04,
     "dialog": [
       {
         "id": "s1",
-        "text": "The group looks to you.",
+        "text": "Capture the main ideas.",
         "choices": [
-          {
-            "id": "lead",
-            "label": "Lead the session",
-            "effects": {
-              "gpaMin": 0.00,
-              "gpaMax": 0.04,
-              "progress": 5
-            }
-          },
-          {
-            "id": "follow",
-            "label": "Quietly follow",
-            "effects": {
-              "gpaMin": 0.02,
-              "gpaMax": 0.03,
-              "progress": 3
-            }
-          }
+          { "id": "one_pager", "label": "One-page summary", "effects": { "gpaMin": 0.01, "gpaMax": 0.03, "progress": 3 } },
+          { "id": "teach_back", "label": "Teach someone else", "effects": { "gpaMin": 0.02, "gpaMax": 0.04, "progress": 2 } }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "office_hours",
+    "title": "Office Hours",
+    "tiers": ["ASSOC", "BACH", "MAST", "PHD"],
+    "cooldownMinutes": 30,
+    "baseProgress": 3,
+    "gpaDeltaMin": 0.02,
+    "gpaDeltaMax": 0.06,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Meet your instructor.",
+        "choices": [
+          { "id": "clarify", "label": "Clarify tough topics", "effects": { "gpaMin": 0.02, "gpaMax": 0.04, "progress": 3 } },
+          { "id": "project_feedback", "label": "Project feedback", "effects": { "gpaMin": 0.03, "gpaMax": 0.06, "progress": 2 } }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "problem_set",
+    "title": "Problem Set",
+    "tiers": ["ASSOC", "BACH"],
+    "cooldownMinutes": 18,
+    "baseProgress": 4,
+    "gpaDeltaMin": 0.02,
+    "gpaDeltaMax": 0.05,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Work through problems.",
+        "choices": [
+          { "id": "odd", "label": "Odd-numbered first", "effects": { "gpaMin": 0.02, "gpaMax": 0.04, "progress": 4 } },
+          { "id": "tough", "label": "Tackle toughest first", "effects": { "gpaMin": 0.03, "gpaMax": 0.05, "progress": 3 } }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "tutoring_session",
+    "title": "Tutoring Session",
+    "tiers": ["ASSOC", "BACH"],
+    "cooldownMinutes": 30,
+    "baseProgress": 3,
+    "gpaDeltaMin": 0.02,
+    "gpaDeltaMax": 0.06,
+    "maxGpa": 3.8,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Work with a tutor.",
+        "choices": [
+          { "id": "peer", "label": "Peer tutor", "effects": { "gpaMin": 0.02, "gpaMax": 0.04, "progress": 3 } },
+          { "id": "center", "label": "Tutoring center", "effects": { "gpaMin": 0.03, "gpaMax": 0.06, "progress": 2 } }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "summary_sheet",
+    "title": "Make a Summary Sheet",
+    "tiers": ["ASSOC", "BACH"],
+    "cooldownMinutes": 18,
+    "baseProgress": 3,
+    "gpaDeltaMin": 0.02,
+    "gpaDeltaMax": 0.04,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Condense the essentials.",
+        "choices": [
+          { "id": "onepager", "label": "One-pager", "effects": { "gpaMin": 0.02, "gpaMax": 0.03, "progress": 3 } },
+          { "id": "cheatsheet", "label": "Cheat sheet", "effects": { "gpaMin": 0.02, "gpaMax": 0.04, "progress": 2 } }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "past_papers",
+    "title": "Past Papers",
+    "tiers": ["ASSOC", "BACH"],
+    "cooldownMinutes": 22,
+    "baseProgress": 4,
+    "gpaDeltaMin": 0.02,
+    "gpaDeltaMax": 0.05,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Practice with old exams.",
+        "choices": [
+          { "id": "last_year", "label": "Last year's exam", "effects": { "gpaMin": 0.02, "gpaMax": 0.04, "progress": 4 } },
+          { "id": "mixed_set", "label": "Mixed years set", "effects": { "gpaMin": 0.02, "gpaMax": 0.05, "progress": 3 } }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "presentation_prep",
+    "title": "Presentation Prep",
+    "tiers": ["ASSOC", "BACH", "MAST"],
+    "cooldownMinutes": 28,
+    "baseProgress": 4,
+    "gpaDeltaMin": 0.02,
+    "gpaDeltaMax": 0.06,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Prepare to present.",
+        "choices": [
+          { "id": "slides", "label": "Crisp slides", "effects": { "gpaMin": 0.02, "gpaMax": 0.04, "progress": 4 } },
+          { "id": "rehearse", "label": "Rehearse delivery", "effects": { "gpaMin": 0.03, "gpaMax": 0.06, "progress": 3 } }
+        ]
+      }
+    ]
+  },
+
+  {
+    "id": "research_block",
+    "title": "Research Block",
+    "tiers": ["BACH", "MAST", "PHD"],
+    "cooldownMinutes": 40,
+    "baseProgress": 5,
+    "gpaDeltaMin": 0.02,
+    "gpaDeltaMax": 0.06,
+    "minGpa": 3.0,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Research focus.",
+        "choices": [
+          { "id": "lit_review", "label": "Literature review", "effects": { "gpaMin": 0.02, "gpaMax": 0.04, "progress": 4 } },
+          { "id": "experiment", "label": "Method design", "effects": { "gpaMin": 0.03, "gpaMax": 0.06, "progress": 3 } }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "advisor_meeting",
+    "title": "Advisor Meeting",
+    "tiers": ["MAST", "PHD"],
+    "cooldownMinutes": 30,
+    "baseProgress": 3,
+    "gpaDeltaMin": 0.02,
+    "gpaDeltaMax": 0.06,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Discuss progress.",
+        "choices": [
+          { "id": "milestones", "label": "Milestones & blockers", "effects": { "gpaMin": 0.02, "gpaMax": 0.04, "progress": 3 } },
+          { "id": "scope", "label": "Refine scope", "effects": { "gpaMin": 0.03, "gpaMax": 0.06, "progress": 2 } }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_analysis_sprint",
+    "title": "Data Analysis Sprint",
+    "tiers": ["MAST", "PHD"],
+    "cooldownMinutes": 35,
+    "baseProgress": 5,
+    "gpaDeltaMin": 0.02,
+    "gpaDeltaMax": 0.06,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Crunch the data.",
+        "choices": [
+          { "id": "clean", "label": "Clean & preprocess", "effects": { "gpaMin": 0.02, "gpaMax": 0.04, "progress": 5 } },
+          { "id": "model", "label": "Model & results", "effects": { "gpaMin": 0.03, "gpaMax": 0.06, "progress": 3 } }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "peer_review_grad",
+    "title": "Peer Review Exchange",
+    "tiers": ["MAST", "PHD"],
+    "cooldownMinutes": 25,
+    "baseProgress": 3,
+    "gpaDeltaMin": 0.01,
+    "gpaDeltaMax": 0.04,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Swap drafts with a peer.",
+        "choices": [
+          { "id": "give_feedback", "label": "Give detailed feedback", "effects": { "gpaMin": 0.02, "gpaMax": 0.04, "progress": 2 } },
+          { "id": "receive_feedback", "label": "Incorporate notes", "effects": { "gpaMin": 0.01, "gpaMax": 0.03, "progress": 3 } }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ta_hours",
+    "title": "TA / Teaching Hours",
+    "tiers": ["MAST", "PHD"],
+    "cooldownMinutes": 30,
+    "baseProgress": 2,
+    "gpaDeltaMin": 0.00,
+    "gpaDeltaMax": 0.03,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Help students learn.",
+        "choices": [
+          { "id": "office_hours", "label": "Hold office hours", "effects": { "gpaMin": 0.00, "gpaMax": 0.02, "progress": 2 } },
+          { "id": "grading", "label": "Grade & feedback", "effects": { "gpaMin": 0.01, "gpaMax": 0.03, "progress": 1 } }
+        ]
+      }
+    ]
+  },
+
+  {
+    "id": "attendance_push",
+    "title": "Go to Class",
+    "tiers": ["MIDDLE", "HIGH", "ASSOC", "BACH"],
+    "cooldownMinutes": 15,
+    "baseProgress": 3,
+    "gpaDeltaMin": 0.01,
+    "gpaDeltaMax": 0.03,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Show up and engage.",
+        "choices": [
+          { "id": "listen", "label": "Listen & notes", "effects": { "gpaMin": 0.01, "gpaMax": 0.02, "progress": 3 } },
+          { "id": "participate", "label": "Ask questions", "effects": { "gpaMin": 0.01, "gpaMax": 0.03, "progress": 2 } }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "study_schedule",
+    "title": "Study Schedule",
+    "tiers": ["MIDDLE", "HIGH", "ASSOC", "BACH", "MAST", "PHD"],
+    "cooldownMinutes": 20,
+    "baseProgress": 2,
+    "gpaDeltaMin": 0.01,
+    "gpaDeltaMax": 0.03,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Plan your week.",
+        "choices": [
+          { "id": "planner", "label": "Weekly planner", "effects": { "gpaMin": 0.01, "gpaMax": 0.02, "progress": 2 } },
+          { "id": "kanban", "label": "Kanban board", "effects": { "gpaMin": 0.01, "gpaMax": 0.03, "progress": 2 } }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "mindfulness",
+    "title": "Mindfulness Break",
+    "tiers": ["ELEMENTARY", "MIDDLE", "HIGH", "CERT", "ASSOC", "BACH", "MAST", "PHD"],
+    "cooldownMinutes": 6,
+    "baseProgress": 0,
+    "gpaDeltaMin": 0.00,
+    "gpaDeltaMax": 0.02,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Reset your brain.",
+        "choices": [
+          { "id": "breath", "label": "Breathing 5 minutes", "effects": { "gpaMin": 0.00, "gpaMax": 0.02, "progress": 0 } },
+          { "id": "walk", "label": "Mindful walk", "effects": { "gpaMin": 0.00, "gpaMax": 0.02, "progress": 0 } }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "sleep_hygiene",
+    "title": "Sleep Hygiene",
+    "tiers": ["ELEMENTARY", "MIDDLE", "HIGH", "CERT", "ASSOC", "BACH", "MAST", "PHD"],
+    "cooldownMinutes": 60,
+    "baseProgress": 0,
+    "gpaDeltaMin": 0.01,
+    "gpaDeltaMax": 0.03,
+    "dialog": [
+      {
+        "id": "s1",
+        "text": "Tonight’s plan.",
+        "choices": [
+          { "id": "routine", "label": "Wind-down routine", "effects": { "gpaMin": 0.01, "gpaMax": 0.02, "progress": 0 } },
+          { "id": "no_screen", "label": "No screens 1h before bed", "effects": { "gpaMin": 0.01, "gpaMax": 0.03, "progress": 0 } }
         ]
       }
     ]
