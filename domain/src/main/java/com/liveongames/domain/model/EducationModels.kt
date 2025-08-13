@@ -76,7 +76,6 @@ fun groupFromPeriod(period: Int, periodsPerYear: Int): Int =
 // === Domain Interfaces for Catalog Items ===
 
 // Represents a program available for enrollment (e.g., High School, Bachelor's).
-// This structure aligns with the fields found in `education_courses.json`.
 interface EducationProgram {
     val id: String
     val title: String
@@ -87,7 +86,6 @@ interface EducationProgram {
     val tuition: Int
     val requirements: Set<String>
 }
-
 
 // === Domain Data Classes for Runtime State ===
 

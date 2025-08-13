@@ -19,7 +19,7 @@ import androidx.compose.foundation.verticalScroll
 import com.liveongames.domain.model.Event
 import com.liveongames.domain.model.EventChoice
 import com.liveongames.domain.model.EventOutcome
-import com.liveongames.liveon.ui.viewmodel.EventViewModel
+import com.liveongames.liveon.viewmodel.EventViewModel
 
 @Composable
 fun EventScreen(

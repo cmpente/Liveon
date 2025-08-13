@@ -1162,7 +1162,7 @@ fun CrimeButton(
 }
 
 // Helper functions for crime data
-fun getRiskTierColor(riskTier: RiskTier): androidx.compose.ui.graphics.Color {
+fun getRiskTierColor(riskTier: RiskTier): Color {
     return when (riskTier) {
         RiskTier.LOW_RISK -> Color(0xFF4CAF50) // Green
         RiskTier.MEDIUM_RISK -> Color(0xFFFFEB3B) // Yellow
@@ -1419,13 +1419,13 @@ fun rememberCooldownState(viewModel: CrimeViewModel): Pair<Boolean, Int> {
 @Composable
 fun rememberSirenBrush(enabled: Boolean): Brush {
     val colors = listOf(
-        androidx.compose.ui.graphics.Color(0xFF3A9BDC), // metallic blue
-        androidx.compose.ui.graphics.Color(0xFF9ED1FF), // highlight blue
-        androidx.compose.ui.graphics.Color(0xFF3A9BDC), // metallic blue
-        androidx.compose.ui.graphics.Color(0xFFFF4C4C), // metallic red
-        androidx.compose.ui.graphics.Color(0xFFFFA3A3), // highlight red
-        androidx.compose.ui.graphics.Color(0xFFFF4C4C), // metallic red
-        androidx.compose.ui.graphics.Color(0xFF3A9BDC), // back to blue
+        Color(0xFF3A9BDC), // metallic blue
+        Color(0xFF9ED1FF), // highlight blue
+        Color(0xFF3A9BDC), // metallic blue
+        Color(0xFFFF4C4C), // metallic red
+        Color(0xFFFFA3A3), // highlight red
+        Color(0xFFFF4C4C), // metallic red
+        Color(0xFF3A9BDC), // back to blue
     )
 
     return if (!enabled) {

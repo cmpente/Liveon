@@ -1,5 +1,5 @@
 // app/src/main/java/com/liveongames/liveon/ui/viewmodel/GameViewModel.kt
-package com.liveongames.liveon.ui.viewmodel
+package com.liveongames.liveon.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

@@ -120,7 +120,7 @@ class CrimeViewModel @Inject constructor(
         }
     }
 
-    fun commitCrime(type: CrimeViewModel.CrimeType) {
+    fun commitCrime(type: CrimeType) {
         Log.d(TAG, "Attempting to commit crime: $type")
         viewModelScope.launch {
             try {

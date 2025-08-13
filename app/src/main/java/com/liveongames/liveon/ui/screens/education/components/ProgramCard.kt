@@ -5,39 +5,56 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.liveongames.data.model.education.EducationCourse
+import com.liveongames.domain.model.EducationProgram
+import com.liveongames.liveon.R
 import com.liveongames.liveon.ui.theme.LocalLiveonTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProgramCard(
-    course: EducationCourse,
+    course: EducationProgram,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    containerColor: Color? = null,
+    borderColor: Color? = null
 ) {
     val theme = LocalLiveonTheme.current
 
-    Card(
-        modifier = modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)),
-        colors = CardDefaults.cardColors(containerColor = theme.surfaceElevated),
-        elevation = CardDefaults.cardElevation(4.dp),
-        onClick = onClick
+    ElevatedCard(
+        onClick = onClick,
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = containerColor ?: theme.surfaceVariant
+        ),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 6.dp)
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(
-                text = course.title,
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold,
-                color = theme.text
-            )
-            Text(
-                text = "GPA: ${"%.2f".format(course.minGpa)}",
+        Column(Modifier.fillMaxWidth().padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_school),
+                    contentDescription = null,
+                    tint = theme.primary
+                )
+                Spacer(Modifier.width(10.dp))
+                Text(course.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = theme.text)
+            }
+            Spacer(Modifier.height(8.dp))
+            Text("Minimum GPA: ${"%.2f".format(course.minGpa)}",
                 style = MaterialTheme.typography.bodySmall,
-                color = theme.text.copy(alpha = 0.7f)
-            )
+                color = theme.text.copy(alpha = 0.85f))
+            Text("Tuition: $${course.tuition}",
+                style = MaterialTheme.typography.bodySmall,
+                color = theme.text.copy(alpha = 0.8f))
         }
     }
 }

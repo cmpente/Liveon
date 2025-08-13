@@ -29,11 +29,11 @@ class EducationRepositoryImpl @Inject constructor(
     // === SCHEMA-BASED EDUCATION METHODS ===
 
     override suspend fun getPrograms(): List<EducationProgram> = withContext(Dispatchers.IO) {
-        assetLoader.loadCourses().map { it as EducationProgram }
+        assetLoader.loadCourses().map { it }
     }
 
     override suspend fun getActions(): List<ActionDef> = withContext(Dispatchers.IO) {
-        assetLoader.loadActions().map { it as ActionDef }
+        assetLoader.loadActions().map { it }
     }
 
     override suspend fun getEnrollment(): Enrollment? = withContext(Dispatchers.IO) {
@@ -341,4 +341,4 @@ fun EducationEntity.toEnrollmentFull(courses: List<EducationProgram>): Enrollmen
         lastActionAt = if (this.timestamp > 0L) this.timestamp else null // Use the entity's timestamp for cooldowns, return null for invalid times
     )
 }
-// --- END OF FILE ---
+

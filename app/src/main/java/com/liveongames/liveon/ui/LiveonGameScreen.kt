@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.liveongames.liveon.R
-import com.liveongames.liveon.ui.viewmodel.GameViewModel
+import com.liveongames.liveon.viewmodel.GameViewModel
 import com.liveongames.liveon.viewmodel.SettingsViewModel
 import com.liveongames.domain.model.GameEvent
 import com.liveongames.liveon.ui.theme.AllGameThemes
@@ -168,7 +168,7 @@ fun LiveonGameScreen(
 // ==================== MAIN CONTENT ====================
 @Composable
 fun GameContent(
-    uiState: com.liveongames.liveon.ui.viewmodel.GameUiState,
+    uiState: com.liveongames.liveon.viewmodel.GameUiState,
     currentTheme: LiveonTheme,
     lifebookScrollState: ScrollState,
     lifeHistoryEntries: List<String>,
@@ -228,7 +228,7 @@ fun GameHeader(currentTheme: LiveonTheme) {
 
 @Composable
 fun LifebookSection(
-    uiState: com.liveongames.liveon.ui.viewmodel.GameUiState,
+    uiState: com.liveongames.liveon.viewmodel.GameUiState,
     currentTheme: LiveonTheme,
     lifebookScrollState: ScrollState,
     lifeHistoryEntries: List<String>,
@@ -363,7 +363,7 @@ fun AgeUpButton(
                         listOf(
                             currentTheme.primary.copy(alpha = 0.3f),
                             currentTheme.primary.copy(alpha = 0.1f),
-                            androidx.compose.ui.graphics.Color.Transparent
+                            Color.Transparent
                         )
                     ),
                     shape = CircleShape
@@ -380,7 +380,7 @@ fun AgeUpButton(
                 .border(2.dp, currentTheme.accent, CircleShape),
             enabled = !isCooldown,
             colors = IconButtonDefaults.iconButtonColors(
-                containerColor = androidx.compose.ui.graphics.Color.Transparent,
+                containerColor = Color.Transparent,
                 contentColor = currentTheme.text
             )
         ) {
@@ -392,7 +392,7 @@ fun AgeUpButton(
                     .graphicsLayer {
                         rotationZ = hourglassRotation
                     },
-                tint = androidx.compose.ui.graphics.Color.Unspecified
+                tint = Color.Unspecified
             )
         }
     }
@@ -400,7 +400,7 @@ fun AgeUpButton(
 
 @Composable
 fun StatsPanel(
-    uiState: com.liveongames.liveon.ui.viewmodel.GameUiState,
+    uiState: com.liveongames.liveon.viewmodel.GameUiState,
     currentTheme: LiveonTheme,
     onMenuOpen: () -> Unit
 ) {
@@ -507,7 +507,7 @@ fun StatsPanel(
 // ==================== POPUP MENU ====================
 @Composable
 fun PopupMenu(
-    uiState: com.liveongames.liveon.ui.viewmodel.GameUiState,
+    uiState: com.liveongames.liveon.viewmodel.GameUiState,
     currentTheme: LiveonTheme,
     onDismiss: () -> Unit,
     onNavigateToCrime: () -> Unit,
@@ -583,7 +583,7 @@ fun PopupMenuHeader(
 
 @Composable
 fun CurrentStatsCard(
-    uiState: com.liveongames.liveon.ui.viewmodel.GameUiState,
+    uiState: com.liveongames.liveon.viewmodel.GameUiState,
     currentTheme: LiveonTheme
 ) {
     Card(
@@ -698,7 +698,7 @@ fun MenuOptionsSection(
 // ==================== EVENT DIALOGS ====================
 @Composable
 fun EventDialogs(
-    uiState: com.liveongames.liveon.ui.viewmodel.GameUiState,
+    uiState: com.liveongames.liveon.viewmodel.GameUiState,
     currentTheme: LiveonTheme,
     gameViewModel: GameViewModel
 ) {
@@ -761,7 +761,7 @@ fun CompactStatItem(
     label: String,
     value: String,
     iconId: Int,
-    color: androidx.compose.ui.graphics.Color,
+    color: Color,
     theme: LiveonTheme
 ) {
     Row(
@@ -810,7 +810,7 @@ fun MenuItemRow(item: MenuItemData) {
             .fillMaxWidth()
             .clickable { item.onClick() }
             .padding(vertical = 5.dp),
-        color = androidx.compose.ui.graphics.Color.Transparent
+        color = Color.Transparent
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -821,7 +821,7 @@ fun MenuItemRow(item: MenuItemData) {
                     .size(32.dp)
                     .background(
                         color = item.theme.primary.copy(alpha = 0.1f),
-                        shape = androidx.compose.foundation.shape.CircleShape
+                        shape = CircleShape
                     ),
                 contentAlignment = Alignment.Center
             ) {

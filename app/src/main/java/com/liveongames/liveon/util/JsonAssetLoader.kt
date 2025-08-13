@@ -168,7 +168,7 @@ class JsonAssetLoader(
                         val obj = el.asJsonObject
 
                         // Parse schema
-                        val schemaObj = obj.getAsJsonObject("schema") ?: return@mapNotNull null
+                        val schemaObj = obj.getAsJsonObject("schema") ?: JsonObject()
                         val schema = AcademicSchema(
                             displayPeriodName = schemaObj.get("displayPeriodName")?.asString ?: "Period",
                             periodsPerYear = schemaObj.get("periodsPerYear")?.asInt ?: 1,
@@ -178,10 +178,19 @@ class JsonAssetLoader(
 
                         // Map tier string → EduTier enum
                         val tierStr = obj.get("tier")?.asString ?: return@mapNotNull null
-                        val tier = EduTier.values().find { it.name.equals(tierStr, ignoreCase = true) }
-                            ?: EduTier.ELEMENTARY
+                        val tier = when (tierStr.uppercase()) {
+                            "ELEMENTARY" -> EduTier.ELEMENTARY
+                            "MIDDLE" -> EduTier.MIDDLE
+                            "HIGH" -> EduTier.HIGH
+                            "CERT" -> EduTier.CERT
+                            "ASSOC" -> EduTier.ASSOC
+                            "BACH" -> EduTier.BACH
+                            "MAST" -> EduTier.MAST
+                            "PHD" -> EduTier.PHD
+                            else -> EduTier.ELEMENTARY
+                        }
 
-                        // Construct concrete implementation
+                        // Construct EducationProgramImpl
                         EducationProgramImpl(
                             id = obj.get("id")?.asString ?: return@mapNotNull null,
                             title = obj.get("title")?.asString ?: "Unnamed Program",

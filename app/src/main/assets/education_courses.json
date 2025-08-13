@@ -1,68 +1,62 @@
 [
   {
     "id": "hs_general",
-    "name": "High School (General)",
-    "tier": 1,
-    "level": "HIGH_SCHOOL",
-    "cost": 0,
-    "durationMonths": 48,
-    "requiredGpa": 0.0,
-    "prerequisites": [],
-    "careerBoosts": [
-      "Foundational literacy",
-      "Social development"
-    ],
-    "flavorText": "Your formative years.",
-    "milestones": [
-      "HS_MIDTERM",
-      "HS_GRAD"
-    ],
-    "difficultyMod": 1.0
+    "title": "High School (General)",
+    "tier": "HIGH",
+    "schema": {
+      "displayPeriodName": "Semester",
+      "periodsPerYear": 2,
+      "totalPeriods": 8,
+      "groupingLabel": "Year"
+    },
+    "minGpa": 2.0,
+    "tuition": 0,
+    "requirements": [],
+    "description": "Foundational secondary education."
   },
   {
-    "id": "bs_cs",
-    "name": "Bachelor of Science \u2014 Computer Science",
-    "tier": 3,
-    "level": "BACHELOR",
-    "cost": 12000,
-    "durationMonths": 48,
-    "requiredGpa": 2.5,
-    "prerequisites": [
-      "hs_general"
-    ],
-    "careerBoosts": [
-      "Software careers",
-      "Tech internships",
-      "STEM networking"
-    ],
-    "flavorText": "Algorithms and systems.",
-    "milestones": [
-      "UNI_MIDTERM",
-      "UNI_CAPSTONE",
-      "UNI_GRAD"
-    ],
-    "difficultyMod": 1.1
+    "id": "ged",
+    "title": "GED",
+    "tier": "HIGH",
+    "schema": {
+      "displayPeriodName": "Milestone",
+      "periodsPerYear": 12,
+      "totalPeriods": 6,
+      "groupingLabel": null
+    },
+    "minGpa": 2.0,
+    "tuition": 0,
+    "requirements": [],
+    "description": "General Educational Development."
   },
   {
-    "id": "cert_welding",
-    "name": "Certified Welder",
-    "tier": 2,
-    "level": "CERTIFICATION",
-    "cost": 3500,
-    "durationMonths": 6,
-    "requiredGpa": 1.5,
-    "prerequisites": [
-      "hs_general"
-    ],
-    "careerBoosts": [
-      "Skilled trades",
-      "Apprenticeships"
-    ],
-    "flavorText": "Precision and heat.",
-    "milestones": [
-      "CERT_EXAM",
-      "CERT_ISSUED"
-    ],
-    "difficultyMod": 0.95
+    "id": "cert_it_support",
+    "title": "Certificate — IT Support",
+    "tier": "CERT",
+    "schema": {
+      "displayPeriodName": "Milestone",
+      "periodsPerYear": 12,
+      "totalPeriods": 6,
+      "groupingLabel": null
+    },
+    "minGpa": 1.8,
+    "tuition": 800,
+    "requirements": ["hs_general","ged"],
+    "description": "Hands-on troubleshooting and ticket workflows."
+  },
+  {
+    "id": "assoc_it",
+    "title": "Associate of Applied Science — IT",
+    "tier": "ASSOC",
+    "schema": {
+      "displayPeriodName": "Semester",
+      "periodsPerYear": 2,
+      "totalPeriods": 4,
+      "groupingLabel": "Year"
+    },
+    "minGpa": 2.0,
+    "tuition": 6000,
+    "requirements": ["hs_general","ged"],
+    "description": "Two-year technical degree."
   }
 ]

@@ -1,4 +1,3 @@
-// app/src/main/java/com/liveongames/liveon/viewmodel/EducationViewModel.kt
 package com.liveongames.liveon.viewmodel
 
 import android.app.Application
@@ -20,6 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @HiltViewModel
 class EducationViewModel @Inject constructor(
@@ -35,9 +35,10 @@ class EducationViewModel @Inject constructor(
         loadData()
     }
 
+    // -------------------- LOAD --------------------
+
     private fun loadData() = viewModelScope.launch(Dispatchers.IO) {
         try {
-            // Explicitly cast or map the result to the correct type
             val programs: List<EducationProgram> = repo.getPrograms()
             val actions: List<EducationActionDef> = repo.getActions().map { it as EducationActionDef }
             val enrollment = repo.getEnrollment()
@@ -47,16 +48,17 @@ class EducationViewModel @Inject constructor(
                     loading = false,
                     programs = programs,
                     actions = actions,
-                    enrollment = enrollment
+                    enrollment = enrollment,
+                    grade = if (enrollment != null) 100 else 0 // visible 0–100 grade
                 )
             }
         } catch (e: Exception) {
             Log.e("EducationVM", "Error loading education data", e)
-            _uiState.update {
-                it.copy(loading = false, message = "Failed to load education data.")
-            }
+            _uiState.update { it.copy(loading = false, message = "Failed to load education data.") }
         }
     }
+
+    // -------------------- EVENTS --------------------
 
     fun handleEvent(event: EducationEvent) {
         when (event) {
@@ -69,25 +71,52 @@ class EducationViewModel @Inject constructor(
         }
     }
 
+    // -------------------- GRADE LOGIC --------------------
+    // Map GPA deltas to visible grade points. 1.0 GPA == 25 points.
+    private fun gpaToGradePoints(gpa: Double): Int = (gpa * 25.0).roundToInt()
+
+    // Passive decay as progress increases. ~0.20 point per 1% progress.
+    private fun decayForProgressDelta(progressDelta: Int): Int = (progressDelta * 0.20).roundToInt()
+
+    private fun recomputeVisibleGrade(
+        previous: Enrollment?,
+        updated: Enrollment,
+        currentGrade: Int
+    ): Int {
+        val gpaDelta = (updated.gpa - (previous?.gpa ?: updated.gpa))
+        val progressDelta = (updated.progressPct - (previous?.progressPct ?: updated.progressPct)).coerceAtLeast(0)
+        val next = currentGrade + gpaToGradePoints(gpaDelta) - decayForProgressDelta(progressDelta)
+        return next.coerceIn(0, 100)
+    }
+
+    // -------------------- ACTIONS --------------------
+
     private fun handleFailOrRetake(retake: Boolean) = viewModelScope.launch(Dispatchers.IO) {
         val currentProgramId = _uiState.value.enrollment?.programId ?: return@launch
-
         try {
             if (retake) {
                 val resetEnrollment = repo.enroll(currentProgramId)
                 _uiState.update {
-                    it.copy(enrollment = resetEnrollment, showFailOrRetake = false, message = "Program restarted. Progress reset.")
+                    it.copy(
+                        enrollment = resetEnrollment,
+                        grade = 100,
+                        showFailOrRetake = false,
+                        message = "Program restarted. Progress reset."
+                    )
                 }
             } else {
                 repo.resetEducation()
                 _uiState.update {
-                    it.copy(enrollment = null, showFailOrRetake = false, message = "You have failed the program and dropped out.")
+                    it.copy(
+                        enrollment = null,
+                        grade = 0,
+                        showFailOrRetake = false,
+                        message = "You have failed the program and dropped out."
+                    )
                 }
             }
         } catch (e: Exception) {
-            _uiState.update {
-                it.copy(message = "Operation failed: ${e.message}", showFailOrRetake = false)
-            }
+            _uiState.update { it.copy(message = "Operation failed: ${e.message}", showFailOrRetake = false) }
         }
     }
 
@@ -95,79 +124,85 @@ class EducationViewModel @Inject constructor(
         try {
             val newEnrollment = repo.enroll(programId)
             _uiState.update {
-                it.copy(enrollment = newEnrollment, message = "Successfully enrolled in the program!")
+                it.copy(
+                    enrollment = newEnrollment,
+                    grade = 100,
+                    message = "Successfully enrolled in the program!"
+                )
             }
         } catch (e: Exception) {
-            _uiState.update {
-                it.copy(message = "Enrollment failed: ${e.message}")
-            }
+            _uiState.update { it.copy(message = "Enrollment failed: ${e.message}") }
         }
     }
 
-    private fun performAction(actionId: String, choiceId: String, multiplier: Double) = viewModelScope.launch(Dispatchers.IO) {
-        try {
-            val currentEnrollment = _uiState.value.enrollment
-                ?: throw IllegalStateException("No active enrollment")
+    private fun performAction(actionId: String, choiceId: String, multiplier: Double) =
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val currentEnrollment = _uiState.value.enrollment
+                    ?: throw IllegalStateException("No active enrollment")
 
-            val actionResult = repo.applyAction(actionId, choiceId, multiplier)
-            val updatedEnrollment = actionResult.enrollment
+                val actionResult: EducationActionResult = repo.applyAction(actionId, choiceId, multiplier)
+                val updatedEnrollment = actionResult.enrollment
 
-            val course = _uiState.value.programs.firstOrNull { it.id == updatedEnrollment.programId }
+                val newGrade = recomputeVisibleGrade(
+                    previous = currentEnrollment,
+                    updated = updatedEnrollment,
+                    currentGrade = _uiState.value.grade
+                )
 
-            if (course != null) {
-                if (updatedEnrollment.progressPct >= 100) {
-                    if (updatedEnrollment.gpa >= course.minGpa) {
-                        repo.resetEducation()
-                        _uiState.update {
-                            it.copy(
-                                enrollment = null,
-                                message = "Congratulations! You graduated from ${course.title} with a GPA of ${"%.2f".format(updatedEnrollment.gpa)}!"
-                            )
-                        }
-                    } else {
-                        if (course.tier >= EduTier.HIGH) {
-                            _uiState.update {
-                                it.copy(showFailOrRetake = true, enrollment = updatedEnrollment, message = "Program complete, but GPA is too low for graduation.")
-                            }
-                        } else {
+                val course = _uiState.value.programs.firstOrNull { it.id == updatedEnrollment.programId }
+                if (course != null) {
+                    if (updatedEnrollment.progressPct >= 100) {
+                        if (updatedEnrollment.gpa >= course.minGpa) {
                             repo.resetEducation()
                             _uiState.update {
-                                it.copy(enrollment = null, message = "Program ended. Required GPA not met. You must repeat.")
+                                it.copy(
+                                    enrollment = null,
+                                    grade = 0,
+                                    message = "Congratulations! You graduated from ${course.title} with a GPA of ${"%.2f".format(updatedEnrollment.gpa)}!"
+                                )
+                            }
+                        } else {
+                            if (course.tier >= EduTier.HIGH) {
+                                _uiState.update {
+                                    it.copy(
+                                        showFailOrRetake = true,
+                                        enrollment = updatedEnrollment,
+                                        grade = newGrade,
+                                        message = "Program complete, but GPA is too low for graduation."
+                                    )
+                                }
+                            } else {
+                                repo.resetEducation()
+                                _uiState.update {
+                                    it.copy(enrollment = null, grade = 0, message = "Program ended. Required GPA not met. You must repeat.")
+                                }
                             }
                         }
-                    }
-                } else {
-                    _uiState.update {
-                        it.copy(enrollment = updatedEnrollment)
+                    } else {
+                        _uiState.update { it.copy(enrollment = updatedEnrollment, grade = newGrade) }
                     }
                 }
-            }
-        } catch (e: Exception) {
-            Log.e("EducationVM", "Error performing action $actionId", e)
-            _uiState.update {
-                it.copy(message = "Action failed: ${e.message}")
+            } catch (e: Exception) {
+                Log.e("EducationVM", "Error performing action $actionId", e)
+                _uiState.update { it.copy(message = "Action failed: ${e.message}") }
             }
         }
-    }
 
-    // --- HELPER FOR UI ---
+    // -------------------- HELPERS FOR UI --------------------
+
     fun isActionEligible(action: EducationActionDef, enrollment: Enrollment?): Boolean {
         val e = enrollment ?: return false
 
-        // Explicit string match avoids type inference problems on `contains`
         val isTierEligible = action.tiers.any { it.name == e.tier.name }
         if (!isTierEligible) return false
 
-        // Smart cast problem solved by explicitly checking for nullability
         val minGpaMet = action.minGpa?.let { e.gpa >= it } ?: true
         val maxGpaMet = action.maxGpa?.let { e.gpa <= it } ?: true
         val isGpaEligible = minGpaMet && maxGpaMet
-
         if (!isGpaEligible) return false
 
-        val isOffCooldown = isActionOffCooldown(action, e)
-
-        return isOffCooldown
+        return isActionOffCooldown(action, e)
     }
 
     private fun isActionOffCooldown(action: EducationActionDef, enrollment: Enrollment): Boolean {
@@ -180,16 +215,10 @@ class EducationViewModel @Inject constructor(
     fun onAgeUp() = viewModelScope.launch(Dispatchers.IO) {
         try {
             val updatedEnrollment = repo.onAgeUp()
-            _uiState.update {
-                it.copy(enrollment = updatedEnrollment)
-            }
-            _uiState.update {
-                it.copy(message = "Happy Birthday! Action limits have been reset for the year.")
-            }
+            _uiState.update { it.copy(enrollment = updatedEnrollment) }
+            _uiState.update { it.copy(message = "Happy Birthday! Action limits have been reset for the year.") }
         } catch (e: Exception) {
-            _uiState.update {
-                it.copy(message = "Age-up logic failed: ${e.message}")
-            }
+            _uiState.update { it.copy(message = "Age-up logic failed: ${e.message}") }
         }
     }
 
@@ -198,11 +227,14 @@ class EducationViewModel @Inject constructor(
     }
 }
 
+// -------------------- STATE & EVENTS --------------------
+
 data class EducationUiState(
     val loading: Boolean = true,
     val programs: List<EducationProgram> = emptyList(),
     val actions: List<EducationActionDef> = emptyList(),
     val enrollment: Enrollment? = null,
+    val grade: Int = 0,                   // visible 0–100 grade (replaces terms/semesters UI)
     val showGpaInfo: Boolean = false,
     val showFailOrRetake: Boolean = false,
     val message: String? = null

@@ -20,9 +20,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.liveongames.liveon.ui.screens.education.EducationScreen // <-- Corrected import path (if in /education subfolder)
+import com.liveongames.liveon.ui.screens.EducationScreen
 import com.liveongames.liveon.ui.LiveonGameScreen
-import com.liveongames.liveon.ui.viewmodel.GameViewModel
+import com.liveongames.liveon.viewmodel.GameViewModel
 import com.liveongames.liveon.viewmodel.CrimeViewModel
 import com.liveongames.liveon.viewmodel.EducationViewModel
 import com.liveongames.liveon.viewmodel.PetsViewModel
@@ -75,62 +75,55 @@ class MainActivity : ComponentActivity() {
 fun LiveonApp() {
     val navController = rememberNavController()
     val settingsViewModel: SettingsViewModel = hiltViewModel()
-    var showCrimeScreen by remember { mutableStateOf(false) }
-    var showEducationScreen by remember { mutableStateOf(false) }
-
     val sharedGameViewModel: GameViewModel = hiltViewModel()
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        NavHost(
-            navController = navController,
-            startDestination = "main"
-        ) {
-            composable("main") {
-                LiveonGameScreen(
-                    gameViewModel = sharedGameViewModel,
-                    settingsViewModel = settingsViewModel,
-                    onNavigateToCrime = { showCrimeScreen = true },
-                    onNavigateToPets = { navController.navigate("pets") },
-                    onNavigateToEducation = { showEducationScreen = true },
-                    onNavigateToSettings = { navController.navigate("settings") }
-                )
-            }
-
-            composable("pets") {
-                val petsViewModel: PetsViewModel = hiltViewModel()
-                PetsScreen(
-                    viewModel = petsViewModel,
-                    settingsViewModel = settingsViewModel
-                )
-            }
-
-            composable("settings") {
-                SettingsScreen(viewModel = settingsViewModel)
-            }
+    NavHost(
+        navController = navController,
+        startDestination = "main"
+    ) {
+        composable("main") {
+            LiveonGameScreen(
+                gameViewModel = sharedGameViewModel,
+                settingsViewModel = settingsViewModel,
+                onNavigateToCrime = { navController.navigate("crime") },
+                onNavigateToPets = { navController.navigate("pets") },
+                // OPEN THE POPUP HERE:
+                onNavigateToEducation = { navController.navigate("education_popup") },
+                onNavigateToSettings = { navController.navigate("settings") }
+            )
         }
 
-        if (showCrimeScreen) {
+        composable("crime") {
             val crimeViewModel: CrimeViewModel = hiltViewModel()
             CrimeScreen(
                 viewModel = crimeViewModel,
                 settingsViewModel = settingsViewModel,
                 onCrimeCommitted = {
                     sharedGameViewModel.refreshPlayerStats()
-                    CoroutineScope(Dispatchers.Main).launch {
-                        delay(1000)
-                        sharedGameViewModel.refreshPlayerStats()
-                    }
                 },
-                onDismiss = { showCrimeScreen = false }
+                onDismiss = { navController.popBackStack() }
             )
         }
 
-        if (showEducationScreen) {
-            val educationViewModel: EducationViewModel = hiltViewModel()
-
-            EducationScreen(
-                viewModel = educationViewModel
+        composable("pets") {
+            val petsViewModel: PetsViewModel = hiltViewModel()
+            // Removed `onBack = ...` because PetsScreen doesn't have that parameter
+            PetsScreen(
+                viewModel = petsViewModel,
+                settingsViewModel = settingsViewModel
             )
+        }
+
+        // Education POPUP destination
+        composable("education_popup") {
+            EducationScreen(
+                showEducationModal = true,
+                onEducationModalDismiss = { navController.popBackStack() }
+            )
+        }
+
+        composable("settings") {
+            SettingsScreen(viewModel = settingsViewModel)
         }
     }
 }

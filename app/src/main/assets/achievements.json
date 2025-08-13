@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.liveongames.liveon.R
 import com.liveongames.liveon.ui.components.LiveonLogo
-import com.liveongames.liveon.ui.viewmodel.GameViewModel
+import com.liveongames.liveon.viewmodel.GameViewModel
 import com.liveongames.domain.model.GameEvent
 import org.json.JSONObject
 import kotlin.random.Random

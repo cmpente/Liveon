@@ -1,5 +1,5 @@
 // app/src/main/java/com/liveongames/liveon/ui/viewmodel/GameUiState.kt
-package com.liveongames.liveon.ui.viewmodel
+package com.liveongames.liveon.viewmodel
 
 import com.liveongames.domain.model.CharacterStats
 import com.liveongames.domain.model.GameEvent
