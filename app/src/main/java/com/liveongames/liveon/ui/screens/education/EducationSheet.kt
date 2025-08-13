@@ -15,22 +15,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DialogProperties
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
@@ -38,7 +26,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.liveongames.data.model.education.EducationActionDef
 import com.liveongames.domain.model.EducationProgram
@@ -48,8 +35,8 @@ import com.liveongames.liveon.viewmodel.EducationUiState
 import com.liveongames.liveon.viewmodel.EducationViewModel
 
 /**
- * Full-screen academic styled sheet.
- * Self-contained: no external component deps, only Material3 + your VM.
+ * Full-screen overlay "sheet" (no DialogProperties needed).
+ * Self-contained. Uses only Material3 + your ViewModel.
  */
 @Composable
 fun EducationSheet(
@@ -58,99 +45,87 @@ fun EducationSheet(
 ) {
     val state by viewModel.uiState.collectAsState()
 
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false)
+    // Scrim backdrop – click outside to dismiss
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.5f))
+            .clickable { onDismiss() } // outside
     ) {
-        // Dimmed backdrop
-        Box(
+        // Foreground container – eats clicks
+        Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.04f))
+                .padding(16.dp)
+                .align(Alignment.Center),
+            shape = RoundedCornerShape(28.dp),
+            tonalElevation = 6.dp,
+            color = MaterialTheme.colorScheme.surface
         ) {
-            // Main container
-            Surface(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                color = MaterialTheme.colorScheme.surface,
-                tonalElevation = 6.dp,
-                shape = RoundedCornerShape(28.dp)
-            ) {
-                Box {
-                    // Close
-                    IconButton(
-                        onClick = onDismiss,
-                        modifier = Modifier.align(Alignment.TopEnd).padding(8.dp)
-                    ) {
-                        Icon(Icons.Filled.Close, contentDescription = "Close")
+            Box(Modifier.fillMaxSize()) {
+
+                // Close button
+                IconButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.align(Alignment.TopEnd).padding(8.dp)
+                ) {
+                    Icon(Icons.Filled.Close, contentDescription = "Close")
+                }
+
+                // Content
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
+                    item {
+                        Text(
+                            "Education",
+                            style = MaterialTheme.typography.displaySmall.copy(
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        )
                     }
 
-                    // Content
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(20.dp)
-                    ) {
-                        // Title
-                        item {
-                            Text(
-                                "Education",
-                                style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.SemiBold)
-                            )
-                        }
-
-                        // Student Record / Not enrolled
-                        item {
-                            StudentRecordCard(
-                                state = state,
-                                onInfo = { viewModel.handleEvent(EducationEvent.ShowGpaInfo) }
-                            )
-                        }
-
-                        // Expandable activities (only when enrolled)
-                        if (state.enrollment != null) {
-                            item {
-                                ActivitiesSection(
-                                    actions = state.actions,
-                                    enrollment = state.enrollment,
-                                    onAction = { actionId, choiceId, mult ->
-                                        viewModel.handleEvent(
-                                            EducationEvent.DoAction(
-                                                actionId = actionId,
-                                                choiceId = choiceId,
-                                                multiplier = mult
-                                            )
-                                        )
-                                    }
-                                )
-                            }
-                        }
-
-                        // Catalog
-                        item {
-                            SectionHeader("Course Catalog")
-                        }
-                        items(state.programs, key = { it.id }) { program ->
-                            ProgramRow(
-                                program = program,
-                                enrolledProgramId = state.enrollment?.programId,
-                                onEnroll = { viewModel.handleEvent(EducationEvent.Enroll(program.id)) }
-                            )
-                        }
-
-                        // Transcript & honors
-                        item {
-                            SectionHeader("Transcript & Honors")
-                        }
-                        item {
-                            TranscriptCard(state.enrollment, state.grade)
-                        }
-
-                        // Bottom spacing
-                        item { Spacer(Modifier.height(12.dp)) }
+                    // Student record
+                    item {
+                        StudentRecordCard(
+                            state = state,
+                            onInfo = { viewModel.handleEvent(EducationEvent.ShowGpaInfo) }
+                        )
                     }
+
+                    // Activities (only when enrolled)
+                    if (state.enrollment != null) {
+                        item {
+                            ActivitiesSection(
+                                actions = state.actions,
+                                enrollment = state.enrollment,
+                                onAction = { actionId, choiceId, multiplier ->
+                                    viewModel.handleEvent(
+                                        EducationEvent.DoAction(actionId, choiceId, multiplier)
+                                    )
+                                }
+                            )
+                        }
+                    }
+
+                    // Course catalog
+                    item { SectionHeader("Course Catalog") }
+                    items(state.programs, key = { it.id }) { program ->
+                        ProgramRow(
+                            program = program,
+                            enrolledProgramId = state.enrollment?.programId,
+                            onEnroll = { viewModel.handleEvent(EducationEvent.Enroll(program.id)) }
+                        )
+                    }
+
+                    // Transcript
+                    item { SectionHeader("Transcript & Honors") }
+                    item { TranscriptCard(state.enrollment) }
+
+                    item { Spacer(Modifier.height(12.dp)) }
                 }
             }
         }
@@ -166,6 +141,14 @@ private fun StudentRecordCard(
 ) {
     val c = MaterialTheme.colorScheme
     val e = state.enrollment
+    val title = e?.let { enr ->
+        state.programs.firstOrNull { it.id == enr.programId }?.title
+    } ?: "Not Enrolled"
+
+    // Map GPA (0–4) to visible grade (0–100). Fallback to 100 when not enrolled.
+    val visibleGrade = e?.let { ((it.gpa / 4.0) * 100).toInt().coerceIn(0, 100) } ?: 100
+    val standing = e?.let { gradeToStanding(visibleGrade) } ?: "—"
+    val progressPct = e?.progressPct ?: 0
 
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(containerColor = c.surfaceVariant),
@@ -178,7 +161,6 @@ private fun StudentRecordCard(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                // Monogram
                 Box(
                     Modifier
                         .size(56.dp)
@@ -199,7 +181,7 @@ private fun StudentRecordCard(
 
                 Column(Modifier.weight(1f)) {
                     Text(
-                        text = e?.programTitle ?: "Not Enrolled",
+                        text = title,
                         style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -219,20 +201,9 @@ private fun StudentRecordCard(
             Spacer(Modifier.height(16.dp))
 
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                MetricPill(
-                    label = "Grade",
-                    value = "${state.grade}%",
-                    emphasis = true
-                )
-                MetricPill(
-                    label = "Progress",
-                    value = "${e?.progressPct ?: 0}%"
-                )
-                MetricPill(
-                    label = "Standing",
-                    value = e?.let { gradeToStanding(state.grade) } ?: "—",
-                    minWidth = 88.dp
-                )
+                MetricPill(label = "Grade", value = "$visibleGrade%", emphasis = true)
+                MetricPill(label = "Progress", value = "$progressPct%")
+                MetricPill(label = "Standing", value = standing, minWidth = 88.dp)
             }
         }
     }
@@ -291,7 +262,7 @@ private fun SectionHeader(title: String) {
 private fun ActivitiesSection(
     actions: List<EducationActionDef>,
     enrollment: Enrollment?,
-    onAction: (actionId: String, choiceId: String, multiplier: Double) -> Unit
+    onAction: (String, String, Double) -> Unit
 ) {
     val c = MaterialTheme.colorScheme
     var expanded by remember { mutableStateOf(true) }
@@ -328,8 +299,8 @@ private fun ActivitiesSection(
                                 action = action,
                                 enabled = enrollment != null,
                                 onClick = {
-                                    // If your action has dialog branches, open sheet; default branch otherwise:
-                                    onAction(action.id, choiceId = "default", multiplier = 1.0)
+                                    // Open branch sheet if you add one later; default branch for now:
+                                    onAction(action.id, "default", 1.0)
                                 }
                             )
                         }
@@ -378,25 +349,13 @@ private fun ActivityCard(
             val mins = action.cooldownMinutes
 
             Text(
-                text = "+${formatGpa(gpaMin)}–${formatGpa(gpaMax)} GPA • ${mins}m",
+                text = "+${String.format("%.2f", gpaMin)}–${String.format("%.2f", gpaMax)} GPA • ${mins}m",
                 style = MaterialTheme.typography.bodyMedium,
                 color = c.onSurfaceVariant
             )
-
-            action.description?.takeIf { it.isNotBlank() }?.let {
-                Text(
-                    it,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = c.onSurfaceVariant,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
         }
     }
 }
-
-private fun formatGpa(v: Double): String = String.format("%.2f", v)
 
 @Composable
 private fun ProgramRow(
@@ -418,7 +377,7 @@ private fun ProgramRow(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Accent
+            // Accent bar
             Box(
                 Modifier
                     .width(6.dp)
@@ -450,16 +409,6 @@ private fun ProgramRow(
                         color = c.onSurfaceVariant
                     )
                 }
-                program.description.takeIf { it.isNotBlank() }?.let {
-                    Spacer(Modifier.height(6.dp))
-                    Text(
-                        it,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = c.onSurfaceVariant,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
             }
 
             Spacer(Modifier.width(12.dp))
@@ -485,9 +434,8 @@ private fun money(v: Int): String =
     if (v <= 0) "$0" else "$${"%,d".format(v)}"
 
 @Composable
-private fun TranscriptCard(enrollment: Enrollment?, visibleGrade: Int) {
+private fun TranscriptCard(enrollment: Enrollment?) {
     val c = MaterialTheme.colorScheme
-    val muted = c.onSurface.copy(alpha = 0.9f)
 
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(containerColor = c.surfaceVariant),
@@ -496,15 +444,10 @@ private fun TranscriptCard(enrollment: Enrollment?, visibleGrade: Int) {
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             if (enrollment == null) {
-                Text(
-                    "No transcript yet. Enroll in a program to begin.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = muted
-                )
+                bullet("No transcript yet. Enroll in a program to begin.")
             } else {
                 bullet("Enrolled in ${enrollment.programId}")
                 bullet("Progress ${enrollment.progressPct}%")
-                bullet("Visible grade $visibleGrade%")
                 bullet("GPA ${"%.2f".format(enrollment.gpa)}")
             }
         }
