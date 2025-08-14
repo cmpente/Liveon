@@ -147,6 +147,7 @@ fun EducationSheet(
                                     } else {
                                         LazyRow(
                                             horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                            modifier = Modifier.padding(vertical = 8.dp) // Added vertical padding
                                         ) {
                                             items(state.actions) { action ->
                                                 ActionPill(
@@ -460,7 +461,7 @@ private fun ActionPill(
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(
             containerColor = cardColor,
-            contentColor = contentColor
+ contentColor = contentColor,
         ),
         modifier = Modifier
             .widthIn(min = 220.dp)
@@ -489,7 +490,7 @@ private fun ActionPill(
                 )
             }
 
-            if (!subtitle.isNullOrBlank()) {
+            if (!subtitle.isNullOrBlank()) { // Changed from `if (subtitle.isNotBlank())`
                 Spacer(Modifier.height(8.dp))
                 Text(
                     subtitle,
@@ -499,7 +500,7 @@ private fun ActionPill(
             }
 
             if (isOnCooldown) {
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(8.dp)) // Ensure spacing even without subtitle
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -519,13 +520,13 @@ private fun ActionPill(
             }
 
             if (hasMiniGame) {
-                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(8.dp)) // Ensure spacing and consistent vertical arrangement
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_default_study),
+                        painter = painterResource(id = R.drawable.ic_quiz), // Using a different icon for mini-game example
                         contentDescription = "Mini-game included",
                         modifier = Modifier.size(16.dp),
                         tint = theme.text.copy(alpha = 0.7f)
