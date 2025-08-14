@@ -9,7 +9,7 @@ class AdvanceYearUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(characterStats: CharacterStats): CharacterStats {
         val updatedStats = characterStats.copy(age = characterStats.age + 1)
- autoProgressEducationUseCase.execute(updatedStats.age)
+        autoProgressEducationUseCase.execute()
  return updatedStats
     }
 }
