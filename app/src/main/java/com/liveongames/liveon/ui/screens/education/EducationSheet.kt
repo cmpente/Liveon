@@ -81,7 +81,7 @@ fun EducationSheet(
         ) {
             var actionsOpen by rememberSaveable { mutableStateOf(true) }
             var expandedCategories by rememberSaveable { mutableStateOf(mapOf<String, Boolean>()) }
- var selectedProgram: EducationProgram? by remember { mutableStateOf(null) }
+            var selectedProgram: EducationProgram? by remember { mutableStateOf(null) }
             var pickingAction by remember { mutableStateOf<EducationActionDef?>(null) }
 
             LazyColumn(
