@@ -369,7 +369,7 @@ private fun StudentRecordCard(
                     Spacer(Modifier.height(4.dp))
                     when (enrollment.tier) {
                         EduTier.ELEMENTARY -> Text("Current Grade: [Grade Level]", style = MaterialTheme.typography.bodyMedium, color = cs.onSecondaryContainer.copy(alpha = 0.75f))
-                        EduTier.MIDDLE_SCHOOL -> Text("Current Grade: [Grade Level]", style = MaterialTheme.typography.bodyMedium, color = cs.onSecondaryContainer.copy(alpha = 0.75f))
+                        EduTier.MIDDLE -> Text("Current Grade: [Grade Level]", style = MaterialTheme.typography.bodyMedium, color = cs.onSecondaryContainer.copy(alpha = 0.75f))
                         EduTier.HIGH -> Text("Enrolled Classes: [List of classes]", style = MaterialTheme.typography.bodyMedium, color = cs.onSecondaryContainer.copy(alpha = 0.75f))
                         EduTier.GED -> Text("GED Program Details: [Details]", style = MaterialTheme.typography.bodyMedium, color = cs.onSecondaryContainer.copy(alpha = 0.75f))
                         EduTier.COMMUNITY_COLLEGE -> Text("Major/Program: [Major/Program Name]", style = MaterialTheme.typography.bodyMedium, color = cs.onSecondaryContainer.copy(alpha = 0.75f))

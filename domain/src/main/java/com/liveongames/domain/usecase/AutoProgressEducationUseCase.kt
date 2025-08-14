@@ -51,5 +51,5 @@ class AutoProgressEducationUseCase @Inject constructor(
             // This Use Case primarily handles initial enrollment for school tiers.
             // Graduation/Failure logic will be handled elsewhere, likely triggered after applying actions
             // and checking if progress is 100%.\n        }
+        }
     }
-}
