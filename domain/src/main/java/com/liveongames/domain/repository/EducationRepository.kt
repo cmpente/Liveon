@@ -22,4 +22,5 @@ interface EducationRepository {
     suspend fun getCompletedInstitutions(): List<CompletedInstitution>
     suspend fun getAcademicHonors(): List<AcademicHonor>
     suspend fun getCertifications(): List<Certification>
+    suspend fun dropOut(characterId: String): Unit
 }

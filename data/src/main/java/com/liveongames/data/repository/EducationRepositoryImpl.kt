@@ -238,6 +238,23 @@ class EducationRepositoryImpl @Inject constructor(
 
         }
     }
+    
+    override suspend fun getCompletedInstitutions(): List<CompletedInstitution> = withContext(Dispatchers.IO) {
+        // TODO: Implement the actual logic to retrieve completed institutions.
+        // This might involve querying a database table that tracks completed programs
+        // or filtering the EducationEntity entries for completed ones.
+        // For now, returning an empty list as a placeholder.
+        
+        // Example (assuming a 'isCompleted' flag or similar in EducationEntity):
+        /*
+        educationDao.getForCharacter(PLAYER)
+            .filter { it.isCompleted } // Assuming you have a way to identify completion
+            .map { entity ->
+                 CompletedInstitution(id = entity.id, name = entity.name) // Map to your domain model
+            }
+        */
+        emptyList() // Placeholder
+    }
 
     override suspend fun retakeProgram(programId: String) = withContext(Dispatchers.IO) {
         val entityToRetake = educationDao.getById(PLAYER, programId)
