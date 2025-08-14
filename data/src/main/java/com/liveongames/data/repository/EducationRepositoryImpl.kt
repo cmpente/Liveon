@@ -239,6 +239,10 @@ class EducationRepositoryImpl @Inject constructor(
         }
     }
     
+ override suspend fun getAcademicHonors(): List<AcademicHonor> = withContext(Dispatchers.IO) {
+ emptyList() // TODO: Implement actual logic
+ }
+
     override suspend fun getCompletedInstitutions(): List<CompletedInstitution> = withContext(Dispatchers.IO) {
         // TODO: Implement the actual logic to retrieve completed institutions.
         // This might involve querying a database table that tracks completed programs
@@ -256,7 +260,7 @@ class EducationRepositoryImpl @Inject constructor(
         emptyList() // Placeholder
     }
 
-    override suspend fun retakeProgram(programId: String) = withContext(Dispatchers.IO) {
+    override suspend fun retakeProgram(programId: String): Unit = withContext(Dispatchers.IO) {
         val entityToRetake = educationDao.getById(PLAYER, programId)
         if (entityToRetake != null) {
             // Reset progress and GPA for retake
