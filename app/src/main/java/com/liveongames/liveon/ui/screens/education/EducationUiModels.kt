@@ -1,3 +1,5 @@
+// app/src/main/java/com/liveongames/liveon/ui/screens/education/EducationUiModels.kt
+
 package com.liveongames.liveon.ui.screens.education
 
 import androidx.annotation.DrawableRes
