@@ -4,7 +4,6 @@ import com.liveongames.domain.model.EduTier
 import com.liveongames.domain.repository.EducationRepository
 import com.liveongames.domain.repository.PlayerRepository
 import com.liveongames.data.repository.PlayerRepositoryImpl.PLAYER_CHARACTER_ID // Corrected import
-import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class AutoProgressEducationUseCase @Inject constructor(
@@ -50,6 +49,6 @@ class AutoProgressEducationUseCase @Inject constructor(
             // Player is already enrolled. Future logic will handle graduation/failure based on progress/GPA
             // This Use Case primarily handles initial enrollment for school tiers.
             // Graduation/Failure logic will be handled elsewhere, likely triggered after applying actions
-            // and checking if progress is 100%.\n        }
+            // and checking if progress is 100%.
         }
     }
