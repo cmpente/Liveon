@@ -15,6 +15,7 @@ interface EducationRepository {
     // >>> CHANGE THE RETURN TYPE HERE <<<
     suspend fun applyAction(actionId: String, choiceId: String, miniGameMultiplier: Double = 1.0): EducationActionResult
     suspend fun onAgeUp(): Enrollment?
+    suspend fun retakeProgram(programId: String)
     suspend fun resetEducation()
     suspend fun getCurrentTermState(): TermState?
 

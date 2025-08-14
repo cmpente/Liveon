@@ -14,6 +14,9 @@ import javax.inject.Inject
 
 import com.liveongames.data.model.education.EducationCourse
 import com.liveongames.data.model.education.EducationActionDef
+import com.liveongames.domain.model.periodFromProgress
+import com.liveongames.domain.model.groupFromPeriod
+
 
 class EducationRepositoryImpl @Inject constructor(
     private val educationDao: EducationDao,
@@ -192,8 +195,7 @@ class EducationRepositoryImpl @Inject constructor(
             EducationActionResult(
                 enrollment = finalEnrollment,
                 graduated = isComplete && meetsGpa,
-                // Indicate that a decision is required for HS+ if complete but GPA is not met
-                decisionRequired = isComplete && !meetsGpa && tierRequiresDecision,
+                failed = isComplete && !meetsGpa && tierRequiresDecision,
                 graduationEligible = isComplete && meetsGpa // Optional helper for UI
             )
 
@@ -209,7 +211,7 @@ class EducationRepositoryImpl @Inject constructor(
                 EducationActionResult(
                     enrollment = safeEnrollment,
                     graduated = false,
-                    decisionRequired = false,
+                    failed = false,
                     graduationEligible = false
                 )
             } ?: run {
@@ -229,7 +231,7 @@ class EducationRepositoryImpl @Inject constructor(
                         lastActionAt = null
                     ),
                     graduated = false,
-                    decisionRequired = false,
+                    failed = false,
                     graduationEligible = false
                 )
             }
@@ -246,31 +248,32 @@ class EducationRepositoryImpl @Inject constructor(
                 progressPct = 0, // Reset progress
                 timestamp = System.currentTimeMillis(), // Update timestamp
                 completionDate = null, // Clear completion date
-                isActive = true // Ensure it's active for retake
+                isActive = true // Ensure it\'s active for retake
             )
             educationDao.upsert(retakeEntity)
         } else {
             // This case is unexpected if we're trying to retake a non-existent or inactive program
             Log.w(TAG, "Entity for program $programId not found or not active during retake attempt.")
-            }
+        }
+    }
 
     override suspend fun onAgeUp(): Enrollment? {
-        // This method is intended to reset age-dependent action caps.
-        // It should not alter the core state of the enrollment (like progress or GPA).
+        // This method is intended to reset age-dependent action caps.\n
+        // It should not alter the core state of the enrollment (like progress or GPA).\n
         val currentEnrollment = getEnrollment() ?: return null
 
         // Call the data layer function to reset the action state for this age/program
         resetActionCapsForAge(currentEnrollment.programId)
 
-        // Return the current enrollment as its logical state hasn't changed
+        // Return the current enrollment as its logical state hasn\'t changed
         return currentEnrollment
     }
 
     override suspend fun resetEducation() {
-        // This clears the current active enrollment, effectively "unenrolling" the player.
-        // It typically just deactivates the current enrollment record.
+        // This clears the current active enrollment, effectively \"unenrolling\" the player.\n
+        // It typically just deactivates the current enrollment record.\n
         educationDao.deactivateAll(PLAYER)
-        // Note: If you have player-global action state that needs reset, do it here too.
+        // Note: If you have player-global action state that needs reset, do it here too.\n
         // actionStateDao.clearForPlayer(PLAYER) // Example if such a method exists
     }
 
@@ -279,7 +282,7 @@ class EducationRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getCurrentTermState(): TermState? = withContext(Dispatchers.IO) {
-        // This method derives the current term state from the active enrollment.
+        // This method derives the current term state from the active enrollment.\n
         val enrollment = getEnrollment() ?: return@withContext null
 
         val schema = enrollment.schema
@@ -291,7 +294,7 @@ class EducationRepositoryImpl @Inject constructor(
         // Calculate the current group (e.g. Year 2, Semester 3) using the helper function
         val currentGroup = groupFromPeriod(currentPeriod, schema.periodsPerYear)
 
-        // Determine the label to use for the group (e.g., "Year", "Semester", or null if it's just periods)
+        // Determine the label to use for the group (e.g., \"Year\", \"Semester\", or null if it\'s just periods)\n
         val groupLabel = schema.groupingLabel ?: schema.displayPeriodName
 
         // Create and return the TermState object with the calculated information
@@ -303,57 +306,36 @@ class EducationRepositoryImpl @Inject constructor(
         )
     }
 
-    // --- Internal Domain Logic Helpers ---
-    // These functions implement the specified schema-driven period and group number calculation.
-
     /**
-     * Calculates the current period index based on overall progress and the total number of periods.
-     * @param progressPct The overall progress through the program (0-100).
-     * @param totalPeriods The total number of display periods defined by the program's schema.
-     * @return The 1-based index of the current period.
-     */
-    private fun periodFromProgress(progressPct: Int, totalPeriods: Int): Int =
-        ((progressPct * totalPeriods + 99) / 100).coerceIn(1, totalPeriods)
-
-    /**
-     * Calculates the group number (e.g., Year 2, Semester 3) based on period index and periods per year.
-     * @param period The 1-based index of the current period.
-     * @param periodsPerYear The number of display periods that make up one group (e.g., 2 for semesters, 4 for quarters).
-     * @return The 1-based number of the current group.
-     */
-    private fun groupFromPeriod(period: Int, periodsPerYear: Int): Int =
-        ((period - 1) / periodsPerYear) + 1
-
-    /**
-     * Resets the age-based usage counter for actions related to a specific education program.
-     * This method interacts with the `EducationActionStateDao` to perform the reset.
-     * @param educationId The ID of the education program for which to reset action caps.
+     * Resets the age-based usage counter for actions related to a specific education program.\n
+     * This method interacts with the `EducationActionStateDao` to perform the reset.\n
+     * @param educationId The ID of the education program for which to reset action caps.\n
      */
     private suspend fun resetActionCapsForAge(educationId: String) {
-        // It resets the usage count for actions tied to this specific education and player's age.
+        // It resets the usage count for actions tied to this specific education and player\'s age.\n
         actionStateDao.resetUsedThisAge(PLAYER, educationId)
-        // If actions have global player-based age caps (not tied to a program), reset them too.
+        // If actions have global player-based age caps (not tied to a program), reset them too.\n
         // actionStateDao.resetUsedThisAgeForPlayer(PLAYER) // Example signature
     }
 }
 
 // === EXTENSIONS FOR ENTITY MAPPING ===
-// This extension maps the legacy EducationEntity to the new Enrollment domain model.
-// It requires the full list of programs to access the complete schema and static data.
+// This extension maps the legacy EducationEntity to the new Enrollment domain model.\n
+// It requires the full list of programs to access the complete schema and static data.\n
 
 /**
- * Maps an EducationEntity from the database to the new Enrollment domain model.
- * @param courses The complete list of available EducationPrograms to find the schema and details.
- * @return An Enrollment object if the entity is active and its course definition is found; null otherwise.
+ * Maps an EducationEntity from the database to the new Enrollment domain model.\n
+ * @param courses The complete list of available EducationPrograms to find the schema and details.\n
+ * @return An Enrollment object if the entity is active and its course definition is found; null otherwise.\n
  */
 fun EducationEntity.toEnrollmentFull(courses: List<EducationProgram>): Enrollment? {
-    // Only active entities should be considered as representing an active enrollment
+    // Only active entities should be considered as representing an active enrollment\n
     if (!this.isActive) return null
 
     // Find the corresponding course definition from the loaded programs list
     val course = courses.firstOrNull { it.id == this.id }
     if (course == null) {
-        // Log a warning if an active enrollment entity exists but its corresponding course is missing
+        // Log a warning if an active enrollment entity exists but its corresponding course is missing\n
         Log.w("EducationRepoImpl", "Active enrollment entity for program '${this.id}' found, but no corresponding course definition exists. Cannot map to domain model.")
         return null // Cannot create a full Enrollment without its definition
     }
@@ -365,10 +347,8 @@ fun EducationEntity.toEnrollmentFull(courses: List<EducationProgram>): Enrollmen
         schema = course.schema, // Get full schema from the program definition
         progressPct = this.progressPct.coerceIn(0, 100), // Ensure value is within valid range, sourced from DB
         gpa = this.currentGpa.coerceIn(0.0, 4.0), // Ensure value is within valid range, sourced from DB
-        startedAge = 18, // TODO: This needs to come from the player's state that started this education
+        startedAge = 18, // TODO: This needs to come from the player\'s state that started this education
         repeats = 0, // TODO: This needs to be tracked and loaded, potentially from the entity or a separate state
-        lastActionAt = if (this.timestamp > 0L) this.timestamp else null // Use the entity's timestamp for cooldowns, return null for invalid times
+        lastActionAt = if (this.timestamp > 0L) this.timestamp else null // Use the entity\'s timestamp for cooldowns, return null for invalid times
     )
 }
-
-
