@@ -91,14 +91,6 @@ fun LiveonApp() {
             )
         }
 
-        composable("pets") {
-            val petsViewModel: PetsViewModel = hiltViewModel()
-            PetsScreen(
-                viewModel = petsViewModel,
-                settingsViewModel = settingsViewModel
-            )
-        }
-
         // Education POPUP destination -> show the new sheet
         composable("education_popup") {
             val eduVm: EducationViewModel = hiltViewModel()

@@ -119,8 +119,8 @@ class EventViewModel @Inject constructor(
                         val updatedCharacter = character.copy(
                             health = updatedStats.health,
                             happiness = updatedStats.happiness,
-                            intelligence = updatedStats.smarts, // Map smarts back to intelligence,
-                            fitness = updatedStats.looks, // Map looks back to fitness
+                            intelligence = updatedStats.smarts, // Map smarts back to intelligence
+                            fitness = updatedStats.fitness, // Map fitness back to fitness
                             money = updatedStats.money,
                             notoriety = updatedStats.reputation // Map notoriety back to reputation
                             // Update other character properties here if needed
