@@ -12,24 +12,20 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.liveongames.liveon.R
 import com.liveongames.liveon.viewmodel.EducationEvent
 import com.liveongames.liveon.viewmodel.EducationViewModel
-import com.liveongames.data.model.education.EducationActionDef
-import com.liveongames.domain.model.EducationProgram
-import com.liveongames.domain.model.EduTier
-import com.liveongames.domain.model.Enrollment
-import com.liveongames.liveon.R
-import com.liveongames.liveon.ui.theme.LocalLiveonTheme // Import LocalLiveonTheme
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import com.liveongames.data.model.education.EducationActionDef
 import androidx.compose.ui.res.painterResource
-import com.liveongames.domain.model.Enrollment
-import com.liveongames.domain.model.EduTier
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 
 /**
  * Education modal sheet (like Crime screen), pure Material 3 + system theme.
