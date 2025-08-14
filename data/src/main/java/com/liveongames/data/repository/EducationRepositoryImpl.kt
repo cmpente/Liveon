@@ -42,11 +42,16 @@ class EducationRepositoryImpl @Inject constructor(
     }
 
     override suspend fun enroll(programId: String): Enrollment {
-        // 1. Validate Program
+        // 1. Check if already enrolled
+        if (getEnrollment() != null) {
+            throw IllegalStateException("Cannot enroll: Player is already enrolled in a program.")
+        }
+
+        // 2. Validate Program
         val course = getPrograms().firstOrNull { it.id == programId }
             ?: throw IllegalArgumentException("Program ID '$programId' not found in available programs.")
 
-        // 2. Deactivate any previous enrollment for the player
+        // 3. Deactivate any previous enrollment for the player (shouldn't be any due to the check above, but as a safeguard)
         educationDao.deactivateAll(PLAYER)
 
         // 3. Create the new Enrollment domain object
@@ -61,7 +66,7 @@ class EducationRepositoryImpl @Inject constructor(
             lastActionAt = null
         )
 
-        // 4. Save to persistence (using legacy EducationEntity for now)
+        // 4. Save to persistence
         // Map to the entity for saving. You'll need to ensure the fields match your DB schema.
         // This is a simplified example; adapt to your entity's constructor/fields.
         val entityToSave = EducationEntity(
@@ -187,7 +192,8 @@ class EducationRepositoryImpl @Inject constructor(
             EducationActionResult(
                 enrollment = finalEnrollment,
                 graduated = isComplete && meetsGpa,
-                failed = isComplete && !meetsGpa && tierRequiresDecision, // Flag for HS+ failure
+                // Indicate that a decision is required for HS+ if complete but GPA is not met
+                decisionRequired = isComplete && !meetsGpa && tierRequiresDecision,
                 graduationEligible = isComplete && meetsGpa // Optional helper for UI
             )
 
@@ -203,7 +209,8 @@ class EducationRepositoryImpl @Inject constructor(
                 EducationActionResult(
                     enrollment = safeEnrollment,
                     graduated = false,
-                    failed = false
+                    decisionRequired = false,
+                    graduationEligible = false
                 )
             } ?: run {
                 // If we can't even retrieve the current state, default/error
@@ -222,8 +229,29 @@ class EducationRepositoryImpl @Inject constructor(
                         lastActionAt = null
                     ),
                     graduated = false,
-                    failed = false
+                    decisionRequired = false,
+                    graduationEligible = false
                 )
+            }
+
+        }
+    }
+
+    override suspend fun retakeProgram(programId: String) = withContext(Dispatchers.IO) {
+        val entityToRetake = educationDao.getById(PLAYER, programId)
+        if (entityToRetake != null) {
+            // Reset progress and GPA for retake
+            val retakeEntity = entityToRetake.copy(
+                currentGpa = 1.0, // Reset GPA
+                progressPct = 0, // Reset progress
+                timestamp = System.currentTimeMillis(), // Update timestamp
+                completionDate = null, // Clear completion date
+                isActive = true // Ensure it's active for retake
+            )
+            educationDao.upsert(retakeEntity)
+        } else {
+            // This case is unexpected if we're trying to retake a non-existent or inactive program
+            Log.w(TAG, "Entity for program $programId not found or not active during retake attempt.")
             }
 
         }
@@ -247,6 +275,10 @@ class EducationRepositoryImpl @Inject constructor(
         educationDao.deactivateAll(PLAYER)
         // Note: If you have player-global action state that needs reset, do it here too.
         // actionStateDao.clearForPlayer(PLAYER) // Example if such a method exists
+    }
+
+    override suspend fun dropOut(characterId: String) = withContext(Dispatchers.IO) {
+        educationDao.deactivateAll(characterId)
     }
 
     override suspend fun getCurrentTermState(): TermState? = withContext(Dispatchers.IO) {
@@ -341,4 +373,5 @@ fun EducationEntity.toEnrollmentFull(courses: List<EducationProgram>): Enrollmen
         lastActionAt = if (this.timestamp > 0L) this.timestamp else null // Use the entity's timestamp for cooldowns, return null for invalid times
     )
 }
+
 

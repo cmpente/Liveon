@@ -41,11 +41,24 @@ class EducationViewModel @Inject constructor(
         try {
             val programs: List<EducationProgram> = repo.getPrograms()
             val actions: List<EducationActionDef> = repo.getActions().map { it as EducationActionDef }
+
+            val categorizedActions = actions.groupBy {
+                when {
+                    it.title.contains("class", ignoreCase = true) || it.title.contains("lecture", ignoreCase = true) || it.title.contains("attend", ignoreCase = true) -> "Attend Class"
+                    it.title.contains("club", ignoreCase = true) || it.title.contains("team", ignoreCase = true) || it.title.contains("group", ignoreCase = true) || it.title.contains("student government", ignoreCase = true) -> "Group Activities"
+                    it.title.contains("study", ignoreCase = true) || it.title.contains("homework", ignoreCase = true) || it.title.contains("tutor", ignoreCase = true) || it.title.contains("read", ignoreCase = true) || it.title.contains("extra credit", ignoreCase = true) -> "Self-Study / Extra Credit"
+                    it.title.contains("test", ignoreCase = true) || it.title.contains("exam", ignoreCase = true) || it.title.contains("SAT", ignoreCase = true) || it.title.contains("GED", ignoreCase = true) || it.title.contains("midterm", ignoreCase = true) || it.title.contains("final", ignoreCase = true) -> "Tests & Exams"
+                    it.title.contains("break", ignoreCase = true) || it.title.contains("fun", ignoreCase = true) || it.title.contains("skip", ignoreCase = true) || it.title.contains("prank", ignoreCase = true) || it.title.contains("game", ignoreCase = true) -> "Break / Fun"
+                    else -> "Other Activities"
+                }
+            }
+
             val enrollment = repo.getEnrollment()
 
             _uiState.update {
                 it.copy(
                     loading = false,
+                    categorizedActions = categorizedActions,
                     programs = programs,
                     actions = actions,
                     enrollment = enrollment,
@@ -165,15 +178,13 @@ class EducationViewModel @Inject constructor(
                         } else {
                             if (course.tier >= EduTier.HIGH) {
                                 _uiState.update {
-                                    it.copy(
-                                        showFailOrRetake = true,
-                                        enrollment = updatedEnrollment,
-                                        grade = newGrade,
-                                        message = "Program complete, but GPA is too low for graduation."
-                                    )
-                                }
+                                    it.copy(showFailOrRetake = true, enrollment = updatedEnrollment, grade = newGrade, message = "Program complete, but GPA is too low for graduation.")
                             } else {
-                                repo.resetEducation()
+                                // For tiers below HIGH, failing means repeating.
+                                // We reset education but keep the player at the same age
+                                // to simulate repeating a grade/program.
+                                // A more sophisticated system could track failed attempts.
+                                repo.resetEducation() // This effectively means repeating the current level
                                 _uiState.update {
                                     it.copy(enrollment = null, grade = 0, message = "Program ended. Required GPA not met. You must repeat.")
                                 }

@@ -76,6 +76,7 @@ fun EducationSheet(
                 .fillMaxHeight(0.92f)
         ) {
             var actionsOpen by rememberSaveable { mutableStateOf(true) }
+            var expandedCategories by rememberSaveable { mutableStateOf(mapOf<String, Boolean>()) }
             var pickingAction by remember { mutableStateOf<EducationActionDef?>(null) }
 
             LazyColumn(
@@ -150,24 +151,31 @@ fun EducationSheet(
 
                             AnimatedVisibility(visible = actionsOpen) {
                                 Column(Modifier.padding(16.dp)) {
-                                    if (state.actions.isEmpty()) {
                                         Text(
                                             "No activities available.",
                                             color = cs.onSurfaceVariant
                                         )
                                     } else {
-                                        LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                            items(state.actions) { action ->
-                                                ActionPill(
-                                                    state = state, // Pass the state to ActionPill
-                                                    action = action,
-                                                    title = action.title,
-                                                    subtitle = action.dialog.firstOrNull()?.text.orEmpty(), // Using dialog text as subtitle
-                                                    isOnCooldown = !viewModel.isActionEligible(action, state.enrollment), // Check eligibility for cooldown
-                                                    hasMiniGame = action.minigameId != null, // Assuming a minigameId indicates a mini-game
-                                                    onClick = { pickingAction = action },
-                                                )
+                                        state.categorizedActions.entries.forEach { (categoryName, actions) ->
+                                            Text(categoryName)
+                                            // Placeholder for expandable content
+                                            AnimatedVisibility(visible = expandedCategories[categoryName] ?: false) {
+                                                LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+ items(actions) { action ->
+ ActionPill(
+ state = state, // Pass the state to ActionPill
+ action = action,
+ title = action.title,
+ subtitle = action.dialog.firstOrNull()?.text.orEmpty(), // Using dialog text as subtitle
+ // Check eligibility for cooldown based on the specific action
+ isOnCooldown = !viewModel.isActionEligible(action, state.enrollment),
+ hasMiniGame = action.minigameId != null, // Assuming a minigameId indicates a mini-game
+ onClick = { pickingAction = action },
+ )
+ }
+
                                             }
+
                                         }
                                     }
                                 }
