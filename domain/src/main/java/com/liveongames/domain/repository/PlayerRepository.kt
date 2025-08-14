@@ -22,6 +22,10 @@ interface PlayerRepository {
     suspend fun addEvent(characterId: String, event: String)
     suspend fun updateJailTime(characterId: String, days: Int)
     suspend fun updateNotoriety(characterId: String, amount: Int)
+
+    companion object {
+ val PLAYER_CHARACTER_ID = "player_character_id"
+    }
 }
 
 companion object {

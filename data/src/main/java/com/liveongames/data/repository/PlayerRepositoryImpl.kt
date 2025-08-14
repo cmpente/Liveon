@@ -12,10 +12,6 @@ class PlayerRepositoryImpl @Inject constructor(
     private val characterDao: CharacterDao
 ) : PlayerRepository {  // Make sure it implements PlayerRepository, not CharacterRepository
 
-    companion object {
-        private const val PLAYER_CHARACTER_ID = "player_character"
-    }
-
     override fun getCharacter(characterId: String): Flow<Character?> {
         return characterDao.getCharacter(characterId).map { entity ->
             entity?.let {
