@@ -5,6 +5,31 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "android",
+            "request": "attach",
+            "name": "Android Attach",
+            "appSrcRoot": "${workspaceRoot}/app/src/main",
+            "adbPort": 5037,
+            "processId": "${command:PickAndroidProcess}"
+        },
+        {
+            "type": "android",
+            "request": "launch",
+            "name": "Android Launch",
+            "appSrcRoot": "${workspaceRoot}/app/src/main",
+            "apkFile": "${workspaceRoot}/app/build/outputs/apk/debug/app-debug.apk",
+            "adbPort": 5037
+        },
+        {
+            "type": "android",
+            "request": "launch",
+            "name": "Android Launch",
+            "appSrcRoot": "${workspaceRoot}/app/src/main",
+            "apkFile": "${workspaceRoot}/app/build/outputs/apk/debug/app-debug.apk",
+            "adbPort": 5037
+        },
+
+        {
             "type": "kotlin",
             "request": "launch",
             "name": "Kotlin Launch",
@@ -13,3 +38,4 @@
         }
     ]
 }
+

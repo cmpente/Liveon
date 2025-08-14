@@ -18,13 +18,19 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.liveongames.domain.repository.CharacterRepository // Import CharacterRepository
+import com.liveongames.domain.usecase.ApplyEventUseCase // Import ApplyEventUseCase
+import com.liveongames.domain.model.Character // Import Character
+import kotlinx.coroutines.flow.first // Import first
 
 @HiltViewModel
 class EventViewModel @Inject constructor(
     private val getRandomEventsUseCase: GetRandomEventsUseCase,
     private val getYearlyEventsUseCase: GetYearlyEventsUseCase,
     private val markEventAsShownUseCase: MarkEventAsShownUseCase,
-    private val eventRepository: EventRepositoryImpl
+    private val eventRepository: EventRepositoryImpl,
+    private val characterRepository: CharacterRepository, // Inject CharacterRepository
+    private val applyEventUseCase: ApplyEventUseCase // Inject ApplyEventUseCase
 ) : ViewModel() {
 
     private val _activeEvents = MutableStateFlow<List<Event>>(emptyList())
@@ -43,10 +49,16 @@ class EventViewModel @Inject constructor(
     val lifeLogEntries: StateFlow<List<LifeLogEntry>> = _lifeLogEntries.asStateFlow()
 
     private var currentPlayerAge = 18 // Default starting age
+    private var currentCharacterId: String? = null // To hold the ID of the current character
 
     init {
         Log.d("EventViewModel", "Initializing EventViewModel")
         loadEvents()
+    }
+
+    // Call this function to set the current character ID
+    fun setCurrentCharacterId(characterId: String) {
+        currentCharacterId = characterId
     }
 
     private fun loadEvents() {
@@ -81,22 +93,35 @@ class EventViewModel @Inject constructor(
         _selectedChoice.value = choice
         _eventOutcomes.value = choice.outcomes
 
-        // Process the choice in life log
-        _currentEvent.value?.let { event ->
-            choice.outcomes.forEach { outcome ->
-                val lifeLogEntry = LifeLogEntry(
-                    title = event.title,
-                    description = outcome.description,
-                    category = event.category,
-                    age = currentPlayerAge,
-                    statChanges = outcome.statChanges
-                )
-                addLifeLogEntry(lifeLogEntry)
-            }
-        }
-
-        // Mark event as shown after choice is made
         viewModelScope.launch {
+            currentCharacterId?.let { characterId ->
+                val currentCharacter = characterRepository.getCharacter(characterId).first() // Get current character
+
+                currentCharacter?.let { character ->
+                    choice.outcomes.forEach { outcome ->
+                        // Apply stat changes using ApplyEventUseCase
+                        val updatedStats = applyEventUseCase(character.stats, _currentEvent.value!!, outcome)
+
+                        // Create updated character with new stats
+                        val updatedCharacter = character.copy(stats = updatedStats)
+
+                        // Update character in the repository
+                        characterRepository.updateCharacter(updatedCharacter)
+
+
+                        val lifeLogEntry = LifeLogEntry(
+                            title = _currentEvent.value!!.title,
+                            description = outcome.description,
+                            category = _currentEvent.value!!.category,
+                            age = currentPlayerAge,
+                            statChanges = outcome.statChanges
+                        )
+                        addLifeLogEntry(lifeLogEntry)
+                    }
+                }
+            }
+
+            // Mark event as shown after choice is made
             _currentEvent.value?.let { event ->
                 Log.d("EventViewModel", "Marking event ${event.id} as shown")
                 markEventAsShownUseCase(event.id)
