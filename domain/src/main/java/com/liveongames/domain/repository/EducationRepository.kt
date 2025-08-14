@@ -17,4 +17,8 @@ interface EducationRepository {
     suspend fun onAgeUp(): Enrollment?
     suspend fun resetEducation()
     suspend fun getCurrentTermState(): TermState?
+
+    suspend fun getCompletedInstitutions(): List<CompletedInstitution>
+    suspend fun getAcademicHonors(): List<AcademicHonor>
+    suspend fun getCertifications(): List<Certification>
 }

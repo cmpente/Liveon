@@ -8,6 +8,9 @@ import com.liveongames.domain.repository.EducationRepository
 import com.liveongames.data.assets.education.EducationAssetLoader
 import com.liveongames.data.model.education.EducationActionDef
 import com.liveongames.domain.model.EducationProgram
+import com.liveongames.domain.model.CompletedInstitution
+import com.liveongames.domain.model.AcademicHonor
+import com.liveongames.domain.model.Certification
 import com.liveongames.domain.model.Enrollment
 import com.liveongames.domain.model.EducationActionResult
 import com.liveongames.domain.model.EduTier

@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.VideogameAsset
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.outlined.Timer
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -47,6 +48,9 @@ import com.liveongames.data.model.education.EducationActionDef
 import com.liveongames.domain.model.EducationProgram
 import com.liveongames.domain.model.Enrollment
 import androidx.compose.ui.draw.clip // Added missing import
+import com.liveongames.domain.model.CompletedInstitution
+import com.liveongames.domain.model.AcademicHonor
+import com.liveongames.domain.model.Certification
 import androidx.compose.material.icons.filled.VideogameAsset
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.outlined.Timer
@@ -77,6 +81,7 @@ fun EducationSheet(
         ) {
             var actionsOpen by rememberSaveable { mutableStateOf(true) }
             var expandedCategories by rememberSaveable { mutableStateOf(mapOf<String, Boolean>()) }
+ var selectedProgram: EducationProgram? by remember { mutableStateOf(null) }
             var pickingAction by remember { mutableStateOf<EducationActionDef?>(null) }
 
             LazyColumn(
@@ -113,12 +118,15 @@ fun EducationSheet(
                 item {
                     val enrolledProgramTitle = state.programs
                         .firstOrNull { it.id == state.enrollment?.programId }
-                        ?.title ?: "Not enrolled"
-                    StudentRecordCard(
+ ?.title ?: "Not enrolled"
+ StudentRecordCard(
                         title = enrolledProgramTitle,
-                        enrollment = state.enrollment
-                    )
-                }
+ enrollment = state.enrollment,
+ playerAvatar = {
+                            Icon(Icons.Default.Person, contentDescription = "Player Avatar", modifier = Modifier.size(40.dp))
+ // Placeholder for player avatar composable
+ }
+ )
 
                 // Activities & Interests
                 item {
@@ -185,27 +193,37 @@ fun EducationSheet(
                 }
 
                 // Catalog
-                if (state.programs.isNotEmpty()) {
-                    item {
-                        Text(
-                            "Course Catalog",
-                            style = MaterialTheme.typography.titleLarge,
-                            color = cs.onSurface
-                        )
-                        HorizontalDivider(Modifier.padding(top = 6.dp))
-                    }
-                    items(state.programs) { program ->
-                        ProgramRow(
-                            program = program,
-                            enrolled = state.enrollment?.programId == program.id,
-                            onEnroll = { viewModel.handleEvent(EducationEvent.Enroll(program.id)) }
+                item {
+                    AnimatedVisibility(visible = state.enrollment == null) {
+ if (state.programs.isNotEmpty()) {
+                            Column {
+ Text(
+ "Course Catalog",
+ style = MaterialTheme.typography.titleLarge,
+ color = cs.onSurface
+ )
+ HorizontalDivider(Modifier.padding(top = 6.dp))
+                            }
+ }
+ }
+                }
+                items(state.programs) { program ->
+ AnimatedVisibility(visible = state.enrollment == null) {
+ ProgramRow(
+ program = program,
+ enrolled = state.enrollment?.programId == program.id,
+ onEnroll = { viewModel.handleEvent(EducationEvent.Enroll(program.id)) },
+ onProgramClick = { selectedProgram = it }
                         )
                     }
                 }
 
                 // Transcript
                 item {
-                    TranscriptCard(enrollment = state.enrollment)
+ TranscriptCard(
+ completedInstitutions = state.completedInstitutions,
+ academicHonors = state.academicHonors,
+ certifications = state.certifications)
                 }
             }
 
@@ -220,6 +238,20 @@ fun EducationSheet(
                     onDismiss = { pickingAction = null }
                 )
             }
+
+            // Program detail panel
+            selectedProgram?.let { program ->
+                // This is a placeholder. Replace with a proper dialog or sheet
+                Dialog(
+                    onDismissRequest = { selectedProgram = null },
+                    properties = DialogProperties(usePlatformDefaultWidth = false)
+                ) {
+                    // Placeholder for the program detail panel content
+                    Surface {
+                        Text(program.title)
+                    }
+                )
+            }
         }
     }
 }
@@ -229,7 +261,8 @@ fun EducationSheet(
 @Composable
 private fun StudentRecordCard(
     title: String,
-    enrollment: Enrollment?
+    enrollment: Enrollment?,
+    playerAvatar: @Composable () -> Unit // Added playerAvatar composable parameter
 /*) {
     val cs = MaterialTheme.colorScheme
     Card(
@@ -268,24 +301,39 @@ private fun StudentRecordCard(
 ) {
     val cs = MaterialTheme.colorScheme
     Card(
+        // Made clickable to toggle expanded state
+        onClick = {  }, // Placeholder onClick, will implement toggling later
         colors = CardDefaults.cardColors(containerColor = cs.secondaryContainer),
         shape = RoundedCornerShape(24.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(Modifier.padding(16.dp)) {
-            Text(
-                title,
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                color = cs.onSecondaryContainer,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                if (enrollment != null) "Student Record" else "Browse programs below",
-                style = MaterialTheme.typography.bodyMedium,
-                color = cs.onSecondaryContainer.copy(alpha = 0.75f)
-            )
-
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Player Avatar",
+                    modifier = Modifier.size(48.dp), // Increased size
+                    tint = cs.onSecondaryContainer // Tint with theme color
+                )
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        title,
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                        color = cs.onSecondaryContainer,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        if (enrollment != null) "Student Record" else "Browse programs below",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = cs.onSecondaryContainer.copy(alpha = 0.75f)
+                    )
+                }
+            }
             Spacer(Modifier.height(12.dp))
 
             if (enrollment != null) {
@@ -313,6 +361,29 @@ private fun StudentRecordCard(
                     StatChip("GPA", "%.2f".format(enrollment.gpa))
                     StatChip("Standing", gradeFromProgress(enrollment.progressPct))
                 }
+
+                // Optional school-specific info section
+                Spacer(Modifier.height(12.dp))
+                Column {
+ Text("School Details:", style = MaterialTheme.typography.titleMedium, color = cs.onSecondaryContainer)
+                    Spacer(Modifier.height(4.dp))
+                    when (enrollment.tier) {
+                        EduTier.ELEMENTARY -> Text("Current Grade: [Grade Level]", style = MaterialTheme.typography.bodyMedium, color = cs.onSecondaryContainer.copy(alpha = 0.75f))
+                        EduTier.MIDDLE_SCHOOL -> Text("Current Grade: [Grade Level]", style = MaterialTheme.typography.bodyMedium, color = cs.onSecondaryContainer.copy(alpha = 0.75f))
+                        EduTier.HIGH -> Text("Enrolled Classes: [List of classes]", style = MaterialTheme.typography.bodyMedium, color = cs.onSecondaryContainer.copy(alpha = 0.75f))
+                        EduTier.GED -> Text("GED Program Details: [Details]", style = MaterialTheme.typography.bodyMedium, color = cs.onSecondaryContainer.copy(alpha = 0.75f))
+                        EduTier.COMMUNITY_COLLEGE -> Text("Major/Program: [Major/Program Name]", style = MaterialTheme.typography.bodyMedium, color = cs.onSecondaryContainer.copy(alpha = 0.75f))
+                        EduTier.UNIVERSITY -> Text("Major: [Major Name]", style = MaterialTheme.typography.bodyMedium, color = cs.onSecondaryContainer.copy(alpha = 0.75f))
+                        EduTier.VOCATIONAL -> Text("Program: [Program Name]", style = MaterialTheme.typography.bodyMedium, color = cs.onSecondaryContainer.copy(alpha = 0.75f))
+                        EduTier.GRADUATE -> Text("Graduate Program: [Program Name]", style = MaterialTheme.typography.bodyMedium, color = cs.onSecondaryContainer.copy(alpha = 0.75f))
+                        EduTier.DOCTORAL -> Text("Doctoral Program: [Program Name]", style = MaterialTheme.typography.bodyMedium, color = cs.onSecondaryContainer.copy(alpha = 0.75f))
+                        EduTier.POST_DOC -> Text("Post-Doctoral Research: [Details]", style = MaterialTheme.typography.bodyMedium, color = cs.onSecondaryContainer.copy(alpha = 0.75f))
+                        EduTier.NONE -> {
+ // This case should ideally not be reached if enrollment is not null
+ Text("Not enrolled in a recognized institution tier.", style = MaterialTheme.typography.bodyMedium, color = cs.onSecondaryContainer.copy(alpha = 0.75f))
+                        }
+                    }
+                }
             }
         }
     }
@@ -320,10 +391,18 @@ private fun StudentRecordCard(
 
 private fun gradeFromProgress(progress: Int): String = when {
     progress >= 90 -> "A"
-    progress >= 80 -> "B"
-    progress >= 70 -> "C"
-    progress >= 60 -> "D"
-    progress > 0 -> "E"
+ progress >= 80 -> "B"
+ progress >= 70 -> "C"
+ progress >= 60 -> "D"
+ progress > 0 -> "E"
+ else -> "F"
+}
+
+private fun gradeFromGpa(gpa: Double): String = when {
+    gpa >= 3.5 -> "A"
+    gpa >= 2.5 -> "B"
+    gpa >= 1.5 -> "C"
+    gpa >= 0.5 -> "D"
     else -> "F"
 }
 
@@ -465,20 +544,43 @@ private fun ProgramRow(
 }
 
 @Composable
-private fun TranscriptCard(enrollment: Enrollment?) {
+private fun TranscriptCard(
+    enrollment: Enrollment?,
+    completedInstitutions: List<CompletedInstitution>,
+    academicHonors: List<AcademicHonor>,
+    certifications: List<Certification>
+) {
     val cs = MaterialTheme.colorScheme
     Card(
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = cs.surfaceVariant),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text("Transcript & Honors", style = MaterialTheme.typography.titleLarge, color = cs.onSurface)
-            if (enrollment == null) {
-                Text("Not enrolled.", color = cs.onSurfaceVariant)
-            } else {
-                Text("• Enrolled in ${enrollment.programId}", color = cs.onSurface)
-                Text("• Progress ${enrollment.progressPct}%", color = cs.onSurface)
+
+            if (completedInstitutions.isNotEmpty()) {
+                Text("Completed Institutions", style = MaterialTheme.typography.titleMedium, color = cs.onSurface)
+                completedInstitutions.forEach { institution ->
+                    Text("• ${institution.institutionName}, GPA: ${"%.2f".format(institution.graduationGpa)}, Completed: ${institution.completionYear}", color = cs.onSurface)
+                }
+                Spacer(Modifier.height(8.dp))
+            }
+
+            if (academicHonors.isNotEmpty()) {
+                Text("Academic Honors", style = MaterialTheme.typography.titleMedium, color = cs.onSurface)
+                academicHonors.forEach { honor ->
+                    Text("• ${honor.title} at ${honor.institutionName} (${honor.year})", color = cs.onSurface)
+                }
+             }
+
+            if (certifications.isNotEmpty()) {
+                Text("Certifications", style = MaterialTheme.typography.titleMedium, color = cs.onSurface)
+                certifications.forEach { certification ->
+                    Text("• ${certification.name} from ${certification.issuingInstitution} (${certification.year})", color = cs.onSurface)
+                }
+ }
+
             }
         }
     }

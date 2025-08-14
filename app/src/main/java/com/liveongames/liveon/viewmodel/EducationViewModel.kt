@@ -5,10 +5,14 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.liveongames.domain.repository.EducationRepository
+import com.liveongames.domain.model.CompletedInstitution
+import com.liveongames.domain.model.AcademicHonor
+import com.liveongames.domain.model.Certification
 import com.liveongames.data.assets.education.EducationAssetLoader
 import com.liveongames.data.model.education.EducationActionDef
 import com.liveongames.domain.model.EducationProgram
 import com.liveongames.domain.model.Enrollment
+import com.liveongames.domain.repository.PlayerRepository
 import com.liveongames.domain.model.EducationActionResult
 import com.liveongames.domain.model.EduTier
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,6 +29,7 @@ import kotlin.math.roundToInt
 class EducationViewModel @Inject constructor(
     app: Application,
     private val repo: EducationRepository,
+    private val playerRepository: PlayerRepository, // Inject PlayerRepository
     private val eduAssets: EducationAssetLoader
 ) : AndroidViewModel(app) {
 
@@ -54,6 +59,10 @@ class EducationViewModel @Inject constructor(
             }
 
             val enrollment = repo.getEnrollment()
+            val playerRequirements = playerRepository.getPlayerRequirements() // Fetch player requirements
+ val completedInstitutions = repo.getCompletedInstitutions()
+ val academicHonors = repo.getAcademicHonors()
+ val certifications = repo.getCertifications()
 
             _uiState.update {
                 it.copy(
@@ -61,8 +70,12 @@ class EducationViewModel @Inject constructor(
                     categorizedActions = categorizedActions,
                     programs = programs,
                     actions = actions,
-                    enrollment = enrollment,
-                    grade = if (enrollment != null) 100 else 0 // visible 0–100 grade
+                    enrollment = enrollment, //
+                    playerRequirements = playerRequirements, // Update playerRequirements in state
+                    grade = if (enrollment != null) 100 else 0, // visible 0–100 grade
+ completedInstitutions = completedInstitutions, // Populate completed institutions
+ academicHonors = academicHonors, // Populate academic honors
+ certifications = certifications // Populate certifications
                 )
             }
         } catch (e: Exception) {
@@ -135,12 +148,20 @@ class EducationViewModel @Inject constructor(
 
     private fun enroll(programId: String) = viewModelScope.launch(Dispatchers.IO) {
         try {
+            val programToEnroll = _uiState.value.programs.firstOrNull { it.id == programId }
+            if (programToEnroll != null) {
+                val playerHasRequirements = _uiState.value.playerRequirements.containsAll(programToEnroll.requirements) // Use playerRequirements from state
+                if (!playerHasRequirements) {
+                    _uiState.update { it.copy(message = "Enrollment failed: Missing requirements.") }
+                    return@launch
+                }
+
+                // Assuming minimum GPA check is handled in the UI before calling enroll
+                // If not, add a check here: _uiState.value.enrollment.gpa >= programToEnroll.minGpa
+
+            }
             val newEnrollment = repo.enroll(programId)
-            _uiState.update {
-                it.copy(
-                    enrollment = newEnrollment,
-                    grade = 100,
-                    message = "Successfully enrolled in the program!"
+            _uiState.update { it.copy(enrollment = newEnrollment, grade = 100, message = "Successfully enrolled in ${newEnrollment.title}!"
                 )
             }
         } catch (e: Exception) {
@@ -205,8 +226,7 @@ class EducationViewModel @Inject constructor(
     fun isActionEligible(action: EducationActionDef, enrollment: Enrollment?): Boolean {
         val e = enrollment ?: return false
 
-        val isTierEligible = action.tiers.any { it.name == e.tier.name }
-        if (!isTierEligible) return false
+ if (!action.tiers.contains(e.tier)) return false
 
         val minGpaMet = action.minGpa?.let { e.gpa >= it } ?: true
         val maxGpaMet = action.maxGpa?.let { e.gpa <= it } ?: true
