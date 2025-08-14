@@ -10,7 +10,7 @@ class AutoProgressEducationUseCase @Inject constructor(
     private val playerRepository: PlayerRepository
 ) {
     suspend fun execute() {
- val player = playerRepository.getPlayer() ?: return // Cannot proceed without player
+        val player = playerRepository.getPlayer() ?: return // Cannot proceed without player
         val currentEnrollment = educationRepository.getEnrollment()
  if (currentEnrollment == null) { // Player is not currently enrolled in any program
  val age = player.age
@@ -24,7 +24,7 @@ class AutoProgressEducationUseCase @Inject constructor(
  }
                 }
  11 -> { // Assuming age 11 is Middle School start
- // Find Middle School program and enroll
+                    // Find Middle School program and enroll
  val middleSchoolProgram = educationRepository.getPrograms()
  .firstOrNull { it.tier == EduTier.MIDDLE_SCHOOL }
  middleSchoolProgram?.let {
