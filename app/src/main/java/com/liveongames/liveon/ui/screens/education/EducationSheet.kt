@@ -47,6 +47,9 @@ import com.liveongames.data.model.education.EducationActionDef
 import com.liveongames.domain.model.EducationProgram
 import com.liveongames.domain.model.Enrollment
 import androidx.compose.ui.draw.clip // Added missing import
+import androidx.compose.material.icons.filled.VideogameAsset
+import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.outlined.Timer
 
 /**
  * Education modal sheet (like Crime screen), pure Material 3 + system theme.
