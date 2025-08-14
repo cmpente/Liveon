@@ -1,4 +1,3 @@
-// app/src/main/java/com/liveongames/liveon/MainActivity.kt
 package com.liveongames.liveon
 
 import android.os.Build
@@ -14,11 +13,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.liveongames.liveon.ui.LiveonGameScreen
-import com.liveongames.liveon.ui.screens.PetsScreen
+import com.liveongames.liveon.ui.screens.CrimeScreen // Keep this import
 import com.liveongames.liveon.ui.screens.SettingsScreen
 import com.liveongames.liveon.ui.screens.education.EducationSheet
 import com.liveongames.liveon.ui.theme.LiveonTheme
-import com.liveongames.liveon.viewmodel.CrimeViewModel
+import com.liveongames.liveon.viewmodel.CrimeViewModel // Keep this import
 import com.liveongames.liveon.viewmodel.EducationViewModel
 import com.liveongames.liveon.viewmodel.GameViewModel
 import com.liveongames.liveon.viewmodel.SettingsViewModel
@@ -73,13 +72,13 @@ fun LiveonApp() {
                 gameViewModel = sharedGameViewModel,
                 settingsViewModel = settingsViewModel,
                 onNavigateToCrime = { navController.navigate("crime") },
-                onNavigateToPets = { navController.navigate("pets") },
+                onNavigateToPets = { navController.navigate("pets") }, // Note: This still navigates to "pets" route, which is now not defined
                 onNavigateToEducation = { navController.navigate("education_popup") },
                 onNavigateToSettings = { navController.navigate("settings") }
             )
         }
 
-        composable("crime") {
+        composable("crime") { // Keep this composable block
             val crimeViewModel: CrimeViewModel = hiltViewModel()
             CrimeScreen(
                 viewModel = crimeViewModel,
