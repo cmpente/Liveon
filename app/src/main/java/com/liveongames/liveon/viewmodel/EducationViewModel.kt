@@ -200,7 +200,9 @@ class EducationViewModel @Inject constructor(
                             if (course.tier >= EduTier.HIGH) {
                                 _uiState.update {
                                     it.copy(showFailOrRetake = true, enrollment = updatedEnrollment, grade = newGrade, message = "Program complete, but GPA is too low for graduation.")
-                            } else {
+                                }
+                            }
+ else {
                                 // For tiers below HIGH, failing means repeating.
                                 // We reset education but keep the player at the same age
                                 // to simulate repeating a grade/program.
@@ -211,7 +213,7 @@ class EducationViewModel @Inject constructor(
                                 }
                             }
                         }
-                    } else {
+                    } else { // Add missing closing brace for the outer if (updatedEnrollment.progressPct >= 100)
                         _uiState.update { it.copy(enrollment = updatedEnrollment, grade = newGrade) }
                     }
                 }

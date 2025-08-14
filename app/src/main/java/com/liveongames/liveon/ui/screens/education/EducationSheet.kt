@@ -247,7 +247,7 @@ fun EducationSheet(
                     Surface {
                         Text(program.title)
                     }
-                )
+                ) // Added closing parenthesis
             }
         }
     }
@@ -260,41 +260,6 @@ private fun StudentRecordCard(
     title: String,
     enrollment: Enrollment?,
     playerAvatar: @Composable () -> Unit // Added playerAvatar composable parameter
-/*) {
-    val cs = MaterialTheme.colorScheme
-    Card(
-        colors = CardDefaults.cardColors(containerColor = cs.secondaryContainer),
-
-        shape = RoundedCornerShape(24.dp),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(Modifier.padding(16.dp)) {
-            Text(
-                title,
-                style = MaterialTheme.typography.titleLarge,
-                color = cs.onSecondaryContainer,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                if (enrollment != null) "Student Record" else "Browse programs below",
-                style = MaterialTheme.typography.bodyMedium,
-                color = cs.onSecondaryContainer.copy(alpha = 0.75f)
-            )
-
-            Spacer(Modifier.height(12.dp))
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                StatChip("Progress", "${enrollment?.progressPct ?: 0}%")
-                val standing = gradeFromProgress(enrollment?.progressPct ?: 0)
-                StatChip("Standing", standing)
-            }
-        }
-    }
-}*/
 ) {
     val cs = MaterialTheme.colorScheme
     Card(
