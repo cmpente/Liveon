@@ -2,7 +2,8 @@ package com.liveongames.domain.usecase
 
 import com.liveongames.domain.model.EduTier
 import com.liveongames.domain.repository.EducationRepository
-import com.liveongames.domain.repository.PlayerRepository
+import com.liveongames.data.repository.PLAYER_CHARACTER_ID
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class AutoProgressEducationUseCase @Inject constructor(
@@ -10,7 +11,7 @@ class AutoProgressEducationUseCase @Inject constructor(
     private val playerRepository: PlayerRepository
 ) {
     suspend fun execute() {
-        val player = playerRepository.getPlayer() ?: return // Cannot proceed without player
+        val player = playerRepository.getCharacter(PLAYER_CHARACTER_ID).first() ?: return // Cannot proceed without player
         val currentEnrollment = educationRepository.getEnrollment()
 
         if (currentEnrollment == null) { // Player is not currently enrolled in any program
