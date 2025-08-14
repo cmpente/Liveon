@@ -1,127 +1,73 @@
 package com.liveongames.liveon.ui.screens.education
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.liveongames.data.model.education.EducationActionDef
 
-/**
- * Generic bottom sheet that reads your action's first dialog step and lists its choices.
- * Works without changing your ViewModel. It expects the model fields:
- *   action.title : String
- *   action.dialog[0].text : String
- *   action.dialog[0].choices : List<{ id:String, label:String }>
- */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ActionChoiceSheet(
-    action: Any,
-    onDismiss: () -> Unit,
-    onChoose: (choiceId: String) -> Unit
+    action: EducationActionDef,
+    onChoose: (String) -> Unit,
+    onDismiss: () -> Unit
 ) {
-    val cs = MaterialTheme.colorScheme
-
-    val (title, prompt, choices) = remember(action) { extractDialogBits(action) }
-
-    // If your Material3 version doesn't support containerColor, remove the param (defaults will be used).
-    ModalBottomSheet(
+    val step = action.dialog.firstOrNull()
+    AlertDialog(
         onDismissRequest = onDismiss,
-        containerColor = cs.surface
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
+        title = {
             Text(
-                title.ifBlank { "Action" },
+                action.title,
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = cs.onSurface
+                fontWeight = FontWeight.Bold
             )
-            if (prompt.isNotBlank()) {
-                Text(prompt, style = MaterialTheme.typography.bodyMedium, color = cs.onSurfaceVariant)
-            }
+        },
+        text = {
+            Surface(tonalElevation = 1.dp) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    if (!step?.text.isNullOrBlank()) {
+                        Text(step!!.text, style = MaterialTheme.typography.bodyMedium)
+                    }
+                    Spacer(Modifier.height(4.dp))
 
-            Spacer(Modifier.height(8.dp))
-
-            if (choices.isEmpty()) {
-                // No choices found — fall back to a single default branch
-                Button(
-                    onClick = { onChoose("default_choice") },
-                    modifier = Modifier.fillMaxWidth()
-                ) { Text("Do it") }
-            } else {
-                choices.forEach { (id, label) ->
-                    Button(
-                        onClick = { onChoose(id) },
-                        modifier = Modifier.fillMaxWidth()
-                    ) { Text(label) }
+                    val choices = step?.choices.orEmpty()
+                    if (choices.isEmpty()) {
+                        Text("No choices available.", style = MaterialTheme.typography.bodyMedium)
+                    } else {
+                        choices.forEach { choice ->
+                            Button(
+                                onClick = { onChoose(choice.id) },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(choice.label)
+                            }
+                        }
+                    }
                 }
             }
-
-            Spacer(Modifier.height(16.dp))
+        },
+        confirmButton = {},
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Close")
+            }
         }
-    }
+    )
 }
-
-/**
- * Safely extract dialog title, prompt and choices from any action model with your JSON shape.
- * Fixes "Not enough information to infer type variable T" by using explicit List<Any?> types.
- */
-private fun extractDialogBits(action: Any): Triple<String, String, List<Pair<String, String>>> {
-    return try {
-        val k = action::class
-
-        // title
-        val title = (k.members.firstOrNull { it.name == "title" }?.call(action) as? String).orElseEmpty()
-
-        // dialog list
-        val dialogAny = k.members.firstOrNull { it.name == "dialog" }?.call(action)
-        val dialogList: List<Any?> = when (dialogAny) {
-            is List<*> -> dialogAny as List<Any?>
-            else -> emptyList<Any?>()
-        }
-
-        val firstStep: Any? = dialogList.firstOrNull()
-        val stepK = firstStep?.let { it::class }
-
-        // prompt text
-        val prompt = (stepK
-            ?.members
-            ?.firstOrNull { it.name == "text" }
-            ?.call(firstStep) as? String
-                ).orElseEmpty()
-
-        // choices
-        val choicesAny = stepK
-            ?.members
-            ?.firstOrNull { it.name == "choices" }
-            ?.call(firstStep)
-
-        val rawChoices: List<Any?> = when (choicesAny) {
-            is List<*> -> choicesAny as List<Any?>
-            else -> emptyList<Any?>()
-        }
-
-        val pairs: List<Pair<String, String>> = rawChoices.mapNotNull { ch ->
-            val ck = ch?.let { it::class }
-            val id = ck?.members?.firstOrNull { it.name == "id" }?.call(ch) as? String
-            val label = ck?.members?.firstOrNull { it.name == "label" }?.call(ch) as? String
-            if (id != null && label != null) id to label else null
-        }
-
-        Triple(title, prompt, pairs)
-    } catch (_: Throwable) {
-        Triple("", "", emptyList())
-    }
-}
-
-private fun String?.orElseEmpty(): String = this ?: ""

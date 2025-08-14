@@ -1,42 +1,54 @@
 package com.liveongames.liveon.ui.screens.education
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.VideogameAsset
+import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.outlined.Timer
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.liveongames.liveon.viewmodel.EducationEvent
+import com.liveongames.liveon.viewmodel.EducationViewModel
 import com.liveongames.data.model.education.EducationActionDef
 import com.liveongames.domain.model.EducationProgram
 import com.liveongames.domain.model.Enrollment
-import com.liveongames.liveon.viewmodel.EducationEvent
-import com.liveongames.liveon.viewmodel.EducationUiState
-import com.liveongames.liveon.viewmodel.EducationViewModel
 
 /**
- * Full-screen overlay "sheet" (no DialogProperties needed).
- * Self-contained. Uses only Material3 + your ViewModel.
+ * Education modal sheet (like Crime screen), pure Material 3 + system theme.
+ * No semesters timeline; clean sections: Student Record, Activities, Catalog, Transcript.
  */
 @Composable
 fun EducationSheet(
@@ -44,315 +56,350 @@ fun EducationSheet(
     viewModel: EducationViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+    val cs = MaterialTheme.colorScheme
 
-    // Scrim backdrop – click outside to dismiss
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.5f))
-            .clickable { onDismiss() } // outside
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-        // Foreground container – eats clicks
         Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-                .align(Alignment.Center),
+            color = cs.surface,
+            tonalElevation = 2.dp,
             shape = RoundedCornerShape(28.dp),
-            tonalElevation = 6.dp,
-            color = MaterialTheme.colorScheme.surface
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.92f)
         ) {
-            Box(Modifier.fillMaxSize()) {
+            var actionsOpen by rememberSaveable { mutableStateOf(true) }
+            var pickingAction by remember { mutableStateOf<EducationActionDef?>(null) }
 
-                // Close button
-                IconButton(
-                    onClick = onDismiss,
-                    modifier = Modifier.align(Alignment.TopEnd).padding(8.dp)
-                ) {
-                    Icon(Icons.Filled.Close, contentDescription = "Close")
-                }
-
-                // Content
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(20.dp),
-                    verticalArrangement = Arrangement.spacedBy(20.dp)
-                ) {
-                    item {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp, vertical = 18.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(bottom = 28.dp)
+            ) {
+                // Header
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Text(
                             "Education",
-                            style = MaterialTheme.typography.displaySmall.copy(
-                                fontWeight = FontWeight.SemiBold
-                            )
+                            style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                            color = cs.onSurface
+                        )
+                        Text(
+                            "Close",
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(12.dp))
+                                .clickable { onDismiss() }
+                                .padding(horizontal = 8.dp, vertical = 4.dp),
+                            color = cs.primary
                         )
                     }
+                }
 
-                    // Student record
-                    item {
-                        StudentRecordCard(
-                            state = state,
-                            onInfo = { viewModel.handleEvent(EducationEvent.ShowGpaInfo) }
-                        )
-                    }
+                // Student Record
+                item {
+                    val enrolledProgramTitle = state.programs
+                        .firstOrNull { it.id == state.enrollment?.programId }
+                        ?.title ?: "Not enrolled"
+                    StudentRecordCard(
+                        title = enrolledProgramTitle,
+                        enrollment = state.enrollment
+                    )
+                }
 
-                    // Activities (only when enrolled)
-                    if (state.enrollment != null) {
-                        item {
-                            ActivitiesSection(
-                                actions = state.actions,
-                                enrollment = state.enrollment,
-                                onAction = { actionId, choiceId, multiplier ->
-                                    viewModel.handleEvent(
-                                        EducationEvent.DoAction(actionId, choiceId, multiplier)
-                                    )
+                // Activities & Interests
+                item {
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = cs.surfaceVariant),
+                        shape = RoundedCornerShape(24.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(Modifier.fillMaxWidth()) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { actionsOpen = !actionsOpen }
+                                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                                    .animateContentSize(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    "Activities & Interests",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = cs.onSurface
+                                )
+                                Icon(
+                                    imageVector = if (actionsOpen) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                                    contentDescription = null,
+                                    tint = cs.onSurfaceVariant
+                                )
+                            }
+
+                            AnimatedVisibility(visible = actionsOpen) {
+                                Column(Modifier.padding(16.dp)) {
+                                    if (state.actions.isEmpty()) {
+                                        Text(
+                                            "No activities available.",
+                                            color = cs.onSurfaceVariant
+                                        )
+                                    } else {
+                                        LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                            items(state.actions) { action ->
+                                                ActionPill(
+                                                    state = state, // Pass the state to ActionPill
+                                                    action = action,
+                                                    title = action.title,
+                                                    costDescription = action.dialog.firstOrNull()?.text.orEmpty(), // Assuming costDescription is available or create one
+                                                    isOnCooldown = !viewModel.isActionEligible(action, state.enrollment), // Check eligibility for cooldown
+                                                    hasMiniGame = action.minigameId != null, // Assuming a minigameId indicates a mini-game
+                                                    onClick = { pickingAction = action },
+                                                )
+                                            }
+                                        }
+                                    }
                                 }
-                            )
+                            }
                         }
                     }
+                }
 
-                    // Course catalog
-                    item { SectionHeader("Course Catalog") }
-                    items(state.programs, key = { it.id }) { program ->
+                // Catalog
+                if (state.programs.isNotEmpty()) {
+                    item {
+                        Text(
+                            "Course Catalog",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = cs.onSurface
+                        )
+                        HorizontalDivider(Modifier.padding(top = 6.dp))
+                    }
+                    items(state.programs) { program ->
                         ProgramRow(
                             program = program,
-                            enrolledProgramId = state.enrollment?.programId,
+                            enrolled = state.enrollment?.programId == program.id,
                             onEnroll = { viewModel.handleEvent(EducationEvent.Enroll(program.id)) }
                         )
                     }
-
-                    // Transcript
-                    item { SectionHeader("Transcript & Honors") }
-                    item { TranscriptCard(state.enrollment) }
-
-                    item { Spacer(Modifier.height(12.dp)) }
                 }
+
+                // Transcript
+                item {
+                    TranscriptCard(enrollment = state.enrollment)
+                }
+            }
+
+            // Action choice dialog
+            pickingAction?.let { act ->
+                ActionChoiceSheet(
+                    action = act,
+                    onChoose = { choiceId: String ->
+                        viewModel.handleEvent(EducationEvent.DoAction(act.id, choiceId))
+                        pickingAction = null
+                    },
+                    onDismiss = { pickingAction = null }
+                )
             }
         }
     }
 }
 
-/* ----------------------- Pieces ----------------------- */
+/* ---------- sub-components (same file for easy paste) ---------- */
 
 @Composable
 private fun StudentRecordCard(
-    state: EducationUiState,
-    onInfo: () -> Unit
-) {
-    val c = MaterialTheme.colorScheme
-    val e = state.enrollment
-    val title = e?.let { enr ->
-        state.programs.firstOrNull { it.id == enr.programId }?.title
-    } ?: "Not Enrolled"
+    title: String,
+    enrollment: Enrollment?
+/*) {
+    val cs = MaterialTheme.colorScheme
+    Card(
+        colors = CardDefaults.cardColors(containerColor = cs.secondaryContainer),
 
-    // Map GPA (0–4) to visible grade (0–100). Fallback to 100 when not enrolled.
-    val visibleGrade = e?.let { ((it.gpa / 4.0) * 100).toInt().coerceIn(0, 100) } ?: 100
-    val standing = e?.let { gradeToStanding(visibleGrade) } ?: "—"
-    val progressPct = e?.progressPct ?: 0
-
-    ElevatedCard(
-        colors = CardDefaults.elevatedCardColors(containerColor = c.surfaceVariant),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 6.dp),
         shape = RoundedCornerShape(24.dp),
+        modifier = Modifier.fillMaxWidth()
     ) {
         Column(Modifier.padding(16.dp)) {
+            Text(
+                title,
+                style = MaterialTheme.typography.titleLarge,
+                color = cs.onSecondaryContainer,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                if (enrollment != null) "Student Record" else "Browse programs below",
+                style = MaterialTheme.typography.bodyMedium,
+                color = cs.onSecondaryContainer.copy(alpha = 0.75f)
+            )
+
+            Spacer(Modifier.height(12.dp))
 
             Row(
-                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Box(
-                    Modifier
-                        .size(56.dp)
-                        .clip(CircleShape)
-                        .background(c.primaryContainer),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "ED",
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            color = c.onPrimaryContainer,
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                }
-
-                Spacer(Modifier.width(14.dp))
-
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Text(
-                        text = if (e == null) "You’re not enrolled in a program." else "Student Record",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = c.onSurfaceVariant
-                    )
-                }
-
-                IconButton(onClick = onInfo) {
-                    Icon(Icons.Filled.Info, contentDescription = "Info")
-                }
+                StatChip("Progress", "${enrollment?.progressPct ?: 0}%")
+                val standing = gradeFromProgress(enrollment?.progressPct ?: 0)
+                StatChip("Standing", standing)
             }
+        }
+    }
+}*/
+) {
+    val cs = MaterialTheme.colorScheme
+    Card(
+        colors = CardDefaults.cardColors(containerColor = cs.secondaryContainer),
+        shape = RoundedCornerShape(24.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(Modifier.padding(16.dp)) {
+            Text(
+                title,
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                color = cs.onSecondaryContainer,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                if (enrollment != null) "Student Record" else "Browse programs below",
+                style = MaterialTheme.typography.bodyMedium,
+                color = cs.onSecondaryContainer.copy(alpha = 0.75f)
+            )
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(12.dp))
 
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                MetricPill(label = "Grade", value = "$visibleGrade%", emphasis = true)
-                MetricPill(label = "Progress", value = "$progressPct%")
-                MetricPill(label = "Standing", value = standing, minWidth = 88.dp)
+            if (enrollment != null) {
+                // Progress Bar
+                Text(
+                    "Progress: ${enrollment.progressPct}%",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = cs.onSecondaryContainer
+                )
+                Spacer(Modifier.height(4.dp))
+                LinearProgressIndicator(
+                    progress = enrollment.progressPct / 100f,
+                    modifier = Modifier.fillMaxWidth(),
+                    color = cs.primary,
+                    trackColor = cs.onSecondaryContainer.copy(alpha = 0.2f)
+                )
+
+                Spacer(Modifier.height(12.dp))
+
+                // GPA and Grade
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    StatChip("GPA", "%.2f".format(enrollment.gpa))
+                    StatChip("Standing", gradeFromProgress(enrollment.progressPct))
+                }
             }
         }
     }
 }
 
-private fun gradeToStanding(grade: Int): String = when (grade) {
-    in 93..100 -> "A"
-    in 85..92 -> "B"
-    in 75..84 -> "C"
-    in 65..74 -> "D"
+private fun gradeFromProgress(progress: Int): String = when {
+    progress >= 90 -> "A"
+    progress >= 80 -> "B"
+    progress >= 70 -> "C"
+    progress >= 60 -> "D"
+    progress > 0 -> "E"
     else -> "F"
 }
 
 @Composable
-private fun MetricPill(
-    label: String,
-    value: String,
-    emphasis: Boolean = false,
-    minWidth: Dp = 0.dp
-) {
-    val c = MaterialTheme.colorScheme
-    val border = if (emphasis) c.primary else c.outline.copy(alpha = 0.6f)
-
+private fun StatChip(label: String, value: String) {
+    val cs = MaterialTheme.colorScheme
     Surface(
-        shape = RoundedCornerShape(14.dp),
-        tonalElevation = if (emphasis) 2.dp else 0.dp,
-        border = BorderStroke(1.dp, border),
-        color = if (emphasis) c.primary.copy(alpha = 0.12f) else c.surface
+        color = cs.surface,
+        tonalElevation = 2.dp,
+        shape = RoundedCornerShape(14.dp)
     ) {
-        Column(
-            Modifier
-                .defaultMinSize(minWidth = minWidth)
-                .padding(horizontal = 14.dp, vertical = 10.dp)
-        ) {
-            Text(label, style = MaterialTheme.typography.labelMedium, color = c.onSurfaceVariant)
+        Column(Modifier.padding(horizontal = 14.dp, vertical = 10.dp)) {
+            Text(label, style = MaterialTheme.typography.labelSmall, color = cs.onSurfaceVariant)
             Text(
                 value,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                color = cs.onSurface
             )
         }
     }
 }
 
 @Composable
-private fun SectionHeader(title: String) {
-    Column {
-        Text(
-            title,
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold)
-        )
-        HorizontalDivider(Modifier.padding(top = 8.dp))
-    }
-}
-
-@Composable
-private fun ActivitiesSection(
-    actions: List<EducationActionDef>,
-    enrollment: Enrollment?,
-    onAction: (String, String, Double) -> Unit
-) {
-    val c = MaterialTheme.colorScheme
-    var expanded by remember { mutableStateOf(true) }
-    val arrowRot by animateFloatAsState(targetValue = if (expanded) 180f else 0f, label = "arrow")
-
-    ElevatedCard(
-        colors = CardDefaults.elevatedCardColors(containerColor = c.surfaceVariant),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
-        shape = RoundedCornerShape(24.dp),
-    ) {
-        Column(Modifier.padding(16.dp)) {
-            Row(
-                Modifier.fillMaxWidth().clickable { expanded = !expanded },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    "Activities & Interests",
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-                    modifier = Modifier.weight(1f)
-                )
-                Icon(
-                    imageVector = Icons.Filled.KeyboardArrowDown,
-                    contentDescription = null,
-                    modifier = Modifier.rotate(arrowRot)
-                )
-            }
-
-            AnimatedVisibility(expanded) {
-                Column {
-                    HorizontalDivider(Modifier.padding(vertical = 12.dp))
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        items(actions, key = { it.id }) { action ->
-                            ActivityCard(
-                                action = action,
-                                enabled = enrollment != null,
-                                onClick = {
-                                    // Open branch sheet if you add one later; default branch for now:
-                                    onAction(action.id, "default", 1.0)
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun ActivityCard(
+private fun ActionPill(
+ state: EducationUiState,
     action: EducationActionDef,
-    enabled: Boolean,
+    title: String,
+    subtitle: String, // This is currently the cost description
+    hasMiniGame: Boolean, // New parameter to indicate mini-game
+    isOnCooldown: Boolean // New parameter to indicate cooldown status
     onClick: () -> Unit
 ) {
-    val c = MaterialTheme.colorScheme
-    val cardColor = if (enabled) c.surface else c.surface.copy(alpha = 0.6f)
+    val cs = MaterialTheme.colorScheme
+    val cardColor = if (!isOnCooldown) cs.surface else cs.surfaceVariant
+    val contentColor = if (!isOnCooldown) cs.onSurface else cs.onSurfaceVariant
+    val rippleEnabled = !isOnCooldown
 
-    Card(
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = cardColor),
-        border = BorderStroke(1.dp, c.outline.copy(alpha = 0.4f)),
+    OutlinedCard(
+
+        onClick = if (rippleEnabled) onClick else ({}),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.outlinedCardColors(containerColor = cardColor, contentColor = contentColor),
         modifier = Modifier
-            .width(240.dp)
-            .heightIn(min = 120.dp)
-            .clickable(enabled = enabled, onClick = onClick)
+            .widthIn(min = 220.dp)
+            .clip(RoundedCornerShape(18.dp))
+ ,
+        enabled = isEligible // Disable interaction if not eligible
+
+
     ) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Filled.Info, contentDescription = null,
-                    tint = if (enabled) c.primary else c.onSurface.copy(alpha = 0.4f)
-                )
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    action.title,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+        Column(Modifier.padding(16.dp)) {
+            Text(title, style = MaterialTheme.typography.titleMedium, color = cs.onSurface)
+            if (subtitle.isNotBlank()) {
+                Spacer(Modifier.height(2.dp))
+                Text(subtitle, style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
             }
-
-            val gpaMin = action.gpaDeltaMin ?: 0.0
-            val gpaMax = action.gpaDeltaMax ?: 0.0
-            val mins = action.cooldownMinutes
-
-            Text(
-                text = "+${String.format("%.2f", gpaMin)}–${String.format("%.2f", gpaMax)} GPA • ${mins}m",
-                style = MaterialTheme.typography.bodyMedium,
-                color = c.onSurfaceVariant
-            )
+            if (!isEligible) {
+                Spacer(Modifier.height(4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+ Icons.Outlined.Timer,
+                        contentDescription = "On Cooldown",
+                        modifier = Modifier.size(16.dp),
+ tint = LocalContentColor.current.copy(alpha = 0.7f)
+                    )
+ Text(" On Cooldown", style = MaterialTheme.typography.labelSmall, color = LocalContentColor.current.copy(alpha = 0.7f))
+                Spacer(Modifier.height(4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+ Icons.Outlined.Timer,
+                        contentDescription = "On Cooldown",
+                        modifier = Modifier.size(16.dp),
+ tint = LocalContentColor.current.copy(alpha = 0.7f)
+                    )
+ Text(" On Cooldown", style = MaterialTheme.typography.labelSmall, color = LocalContentColor.current.copy(alpha = 0.7f))
+                }
+            }
+            if (hasMiniGame) {
+                Spacer(Modifier.height(4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Default.VideogameAsset,
+                        contentDescription = "Mini-game included",
+                        modifier = Modifier.size(16.dp),
+                        tint = LocalContentColor.current.copy(alpha = 0.7f)
+                    )
+                    Text(" Mini-game", style = MaterialTheme.typography.labelSmall, color = LocalContentColor.current.copy(alpha = 0.7f))
+                }
+            }
         }
     }
 }
@@ -360,110 +407,75 @@ private fun ActivityCard(
 @Composable
 private fun ProgramRow(
     program: EducationProgram,
-    enrolledProgramId: String?,
+    enrolled: Boolean,
     onEnroll: () -> Unit
 ) {
-    val c = MaterialTheme.colorScheme
-    val isEnrolled = enrolledProgramId == program.id
-
-    Card(
-        shape = RoundedCornerShape(22.dp),
-        colors = CardDefaults.cardColors(containerColor = c.surface),
-        border = BorderStroke(1.dp, c.outline.copy(alpha = 0.35f)),
+    val cs = MaterialTheme.colorScheme
+    ElevatedCard(
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = if (enrolled) cs.primaryContainer else cs.surface,
+            contentColor = if (enrolled) cs.onPrimaryContainer else cs.onSurface
+        ),
+        modifier = Modifier.fillMaxWidth()
     ) {
         Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Accent bar
-            Box(
-                Modifier
-                    .width(6.dp)
-                    .height(56.dp)
-                    .clip(RoundedCornerShape(3.dp))
-                    .background(c.primary)
+            Icon(
+                imageVector = Icons.Default.School, // Placeholder icon, you can change this based on program type
+                contentDescription = null,
+                tint = if (enrolled) cs.onPrimaryContainer else cs.primary,
+                modifier = Modifier.size(40.dp).padding(end = 16.dp)
             )
-
-            Spacer(Modifier.width(14.dp))
-
             Column(Modifier.weight(1f)) {
                 Text(
                     program.title,
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = if (enrolled) cs.onPrimaryContainer else cs.onSurface
                 )
-                Spacer(Modifier.height(4.dp))
-                Row {
-                    Text(
-                        "Req. GPA ${String.format("%.2f", program.minGpa)}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = c.onSurfaceVariant
-                    )
-                    Spacer(Modifier.width(12.dp))
-                    Text(
-                        "Tuition ${money(program.tuition)}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = c.onSurfaceVariant
-                    )
-                }
+                Spacer(Modifier.height(2.dp))
+                val tuition = if (program.tuition == 0) "$0" else "$${program.tuition}"
+                Text(
+                    "Min GPA ${"%.2f".format(program.minGpa)}   Tuition $tuition",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = if (enrolled) cs.onPrimaryContainer.copy(alpha = 0.8f) else cs.onSurfaceVariant
+                )
+                val s = program.schema
+                Text(
+                    "${s.displayPeriodName} · ${s.periodsPerYear}/yr · ${s.totalPeriods} total",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (enrolled) cs.onPrimaryContainer.copy(alpha = 0.7f) else cs.onSurfaceVariant
+                )
             }
-
-            Spacer(Modifier.width(12.dp))
-
-            Button(
-                onClick = onEnroll,
-                enabled = !isEnrolled,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = c.primary,
-                    contentColor = c.onPrimary,
-                    disabledContainerColor = c.surfaceVariant,
-                    disabledContentColor = c.onSurfaceVariant
-                ),
-                shape = RoundedCornerShape(18.dp)
-            ) {
-                Text(if (isEnrolled) "Enrolled" else "Enroll")
+            if (enrolled) {
+                AssistChip(onClick = {}, label = { Text("Enrolled") }, enabled = false) // Make enrolled chip non-interactive
+            } else {
+                Button(onClick = onEnroll, shape = RoundedCornerShape(12.dp)) { Text("Enroll") } // Consider making button color distinct
             }
         }
     }
 }
-
-private fun money(v: Int): String =
-    if (v <= 0) "$0" else "$${"%,d".format(v)}"
 
 @Composable
 private fun TranscriptCard(enrollment: Enrollment?) {
-    val c = MaterialTheme.colorScheme
-
-    ElevatedCard(
-        colors = CardDefaults.elevatedCardColors(containerColor = c.surfaceVariant),
-        elevation = CardDefaults.elevatedCardElevation(2.dp),
-        shape = RoundedCornerShape(24.dp)
+    val cs = MaterialTheme.colorScheme
+    Card(
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = cs.surfaceVariant),
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text("Transcript & Honors", style = MaterialTheme.typography.titleLarge, color = cs.onSurface)
             if (enrollment == null) {
-                bullet("No transcript yet. Enroll in a program to begin.")
+                Text("Not enrolled.", color = cs.onSurfaceVariant)
             } else {
-                bullet("Enrolled in ${enrollment.programId}")
-                bullet("Progress ${enrollment.progressPct}%")
-                bullet("GPA ${"%.2f".format(enrollment.gpa)}")
+                Text("• Enrolled in ${enrollment.programId}", color = cs.onSurface)
+                Text("• Progress ${enrollment.progressPct}%", color = cs.onSurface)
             }
         }
-    }
-}
-
-@Composable
-private fun bullet(text: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Box(
-            Modifier
-                .size(8.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary)
-        )
-        Spacer(Modifier.width(10.dp))
-        Text(text, style = MaterialTheme.typography.bodyLarge)
     }
 }

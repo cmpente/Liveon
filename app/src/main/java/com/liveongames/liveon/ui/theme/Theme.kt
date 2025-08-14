@@ -1,70 +1,113 @@
-// app/src/main/java/com/liveongames/liveon/ui/theme/Theme.kt
-
 package com.liveongames.liveon.ui.theme
 
-import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
+import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
-// 1. Define the CompositionLocal for your custom theme
-val LocalLiveonTheme = staticCompositionLocalOf<LiveonTheme> {
-    error("No LiveonTheme provided! Wrap your content with LiveonTheme().")
+/**
+ * DO NOT declare data class LiveonTheme here — it's in GameThemes.kt.
+ * This file only:
+ *  - exposes LocalLiveonTheme (CompositionLocal<LiveonTheme>)
+ *  - maps your custom palette to Material3 colorScheme
+ *  - provides two @Composable overloads named LiveonTheme(...)
+ */
+
+// Uses the LiveonTheme data class from GameThemes.kt
+val LocalLiveonTheme = staticCompositionLocalOf {
+    LiveonTheme(
+        name = "Default",
+        background = Color(0xFF0F1115),
+        surface = Color(0xFF171A1F),
+        primary = Color(0xFF6C7CFF),
+        accent = Color(0xFF22C1DC),
+        secondary = Color(0xFF9AA0A6),
+        text = Color(0xFFECEFF4),
+        surfaceVariant = Color(0xFF23262C),
+        surfaceElevated = Color(0xFF1B1F25)
+    )
 }
 
-// Fallback Material Color Schemes (using some of your base colors)
-private val DarkColorScheme = darkColorScheme(
-    primary = PrimaryColor, // From Color.kt
-    onPrimary = androidx.compose.ui.graphics.Color.White, // Or theme-specific onPrimary if you define it
-    secondary = SecondaryColor,
-    onSecondary = androidx.compose.ui.graphics.Color.White,
-    background = BackgroundColor,
-    surface = CardBackgroundColor,
-    onSurface = TextPrimary
+private val LiveonShapes = Shapes(
+    extraSmall = RoundedCornerShape(6.dp),
+    small      = RoundedCornerShape(10.dp),
+    medium     = RoundedCornerShape(16.dp),
+    large      = RoundedCornerShape(22.dp),
+    extraLarge = RoundedCornerShape(28.dp)
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = PrimaryColor,
-    onPrimary = androidx.compose.ui.graphics.Color.White,
-    secondary = SecondaryColor,
-    onSecondary = androidx.compose.ui.graphics.Color.White,
-    background = BackgroundColor, // Might need light variant
-    surface = CardBackgroundColor, // Might need light variant
-    onSurface = TextPrimary // Might need light variant
-)
-
-// 2. Main Theme Wrapper Composable
+/** Overload #1 — choose a theme (first from AllGameThemes by default) */
 @Composable
 fun LiveonTheme(
-    liveonTheme: LiveonTheme = PremiumSleek, // Use selected theme
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false, // Disable dynamic for custom control
     content: @Composable () -> Unit
 ) {
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
-    val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
-        }
+    val chosen = AllGameThemes.firstOrNull() ?: LocalLiveonTheme.current
+    ProvideLiveonTheme(chosen, darkTheme, content)
+}
+
+/** Overload #2 — provide an explicit theme instance */
+@Composable
+fun LiveonTheme(
+    theme: LiveonTheme,
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit
+) {
+    ProvideLiveonTheme(theme, darkTheme, content)
+}
+
+@Composable
+private fun ProvideLiveonTheme(
+    theme: LiveonTheme,
+    darkTheme: Boolean,
+    content: @Composable () -> Unit
+) {
+    // Map YOUR palette to Material3 (no dynamic colors).
+    val cs = if (darkTheme) {
+        darkColorScheme(
+            primary = theme.primary,
+            secondary = theme.secondary,
+            tertiary = theme.accent,
+            background = theme.background,
+            surface = theme.surface,
+            surfaceVariant = theme.surfaceVariant,
+            onPrimary = Color.White,
+            onSecondary = Color.White,
+            onTertiary = Color.White,
+            onBackground = theme.text,
+            onSurface = theme.text,
+            onSurfaceVariant = theme.text.copy(alpha = 0.78f)
+        )
+    } else {
+        lightColorScheme(
+            primary = theme.primary,
+            secondary = theme.secondary,
+            tertiary = theme.accent,
+            background = theme.background,
+            surface = theme.surface,
+            surfaceVariant = theme.surfaceVariant,
+            onPrimary = Color.White,
+            onSecondary = Color.White,
+            onTertiary = Color.White,
+            onBackground = theme.text,
+            onSurface = theme.text,
+            onSurfaceVariant = theme.text.copy(alpha = 0.78f)
+        )
     }
 
-    // 3. Provide your custom theme data
-    CompositionLocalProvider(LocalLiveonTheme provides liveonTheme) {
+    CompositionLocalProvider(LocalLiveonTheme provides theme) {
         MaterialTheme(
-            colorScheme = colorScheme,
-            typography = androidx.compose.material3.Typography(), // Use default or your custom Typography
+            colorScheme = cs,
+            typography = Typography(),
+            shapes = LiveonShapes,
             content = content
         )
     }

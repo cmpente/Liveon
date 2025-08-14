@@ -19,7 +19,6 @@ import com.liveongames.liveon.ui.screens.PetsScreen
 import com.liveongames.liveon.ui.screens.SettingsScreen
 import com.liveongames.liveon.ui.screens.education.EducationSheet
 import com.liveongames.liveon.ui.theme.LiveonTheme
-import com.liveongames.liveon.ui.theme.PremiumSleek
 import com.liveongames.liveon.viewmodel.CrimeViewModel
 import com.liveongames.liveon.viewmodel.EducationViewModel
 import com.liveongames.liveon.viewmodel.GameViewModel
@@ -33,10 +32,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            LiveonTheme(liveonTheme = PremiumSleek) {
+            LiveonTheme {
                 LiveonApp()
             }
         }
+
         enableFullScreen()
     }
 
