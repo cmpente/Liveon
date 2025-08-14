@@ -3,7 +3,7 @@ package com.liveongames.domain.usecase
 import com.liveongames.domain.model.EduTier
 import com.liveongames.domain.repository.EducationRepository
 import com.liveongames.domain.repository.PlayerRepository
-import com.liveongames.data.repository.PlayerRepositoryImpl.PLAYER_CHARACTER_ID // Corrected import
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class AutoProgressEducationUseCase @Inject constructor(
@@ -11,7 +11,7 @@ class AutoProgressEducationUseCase @Inject constructor(
     private val playerRepository: PlayerRepository
 ) {
     suspend fun execute() {
-        val player = playerRepository.getCharacter(PLAYER_CHARACTER_ID).first() ?: return // Cannot proceed without player
+        val player = playerRepository.getCharacter(PlayerRepository.PLAYER_CHARACTER_ID).first() ?: return // Cannot proceed without player
 
         val currentEnrollment = educationRepository.getEnrollment()
 
