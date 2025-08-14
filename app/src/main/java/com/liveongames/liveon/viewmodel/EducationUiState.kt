@@ -38,7 +38,28 @@ class EducationViewModel @Inject constructor(
         loadData()
     }
 
-    // -------------------- LOAD --------------------\n\n    private fun loadData() = viewModelScope.launch(Dispatchers.IO) {\n        try {\n            val programs: List<EducationProgram> = repo.getPrograms()\n            val actions: List<EducationActionDef> = repo.getActions().map { it as EducationActionDef }\n            val enrollment = repo.getEnrollment()\n\n            _uiState.update {\n                it.copy(\n                    loading = false,\n                    programs = programs,\n                    actions = actions,\n                    enrollment = enrollment,\n                    grade = if (enrollment != null) 100 else 0, // visible 0–100 grade\n                    categorizedActions = categorizeActions(actions) // Categorize actions here\n                )\n            }\n        } catch (e: Exception) {\n            Log.e(\"EducationVM\", \"Error loading education data\", e)\n            _uiState.update { it.copy(loading = false, message = \"Failed to load education data.\") }\n        }\n    }
+    // -------------------- LOAD --------------------
+    private fun loadData() = viewModelScope.launch(Dispatchers.IO) {
+        try {
+            val programs: List<EducationProgram> = repo.getPrograms()
+            val actions: List<EducationActionDef> = repo.getActions().map { it as EducationActionDef }
+            val enrollment = repo.getEnrollment()
+
+            _uiState.update {
+                it.copy(
+                    loading = false,
+                    programs = programs,
+                    actions = actions,
+                    enrollment = enrollment,
+                    grade = if (enrollment != null) 100 else 0, // visible 0–100 grade
+                    categorizedActions = categorizeActions(actions) // Categorize actions here
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("EducationVM", "Error loading education data", e)
+            _uiState.update { it.copy(loading = false, message = "Failed to load education data.") }
+        }
+    }
 
     // Dummy categorization logic for now - will need to be properly implemented
     private fun categorizeActions(actions: List<EducationActionDef>): Map<String, List<EducationActionDef>> {
