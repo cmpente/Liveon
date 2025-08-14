@@ -4,7 +4,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -157,7 +159,7 @@ fun EducationSheet(
                                                     state = state, // Pass the state to ActionPill
                                                     action = action,
                                                     title = action.title,
-                                                    costDescription = action.dialog.firstOrNull()?.text.orEmpty(), // Assuming costDescription is available or create one
+                                                    subtitle = action.dialog.firstOrNull()?.text.orEmpty(), // Using dialog text as subtitle
                                                     isOnCooldown = !viewModel.isActionEligible(action, state.enrollment), // Check eligibility for cooldown
                                                     hasMiniGame = action.minigameId != null, // Assuming a minigameId indicates a mini-game
                                                     onClick = { pickingAction = action },
@@ -387,8 +389,8 @@ private fun ActionPill(
                         contentDescription = "Mini-game included",
                         modifier = Modifier.size(16.dp),
                         tint = LocalContentColor.current.copy(alpha = 0.7f)
-                    )
-                    Text(" Mini-game", style = MaterialTheme.typography.labelSmall, color = LocalContentContent.current.copy(alpha = 0.7f))
+                    ) // Corrected typo
+                    Text(" Mini-game", style = MaterialTheme.typography.labelSmall, color = LocalContentColor.current.copy(alpha = 0.7f))
                 }
             }
         }

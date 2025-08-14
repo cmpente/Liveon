@@ -10,4 +10,5 @@ data class CharacterStats(
     val age: Int = 18,
     val smarts: Int = 20, // Added smarts property
     val reputation: Int = 30 // Added reputation property
+    val fitness: Int = 50 // Added fitness property
 )

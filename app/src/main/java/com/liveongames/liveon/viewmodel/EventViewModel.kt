@@ -105,8 +105,8 @@ class EventViewModel @Inject constructor(
                         val characterStats = CharacterStats(
                             health = character.health,
                             happiness = character.happiness,
-                            smarts = character.intelligence, // Assuming intelligence maps to smarts
-                            looks = character.fitness, // Assuming fitness maps to looks
+                            smarts = character.intelligence,
+                            fitness = character.fitness,
                             money = character.money,
                             reputation = character.notoriety // Assuming notoriety maps to reputation
                             // Add other stats here if needed and map them correctly
