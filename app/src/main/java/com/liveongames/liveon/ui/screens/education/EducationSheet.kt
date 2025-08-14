@@ -147,7 +147,6 @@ fun EducationSheet(
                                     } else {
                                         LazyRow(
                                             horizontalArrangement = Arrangement.spacedBy(12.dp)
-                                            modifier = Modifier.padding(vertical = 8.dp) // Added vertical padding
                                         ) {
                                             items(state.actions) { action ->
                                                 ActionPill(
@@ -468,6 +467,7 @@ private fun ActionPill(
             .clip(RoundedCornerShape(18.dp))
             .then(
                 if (rippleEnabled) Modifier.clickable(onClick = onClick) else Modifier
+                    .padding(vertical = 8.dp) // Added vertical padding to individual items
             )
     ) {
         Column(Modifier.padding(16.dp)) {
