@@ -2,258 +2,457 @@
 package com.liveongames.liveon.ui.screens.education
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.liveongames.liveon.R
+import com.liveongames.liveon.ui.theme.LocalLiveonTheme
 import com.liveongames.liveon.viewmodel.EducationEvent
 import com.liveongames.liveon.viewmodel.EducationViewModel
-import com.liveongames.domain.model.EducationProgram
-import com.liveongames.domain.model.Enrollment
-import com.liveongames.domain.model.EduTier
-import com.liveongames.data.model.education.EducationActionDef
-import com.liveongames.liveon.ui.theme.LocalLiveonTheme
+import com.liveongames.data.model.education.EducationActionDef // <-- correct package
 
-/**
- * Education modal sheet using Liveon theme tokens.
- */
+import java.util.Locale
+
 @Composable
 fun EducationSheet(
     onDismiss: () -> Unit,
     viewModel: EducationViewModel = hiltViewModel()
 ) {
+    val t = LocalLiveonTheme.current
     val state by viewModel.uiState.collectAsState()
-    val theme = LocalLiveonTheme.current
 
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false)
+    val enrollment = state.enrollment
+    val programTitle = remember(enrollment, state.programs) {
+        val id = enrollment?.programId
+        state.programs.firstOrNull { it.id == id }?.title ?: "Student Record"
+    }
+    val progressPct = enrollment?.progressPct ?: 0
+    val gpaText = enrollment?.gpa?.let { g -> String.format(Locale.US, "%.2f", g) } ?: "—"
+    val standingText = remember(enrollment?.gpa) {
+        val g = enrollment?.gpa ?: return@remember "—"
+        when {
+            g >= 3.7 -> "A"
+            g >= 3.0 -> "B"
+            g >= 2.0 -> "C"
+            g >= 1.0 -> "D"
+            else -> "F"
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.55f))
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) { onDismiss() }
     ) {
-        Surface(
-            color = theme.surface,
-            shape = RoundedCornerShape(28.dp),
+        Column(
             modifier = Modifier
+                .align(Alignment.BottomCenter)
                 .fillMaxWidth()
                 .fillMaxHeight(0.92f)
+                .shadow(22.dp, RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+                .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+                .background(t.surface)
+                .padding(horizontal = 14.dp, vertical = 10.dp)
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ) { /* absorb */ },
+            verticalArrangement = Arrangement.Top
         ) {
-            var actionsOpen by rememberSaveable { mutableStateOf(true) }
-            var selectedProgram: EducationProgram? by remember { mutableStateOf(null) }
-            var pickingAction by remember { mutableStateOf<EducationActionDef?>(null) }
-
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 18.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(bottom = 28.dp)
+            // Header
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // Header
+                Text(
+                    "Education",
+                    color = t.text,
+                    style = MaterialTheme.typography.titleLarge, // was headlineLarge
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f)
+                )
+                IconButton(onClick = onDismiss) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_collapse),
+                        tint = t.text.copy(alpha = 0.85f),
+                        contentDescription = "Close"
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(6.dp))
+
+            // Content
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(bottom = 20.dp)
+            ) {
+                // Student record card
                 item {
-                    Row(
+                    Surface(
+                        color = t.surfaceElevated,
+                        shape = RoundedCornerShape(18.dp),
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            "Education",
-                            style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
-                            color = theme.text
-                        )
-                        Text(
-                            "Close",
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(12.dp))
-                                .clickable { onDismiss() }
-                                .padding(horizontal = 8.dp, vertical = 4.dp),
-                            color = theme.primary
-                        )
+                        Column(Modifier.padding(14.dp)) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(44.dp) // tighter
+                                        .clip(CircleShape)
+                                        .background(t.primary.copy(alpha = 0.18f)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.ic_person),
+                                        contentDescription = null,
+                                        tint = t.primary
+                                    )
+                                }
+                                Spacer(Modifier.width(10.dp))
+                                Column(Modifier.weight(1f)) {
+                                    Text(
+                                        programTitle,
+                                        color = t.text,
+                                        style = MaterialTheme.typography.titleMedium, // was headlineSmall
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    Text(
+                                        "Student Record",
+                                        color = t.text.copy(alpha = 0.6f),
+                                        style = MaterialTheme.typography.labelMedium // was labelLarge
+                                    )
+                                }
+                                IconButton(
+                                    onClick = { viewModel.handleEvent(EducationEvent.ShowGpaInfo) }
+                                ) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.ic_info),
+                                        contentDescription = "GPA Info",
+                                        tint = t.accent
+                                    )
+                                }
+                            }
+
+                            Spacer(Modifier.height(10.dp))
+
+                            Text(
+                                "Progress: $progressPct%",
+                                color = t.text.copy(alpha = 0.8f),
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                            LinearProgressIndicator(
+                                progress = { progressPct / 100f }, // lambda form
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(6.dp) // thinner
+                                    .clip(RoundedCornerShape(8.dp)),
+                                color = t.primary,
+                                trackColor = t.surfaceVariant
+                            )
+
+                            Spacer(Modifier.height(10.dp))
+
+                            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                StatChip(
+                                    label = "GPA",
+                                    value = gpaText,
+                                    tint = t.primary,
+                                    container = t.surfaceVariant
+                                )
+                                StatChip(
+                                    label = "Standing",
+                                    value = standingText,
+                                    tint = t.accent,
+                                    container = t.surfaceVariant
+                                )
+                            }
+                        }
                     }
                 }
 
-                // Student Record
+                // Activities — ACCORDION of categories
                 item {
-                    val enrolledProgramTitle = state.programs
-                        .firstOrNull { it.id == state.enrollment?.programId }
-                        ?.title ?: "Not enrolled"
-
-                    StudentRecordCard(
-                        title = enrolledProgramTitle,
-                        enrollment = state.enrollment,
-                        playerAvatar = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_person),
-                                contentDescription = "Player Avatar",
-                                modifier = Modifier.size(40.dp),
-                                tint = theme.text
+                    ActivitiesAccordion(
+                        actions = state.actions,
+                        canPerform = enrollment != null,
+                        onPerform = { actionId ->
+                            viewModel.handleEvent(
+                                EducationEvent.DoAction(actionId, "default_choice")
                             )
                         }
                     )
                 }
 
-                // Activities & Interests
+                // Catalog
+                item { SectionHeader("Course Catalog", t.text, t.accent) }
                 item {
-                    Card(
-                        colors = CardDefaults.cardColors(containerColor = theme.surfaceVariant),
-                        shape = RoundedCornerShape(24.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column(Modifier.fillMaxWidth()) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable { actionsOpen = !actionsOpen }
-                                    .padding(horizontal = 16.dp, vertical = 12.dp)
-                                    .animateContentSize(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        state.programs.forEach { program ->
+                            val enrolledHere = enrollment?.programId == program.id
+                            Surface(
+                                color = t.surfaceElevated,
+                                shape = RoundedCornerShape(16.dp),
+                                modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text(
-                                    "Activities & Interests",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = theme.text
-                                )
-                                Icon(
-                                    painter = painterResource(id = if (actionsOpen) R.drawable.ic_collapse else R.drawable.ic_expand),
-                                    contentDescription = null,
-                                    tint = theme.text.copy(alpha = 0.7f),
-                                    modifier = Modifier.size(24.dp)
-                                )
-                            }
-
-                            AnimatedVisibility(visible = actionsOpen) {
-                                Column(Modifier.padding(16.dp)) {
-                                    if (state.actions.isEmpty()) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(14.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
                                         Text(
-                                            "No activities available.",
-                                            color = theme.text.copy(alpha = 0.7f)
+                                            program.title,
+                                            color = t.text,
+                                            style = MaterialTheme.typography.titleMedium, // was titleLarge
+                                            fontWeight = FontWeight.SemiBold,
+                                            maxLines = 2,
+                                            overflow = TextOverflow.Ellipsis
                                         )
-                                    } else {
-                                        LazyRow(
-                                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                                        ) {
-                                            items(state.actions) { action ->
-                                                ActionPill(
-                                                    action = action,
-                                                    title = action.title,
-                                                    subtitle = action.dialog.firstOrNull()?.text.orEmpty(),
-                                                    isOnCooldown = !viewModel.isActionEligible(action, state.enrollment),
-                                                    hasMiniGame = false,
-                                                    onClick = { pickingAction = action },
-                                                )
-                                            }
+                                        Spacer(Modifier.height(4.dp))
+                                        Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                                            Text(
+                                                "Req. GPA ${String.format(Locale.US, "%.2f", program.minGpa)}",
+                                                color = t.text.copy(alpha = 0.75f),
+                                                style = MaterialTheme.typography.bodyMedium
+                                            )
+                                            Text(
+                                                "Tuition $${program.tuition}",
+                                                color = t.text.copy(alpha = 0.75f),
+                                                style = MaterialTheme.typography.bodyMedium
+                                            )
                                         }
                                     }
+
+                                    Button(
+                                        onClick = {
+                                            if (!enrolledHere) {
+                                                viewModel.handleEvent(
+                                                    EducationEvent.Enroll(program.id)
+                                                )
+                                            }
+                                        },
+                                        enabled = !enrolledHere,
+                                        shape = RoundedCornerShape(10.dp),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = if (enrolledHere) t.surfaceVariant else t.primary,
+                                            contentColor = if (enrolledHere) t.text.copy(alpha = 0.75f) else Color.White,
+                                            disabledContainerColor = t.surfaceVariant,
+                                            disabledContentColor = t.text.copy(alpha = 0.6f)
+                                        )
+                                    ) { Text(if (enrolledHere) "Enrolled" else "Enroll") }
                                 }
                             }
                         }
                     }
                 }
 
-                // Catalog
-                item {
-                    AnimatedVisibility(visible = state.enrollment == null) {
-                        if (state.programs.isNotEmpty()) {
-                            Column {
-                                Text(
-                                    "Course Catalog",
-                                    style = MaterialTheme.typography.titleLarge,
-                                    color = theme.text
-                                )
-                                Divider(
-                                    modifier = Modifier.padding(top = 6.dp),
-                                    color = theme.text.copy(alpha = 0.12f)
-                                )
-                            }
-                        }
-                    }
-                }
-
-                // Program List
-                items(state.programs) { program ->
-                    AnimatedVisibility(visible = state.enrollment == null) {
-                        ProgramRow(
-                            program = program,
-                            enrolled = state.enrollment?.programId == program.id,
-                            onEnroll = { viewModel.handleEvent(EducationEvent.Enroll(program.id)) }
-                        )
-                    }
-                }
-
                 // Transcript
+                item { SectionHeader("Transcript & Honors", t.text, t.accent) }
                 item {
-                    TranscriptCard(
-                        enrollment = state.enrollment,
-                        completedInstitutions = emptyList(),
-                        academicHonors = emptyList(),
-                        certifications = emptyList()
-                    )
+                    Surface(
+                        color = t.surfaceElevated,
+                        shape = RoundedCornerShape(16.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(Modifier.padding(14.dp)) {
+                            if (enrollment == null) {
+                                Text(
+                                    "Not enrolled.",
+                                    color = t.text.copy(alpha = 0.75f),
+                                    style = MaterialTheme.typography.bodyMedium // was bodyLarge
+                                )
+                            } else {
+                                Bullet("Enrolled in $programTitle", t)
+                                Bullet("Progress $progressPct%", t)
+                                Bullet("Standing $standingText", t)
+                            }
+                        }
+                    }
                 }
             }
 
-            // Action choice dialog (placeholder)
-            pickingAction?.let { act ->
-                // TODO: Implement ActionChoiceSheet
+            // Dialogs
+            if (state.showGpaInfo) {
+                GpaInfoDialog(
+                    show = true,
+                    onDismiss = { viewModel.handleEvent(EducationEvent.HideGpaInfo) }
+                )
+            }
+            if (state.showFailOrRetake) {
+                FailOrRetakeDialog(
+                    onRetake = { viewModel.handleEvent(EducationEvent.ChooseFailOrRetake(true)) },
+                    onFail = { viewModel.handleEvent(EducationEvent.ChooseFailOrRetake(false)) },
+                    onDismiss = { viewModel.handleEvent(EducationEvent.ChooseFailOrRetake(false)) }
+                )
             }
 
-            // Program detail panel
-            selectedProgram?.let { program ->
-                Dialog(
-                    onDismissRequest = { selectedProgram = null },
-                    properties = DialogProperties(usePlatformDefaultWidth = false)
+            // Snackbar
+            val snackbarHostState = remember { SnackbarHostState() }
+            state.message?.let { msg ->
+                LaunchedEffect(msg) {
+                    snackbarHostState.showSnackbar(msg)
+                    viewModel.handleEvent(EducationEvent.DismissMessage)
+                }
+            }
+            Box(Modifier.fillMaxWidth()) {
+                SnackbarHost(
+                    hostState = snackbarHostState,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 6.dp)
+                )
+            }
+        }
+    }
+}
+
+/* --------------------- Activities Accordion --------------------- */
+
+@Composable
+private fun ActivitiesAccordion(
+    actions: List<EducationActionDef>,
+    canPerform: Boolean,
+    onPerform: (String) -> Unit
+) {
+    val t = LocalLiveonTheme.current
+
+    Surface(
+        color = t.surfaceElevated,
+        shape = RoundedCornerShape(18.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(Modifier.padding(14.dp)) {
+            Text(
+                "Activities & Interests",
+                color = t.text,
+                style = MaterialTheme.typography.titleMedium, // was titleLarge
+                fontWeight = FontWeight.SemiBold
+            )
+
+            Spacer(Modifier.height(6.dp))
+
+            if (!canPerform) {
+                HintPill("Enroll in a course to unlock activities.")
+                return@Column
+            }
+            if (actions.isEmpty()) {
+                HintPill("No activities available right now.")
+                return@Column
+            }
+
+            // Group actions into friendly categories
+            val grouped = remember(actions) {
+                actions.groupBy { actionCategory(it.id, it.title) }
+                    .toSortedMap(String.CASE_INSENSITIVE_ORDER)
+            }
+
+            // Expansion state per category (default open)
+            val expansionKeys = remember(grouped) { grouped.keys.toList() }
+            val expanded = rememberSaveable(
+                inputs = arrayOf(expansionKeys),
+                saver = mapSaver(
+                    save = { stateMap: MutableMap<String, Boolean> -> stateMap.toMap() },
+                    restore = { restored: Map<String, Any?> ->
+                        @Suppress("UNCHECKED_CAST")
+                        val restoredTyped = restored as Map<String, Boolean>
+                        mutableStateMapOf<String, Boolean>().apply {
+                            putAll(restoredTyped)
+                            // NEW categories default to collapsed
+                            expansionKeys.forEach { key -> if (key !in this) put(key, false) }
+                        }
+                    }
+                )
+            ) {
+                mutableStateMapOf<String, Boolean>().apply {
+                    // collapsed by default on first creation
+                    expansionKeys.forEach { put(it, false) }
+                }
+            }
+
+
+            for ((category, itemList) in grouped) { // explicit destructure avoids K type ambiguity
+                Spacer(Modifier.height(4.dp))
+
+                // Category header row
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable {
+                            expanded[category] = !(expanded[category] ?: true)
+                        }
+                        .padding(horizontal = 10.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Surface(
-                        shape = RoundedCornerShape(24.dp),
-                        color = theme.surface
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(24.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            Text(
-                                program.title,
-                                style = MaterialTheme.typography.headlineSmall,
-                                color = theme.text
-                            )
-                            Text(
-                                program.description,
-                                color = theme.text.copy(alpha = 0.7f)
-                            )
-                            Text(
-                                "Min GPA: ${"%.2f".format(program.minGpa)}",
-                                color = theme.text
-                            )
-                            Text(
-                                "Tuition: $${program.tuition}",
-                                color = theme.text
-                            )
-                            val s = program.schema
-                            Text(
-                                "${s.displayPeriodName} · ${s.periodsPerYear}/yr · ${s.totalPeriods} total",
-                                color = theme.text.copy(alpha = 0.7f)
-                            )
-                            Button(
-                                onClick = { selectedProgram = null },
-                                modifier = Modifier.align(Alignment.End)
-                            ) {
-                                Text("Close")
+                    Icon(
+                        painter = painterResource(R.drawable.ic_expand),
+                        contentDescription = null,
+                        tint = t.text.copy(alpha = 0.75f),
+                        modifier = Modifier
+                            .size(16.dp)
+                            .graphicsLayer {
+                                rotationZ = if (expanded[category] == true) 180f else 0f
                             }
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    Text(
+                        category,
+                        color = t.text,
+                        style = MaterialTheme.typography.titleSmall, // a bit smaller
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        "${itemList.size}",
+                        color = t.text.copy(alpha = 0.7f),
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                }
+
+                AnimatedVisibility(visible = expanded[category] == true) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(6.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 24.dp, top = 6.dp, end = 4.dp, bottom = 4.dp)
+                    ) {
+                        itemList.forEach { action ->
+                            ActivityListItem(
+                                title = action.title,
+                                enabled = true, // ViewModel eligibility is enforced when performing
+                                onClick = { onPerform(action.id) },
+                                leadingIcon = R.drawable.ic_info
+                            )
                         }
                     }
                 }
@@ -262,393 +461,206 @@ fun EducationSheet(
     }
 }
 
-/* ---------- Sub-components ---------- */
+/* ------------------------- helpers ------------------------- */
 
-@Composable
-private fun StudentRecordCard(
-    title: String,
-    enrollment: Enrollment?,
-    playerAvatar: @Composable () -> Unit
-) {
-    val theme = LocalLiveonTheme.current
-    Card(
-        colors = CardDefaults.cardColors(containerColor = theme.surfaceElevated),
-        shape = RoundedCornerShape(24.dp),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                playerAvatar()
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        title,
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                        color = theme.text,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Text(
-                        if (enrollment != null) "Student Record" else "Browse programs below",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = theme.text.copy(alpha = 0.75f)
-                    )
-                }
-            }
-            Spacer(Modifier.height(12.dp))
-
-            if (enrollment != null) {
-                // Progress Bar
-                Text(
-                    "Progress: ${enrollment.progressPct}%",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = theme.text
-                )
-                Spacer(Modifier.height(4.dp))
-                LinearProgressIndicator(
-                    progress = { enrollment.progressPct / 100f },
-                    modifier = Modifier.fillMaxWidth(),
-                    color = theme.primary,
-                    trackColor = theme.text.copy(alpha = 0.2f)
-                )
-
-                Spacer(Modifier.height(12.dp))
-
-                // GPA and Grade
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    StatChip(
-                        label = "GPA",
-                        value = "%.2f".format(enrollment.gpa),
-                        icon = R.drawable.ic_gpa
-                    )
-                    StatChip(
-                        label = "Standing",
-                        value = gradeFromProgress(enrollment.progressPct),
-                        icon = R.drawable.ic_certificate
-                    )
-                }
-
-                // School Details
-                Spacer(Modifier.height(12.dp))
-                Column {
-                    Text(
-                        "School Details:",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = theme.text
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    // TODO: Dynamically display enrolled courses/grade level based on enrollment.courses and enrollment.tier
-                    when (enrollment.tier) {
-                        EduTier.ELEMENTARY -> Text(
-                            "Current Grade: 5th Grade", // Placeholder
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = theme.text.copy(alpha = 0.75f)
-                        )
-                        EduTier.MIDDLE -> Text(
-                            "Current Grade: 7th Grade", // Placeholder
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = theme.text.copy(alpha = 0.75f)
-                        )
-                        EduTier.HIGH -> Text(
-                            "Enrolled Classes: English, Math, Science", // Placeholder
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = theme.text.copy(alpha = 0.75f)
-                        )
-                        EduTier.CERT -> Text(
-                            "Certificate Program Details: Completing the requirements for a Software Development certification.", // Placeholder
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = theme.text.copy(alpha = 0.75f)
-                        )
-
-
-                        EduTier.ASSOC -> Text(
-                            "Associate Degree Details: [Details]",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = theme.text.copy(alpha = 0.75f)
-                        )
-                        EduTier.BACH -> Text(
-                            "Bachelor's Degree Details: [Details]",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = theme.text.copy(alpha = 0.75f)
-                        )
-                        EduTier.MAST -> Text(
-                            "Master's Degree Details: [Details]",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = theme.text.copy(alpha = 0.75f)
-                        )
-                        EduTier.PHD -> Text(
-                            "Doctoral Program Details: [Details]",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = theme.text.copy(alpha = 0.75f)
-                        )
-                        else -> Text(
-                            "Not enrolled in a recognized institution tier.",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = theme.text.copy(alpha = 0.75f)
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-private fun gradeFromProgress(progress: Int): String = when {
-    progress >= 90 -> "A"
-    progress >= 80 -> "B"
-    progress >= 70 -> "C"
-    progress >= 60 -> "D"
-    progress > 0 -> "E"
-    else -> "F"
-}
-
-@Composable
-private fun StatChip(label: String, value: String, icon: Int) {
-    val theme = LocalLiveonTheme.current
-    Surface(
-        color = theme.surface,
-        shape = RoundedCornerShape(14.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Icon(
-                painter = painterResource(id = icon),
-                contentDescription = null,
-                tint = theme.primary,
-                modifier = Modifier.size(16.dp)
-            )
-            Column {
-                Text(
-                    label,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = theme.text.copy(alpha = 0.7f)
-                )
-                Text(
-                    value,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = theme.text
-                )
-            }
-        }
+private fun actionCategory(actionId: String, title: String): String {
+    val t = title.lowercase(Locale.US)
+    val i = actionId.lowercase(Locale.US)
+    return when {
+        "study" in t || "focus" in t || "pomodoro" in i || "flow" in i -> "Study & Focus"
+        "club" in t || "org" in t || "society" in t || "debate" in t -> "Clubs & Orgs"
+        "exam" in t || "test" in t || "quiz" in t || "practice" in t -> "Exams & Prep"
+        "tutor" in t || "mentor" in t || "office hours" in t -> "Tutoring"
+        "research" in t || "lab" in t -> "Research"
+        "volunteer" in t || "community" in t || "service" in t -> "Community"
+        "sport" in t || "gym" in t || "fitness" in t || "run" in t -> "Fitness"
+        "library" in t || "read" in t || "book" in t -> "Library & Reading"
+        else -> "General"
     }
 }
 
 @Composable
-private fun ActionPill(
-    action: EducationActionDef,
-    title: String,
-    subtitle: String?,
-    hasMiniGame: Boolean = false, // Default to false if not explicitly passed
-    isOnCooldown: Boolean,
-    onClick: () -> Unit
-) {
-    val theme = LocalLiveonTheme.current
-    val cardColor = if (!isOnCooldown) theme.surface else theme.surfaceVariant
-    val contentColor = if (!isOnCooldown) theme.text else theme.text.copy(alpha = 0.7f)
-    val rippleEnabled = !isOnCooldown
+private fun SectionHeader(title: String, text: Color, accent: Color) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+        Text(
+            title,
+            color = text,
+            style = MaterialTheme.typography.titleMedium, // smaller
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.weight(1f)
+        )
+        Box(
+            modifier = Modifier
+                .height(2.dp)
+                .width(40.dp)
+                .background(accent, RoundedCornerShape(2.dp))
+        )
+    }
+}
 
-    Card(
-        shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = cardColor,
- contentColor = contentColor,
-        ),
+@Composable
+private fun StatChip(label: String, value: String, tint: Color, container: Color) {
+    Column(
         modifier = Modifier
-            .widthIn(min = 220.dp)
-            .clip(RoundedCornerShape(18.dp))
-            .then(
-                if (rippleEnabled) Modifier.clickable(onClick = onClick) else Modifier
-                    .padding(vertical = 8.dp) // Added vertical padding to individual items
-            )
+            .clip(RoundedCornerShape(12.dp))
+            .background(container)
+            .padding(horizontal = 12.dp, vertical = 8.dp)
     ) {
-        Column(Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_default_study),
-                    contentDescription = null,
-                    tint = if (isOnCooldown) theme.text.copy(alpha = 0.7f) else theme.primary,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(Modifier.width(8.dp))
+        Text(label, color = tint.copy(alpha = 0.9f), style = MaterialTheme.typography.labelMedium)
+        Spacer(Modifier.height(1.dp))
+        Text(
+            value,
+            color = Color.White.copy(alpha = 0.95f),
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+private fun ActivityListItem(
+    title: String,
+    enabled: Boolean,
+    onClick: () -> Unit,
+    leadingIcon: Int
+) {
+    val t = LocalLiveonTheme.current
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(if (enabled) t.surfaceVariant else t.surfaceVariant.copy(alpha = 0.5f))
+            .clickable(enabled = enabled) { onClick() }
+            .padding(horizontal = 10.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = painterResource(leadingIcon),
+            contentDescription = null,
+            tint = if (enabled) t.primary else t.text.copy(alpha = 0.5f),
+            modifier = Modifier.size(16.dp)
+        )
+        Spacer(Modifier.width(8.dp))
+        Text(
+            title,
+            color = if (enabled) t.text else t.text.copy(alpha = 0.6f),
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.weight(1f),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Icon(
+            painter = painterResource(R.drawable.ic_expand),
+            contentDescription = null,
+            tint = t.text.copy(alpha = 0.45f),
+            modifier = Modifier
+                .size(14.dp)
+                .graphicsLayer { rotationZ = 270f }
+        )
+    }
+}
+
+@Composable
+private fun HintPill(text: String) {
+    val t = LocalLiveonTheme.current
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(14.dp))
+            .background(t.surface.copy(alpha = 0.85f))
+            .padding(horizontal = 10.dp, vertical = 6.dp)
+    ) {
+        Text(text = text, color = t.text, style = MaterialTheme.typography.bodySmall)
+    }
+}
+
+@Composable
+private fun Bullet(text: String, t: com.liveongames.liveon.ui.theme.LiveonTheme) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            modifier = Modifier
+                .size(6.dp)
+                .clip(CircleShape)
+                .background(t.accent)
+        )
+        Spacer(Modifier.width(6.dp))
+        Text(text, color = t.text.copy(alpha = 0.85f), style = MaterialTheme.typography.bodyMedium)
+    }
+}
+
+/* --- Inline dialogs --- */
+
+@Composable
+private fun GpaInfoDialog(show: Boolean, onDismiss: () -> Unit) {
+    if (!show) return
+    val t = LocalLiveonTheme.current
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.6f))
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) { onDismiss() }
+    ) {
+        Surface(
+            color = t.surfaceElevated,
+            shape = RoundedCornerShape(18.dp),
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(20.dp)
+        ) {
+            Column(Modifier.padding(16.dp)) {
+                Text("About GPA", color = t.text, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Spacer(Modifier.height(6.dp))
                 Text(
-                    title,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = theme.text,
-                    modifier = Modifier.weight(1f)
+                    "Your grade is tracked as GPA. Do activities to raise it; ignore school and it drifts down over time.",
+                    color = t.text.copy(alpha = 0.85f),
+                    style = MaterialTheme.typography.bodyMedium
                 )
-            }
-
-            if (!subtitle.isNullOrBlank()) { // Changed from `if (subtitle.isNotBlank())`
-                Spacer(Modifier.height(8.dp))
-                Text(
-                    subtitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = theme.text.copy(alpha = 0.7f)
-                , maxLines = 2, overflow = TextOverflow.Ellipsis)
-            }
-
-            if (isOnCooldown) {
-                Spacer(Modifier.height(8.dp)) // Ensure spacing even without subtitle
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_hourglass),
-                        contentDescription = "On Cooldown",
-                        modifier = Modifier.size(16.dp),
-                        tint = theme.text.copy(alpha = 0.7f)
-                    )
-                    Text(
-                        "On Cooldown",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = theme.text.copy(alpha = 0.7f)
-                    )
-                }
-            }
-
-            if (hasMiniGame) {
-                Spacer(Modifier.height(8.dp)) // Ensure spacing and consistent vertical arrangement
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_quiz), // Using a different icon for mini-game example
-                        contentDescription = "Mini-game included",
-                        modifier = Modifier.size(16.dp),
-                        tint = theme.text.copy(alpha = 0.7f)
-                    )
-                    Text(
-                        "Mini-game",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = theme.text.copy(alpha = 0.7f)
-                    )
-                }
+                Spacer(Modifier.height(12.dp))
+                Button(onClick = onDismiss, colors = ButtonDefaults.buttonColors(containerColor = t.primary)) { Text("OK") }
             }
         }
     }
 }
 
 @Composable
-private fun ProgramRow(
-    program: EducationProgram,
-    enrolled: Boolean,
-    onEnroll: () -> Unit
+private fun FailOrRetakeDialog(
+    onRetake: () -> Unit,
+    onFail: () -> Unit,
+    onDismiss: () -> Unit
 ) {
-    val theme = LocalLiveonTheme.current
-    ElevatedCard(
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = if (enrolled) theme.primary.copy(alpha = 0.2f) else theme.surface,
-            contentColor = if (enrolled) theme.primary else theme.text
-        ),
-        modifier = Modifier.fillMaxWidth()
+    val t = LocalLiveonTheme.current
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.6f))
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) { onDismiss() }
     ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Surface(
+            color = t.surfaceElevated,
+            shape = RoundedCornerShape(18.dp),
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(20.dp)
         ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_school),
-                contentDescription = null,
-                tint = if (enrolled) theme.primary else theme.primary,
-                modifier = Modifier.size(40.dp).padding(end = 16.dp)
-            )
-            Column(Modifier.weight(1f)) {
+            Column(Modifier.padding(16.dp)) {
+                Text("Course Outcome", color = t.text, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Spacer(Modifier.height(6.dp))
                 Text(
-                    program.title,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = if (enrolled) theme.primary else theme.text
+                    "Accept a failing grade or retake. Retaking costs time but may improve GPA.",
+                    color = t.text.copy(alpha = 0.85f),
+                    style = MaterialTheme.typography.bodyMedium
                 )
-                Spacer(Modifier.height(2.dp))
-                val tuition = if (program.tuition == 0) "$0" else "$${program.tuition}"
-                Text(
-                    "Min GPA ${"%.2f".format(program.minGpa)}   Tuition $tuition",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium,
-                    color = if (enrolled) theme.primary.copy(alpha = 0.8f) else theme.text.copy(alpha = 0.7f)
-                )
-                val s = program.schema
-                Text(
-                    "${s.displayPeriodName} · ${s.periodsPerYear}/yr · ${s.totalPeriods} total",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (enrolled) theme.primary.copy(alpha = 0.7f) else theme.text.copy(alpha = 0.7f)
-                )
-            }
-            if (enrolled) {
-                AssistChip(
-                    onClick = { },
-                    label = { Text("Enrolled", color = theme.primary) },
-                    enabled = false
-                )
-            } else {
-                Button(
-                    onClick = onEnroll,
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = theme.primary,
-                        contentColor = theme.surface
-                    )
-                ) {
-                    Text("Enroll")
+                Spacer(Modifier.height(12.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Button(onClick = onRetake, colors = ButtonDefaults.buttonColors(containerColor = t.primary)) { Text("Retake") }
+                    Button(onClick = onFail, colors = ButtonDefaults.buttonColors(containerColor = t.accent)) { Text("Fail") }
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun TranscriptCard(
-    enrollment: Enrollment?,
-    completedInstitutions: List<Any>,
-    academicHonors: List<Any>,
-    certifications: List<Any>
-) {
-    val theme = LocalLiveonTheme.current
-    Card(
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = theme.surfaceVariant),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(
-            Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_diploma),
-                    contentDescription = null,
-                    tint = theme.primary,
-                    modifier = Modifier.size(24.dp)
-                )
-                Text(
-                    "Transcript & Honors",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = theme.text
-                )
-            }
-
-            Text(
-                "Transcript information will be available here",
-                color = theme.text.copy(alpha = 0.7f)
-            )
         }
     }
 }
