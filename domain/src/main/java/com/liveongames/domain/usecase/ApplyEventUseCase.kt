@@ -8,24 +8,22 @@ import javax.inject.Inject
 
 class ApplyEventUseCase @Inject constructor() {
     operator fun invoke(characterStats: CharacterStats, event: Event, chosenOutcome: EventOutcome): CharacterStats {
-        val updatedStats = characterStats.toMutableMap()
+        var updatedStats = characterStats.copy() // Start with a copy of the original stats
 
         // Apply stat changes from the chosen outcome
         for ((statName, change) in chosenOutcome.statChanges) {
-            val currentStatValue = updatedStats[statName] ?: 0
-            updatedStats[statName] = currentStatValue + change
+            when (statName) {
+                "health" -> updatedStats = updatedStats.copy(health = updatedStats.health + change)
+                "happiness" -> updatedStats = updatedStats.copy(happiness = updatedStats.happiness + change)
+                "smarts" -> updatedStats = updatedStats.copy(smarts = updatedStats.smarts + change)
+                "looks" -> updatedStats = updatedStats.copy(looks = updatedStats.looks + change)
+                "money" -> updatedStats = updatedStats.copy(money = updatedStats.money + change)
+                "reputation" -> updatedStats = updatedStats.copy(reputation = updatedStats.reputation + change)
+                // Add other stats here as needed
+            }
         }
 
         // TODO: Implement logic to handle ageProgression, achievements, and consequences
-
-        return CharacterStats(
-            health = updatedStats["health"] ?: characterStats.health,
-            happiness = updatedStats["happiness"] ?: characterStats.happiness,
-            smarts = updatedStats["smarts"] ?: characterStats.smarts,
-            looks = updatedStats["looks"] ?: characterStats.looks,
-            money = updatedStats["money"] ?: characterStats.money,
-            reputation = updatedStats["reputation"] ?: characterStats.reputation
-            // Add other stats here
-        )
+        return updatedStats
     }
 }
