@@ -5,6 +5,7 @@ import com.liveongames.domain.repository.CrimeRepository
 import com.liveongames.domain.repository.EventRepository
 import com.liveongames.domain.repository.PetRepository
 import com.liveongames.domain.repository.PlayerRepository
+import com.liveongames.domain.repository.CharacterRepository // Import CharacterRepository
 import com.liveongames.domain.repository.EducationRepository
 import com.liveongames.data.repository.CrimeRepositoryImpl
 import com.liveongames.data.repository.EventRepositoryImpl
@@ -12,6 +13,7 @@ import com.liveongames.data.repository.PetRepositoryImpl
 import com.liveongames.data.repository.PlayerRepositoryImpl
 import com.liveongames.data.repository.EducationRepositoryImpl
 import dagger.Binds
+import com.liveongames.data.repository.CharacterRepositoryImpl // Import CharacterRepositoryImpl
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
@@ -35,4 +37,7 @@ abstract class RepositoryModule {
 
     @Binds @Singleton
     abstract fun bindEducationRepository(impl: EducationRepositoryImpl): EducationRepository
+
+    @Binds @Singleton // Add binding for CharacterRepository
+    abstract fun bindCharacterRepository(impl: CharacterRepositoryImpl): CharacterRepository
 }
