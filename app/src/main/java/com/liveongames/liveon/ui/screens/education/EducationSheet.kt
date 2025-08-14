@@ -10,8 +10,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.VideogameAsset
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.AssistChip
@@ -340,7 +340,7 @@ private fun ActionPill(
     title: String,
     subtitle: String, // This is currently the cost description
     hasMiniGame: Boolean, // New parameter to indicate mini-game
-    isOnCooldown: Boolean // New parameter to indicate cooldown status
+    isOnCooldown: Boolean, // New parameter to indicate cooldown status
     onClick: () -> Unit
 ) {
     val cs = MaterialTheme.colorScheme
@@ -357,7 +357,7 @@ private fun ActionPill(
             .widthIn(min = 220.dp)
             .clip(RoundedCornerShape(18.dp))
  ,
-        enabled = isEligible // Disable interaction if not eligible
+        enabled = true // Disable interaction if not eligible
 
 
     ) {
@@ -367,16 +367,7 @@ private fun ActionPill(
                 Spacer(Modifier.height(2.dp))
                 Text(subtitle, style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
             }
-            if (!isEligible) {
-                Spacer(Modifier.height(4.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
- Icons.Outlined.Timer,
-                        contentDescription = "On Cooldown",
-                        modifier = Modifier.size(16.dp),
- tint = LocalContentColor.current.copy(alpha = 0.7f)
-                    )
- Text(" On Cooldown", style = MaterialTheme.typography.labelSmall, color = LocalContentColor.current.copy(alpha = 0.7f))
+            if (!isOnCooldown) { // Corrected conditional check
                 Spacer(Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
@@ -397,7 +388,7 @@ private fun ActionPill(
                         modifier = Modifier.size(16.dp),
                         tint = LocalContentColor.current.copy(alpha = 0.7f)
                     )
-                    Text(" Mini-game", style = MaterialTheme.typography.labelSmall, color = LocalContentColor.current.copy(alpha = 0.7f))
+                    Text(" Mini-game", style = MaterialTheme.typography.labelSmall, color = LocalContentContent.current.copy(alpha = 0.7f))
                 }
             }
         }

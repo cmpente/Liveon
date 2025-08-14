@@ -9,9 +9,11 @@ import com.liveongames.domain.model.Event
 import com.liveongames.domain.model.EventChoice
 import com.liveongames.domain.model.EventOutcome
 import com.liveongames.domain.model.LifeLogEntry
+import com.liveongames.domain.model.CharacterStats
 import com.liveongames.domain.usecase.GetRandomEventsUseCase
 import com.liveongames.domain.usecase.GetYearlyEventsUseCase
 import com.liveongames.domain.usecase.MarkEventAsShownUseCase
+import com.liveongames.domain.usecase.ApplyEventUseCase // Import ApplyEventUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +21,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.liveongames.domain.repository.CharacterRepository // Import CharacterRepository
-import com.liveongames.domain.usecase.ApplyEventUseCase // Import ApplyEventUseCase
 import com.liveongames.domain.model.Character // Import Character
 import kotlinx.coroutines.flow.first // Import first
 
@@ -97,13 +98,33 @@ class EventViewModel @Inject constructor(
             currentCharacterId?.let { characterId ->
                 val currentCharacter = characterRepository.getCharacter(characterId).first() // Get current character
 
+                // Ensure we have a valid character
                 currentCharacter?.let { character ->
                     choice.outcomes.forEach { outcome ->
+                        // Create CharacterStats object from Character properties
+                        val characterStats = CharacterStats(
+                            health = character.health,
+                            happiness = character.happiness,
+                            smarts = character.intelligence, // Assuming intelligence maps to smarts
+                            looks = character.fitness, // Assuming fitness maps to looks
+                            money = character.money,
+                            reputation = character.notoriety // Assuming notoriety maps to reputation
+                            // Add other stats here if needed and map them correctly
+                        )
+
                         // Apply stat changes using ApplyEventUseCase
-                        val updatedStats = applyEventUseCase(character.stats, _currentEvent.value!!, outcome)
+                        val updatedStats = applyEventUseCase(characterStats, _currentEvent.value!!, outcome)
 
                         // Create updated character with new stats
-                        val updatedCharacter = character.copy(stats = updatedStats)
+                        val updatedCharacter = character.copy(
+                            health = updatedStats.health,
+                            happiness = updatedStats.happiness,
+                            intelligence = updatedStats.smarts, // Map smarts back to intelligence
+                            fitness = updatedStats.looks, // Map looks back to fitness
+                            money = updatedStats.money,
+                            notoriety = updatedStats.reputation // Map notoriety back to reputation
+                            // Update other character properties here if needed
+                        )
 
                         // Update character in the repository
                         characterRepository.updateCharacter(updatedCharacter)
