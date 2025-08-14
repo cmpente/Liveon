@@ -10,9 +10,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.VideogameAsset
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.AssistChip
@@ -155,10 +154,12 @@ fun EducationSheet(
                                         LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                             items(state.actions) { action ->
                                                 ActionPill(
- state = state, // Pass the state to ActionPill
+                                                    state = state, // Pass the state to ActionPill
                                                     action = action,
                                                     title = action.title,
- subtitle = action.costDescription, // Assuming costDescription is available or create one
+                                                    costDescription = action.dialog.firstOrNull()?.text.orEmpty(), // Assuming costDescription is available or create one
+                                                    isOnCooldown = !viewModel.isActionEligible(action, state.enrollment), // Check eligibility for cooldown
+                                                    hasMiniGame = action.minigameId != null, // Assuming a minigameId indicates a mini-game
                                                     onClick = { pickingAction = action },
                                                 )
                                             }
@@ -338,16 +339,17 @@ private fun ActionPill(
     action: EducationActionDef,
     title: String,
     subtitle: String, // This is currently the cost description
-    hasMiniGame: Boolean // New parameter to indicate mini-game
+    hasMiniGame: Boolean, // New parameter to indicate mini-game
+    isOnCooldown: Boolean, // New parameter to indicate cooldown status
     onClick: () -> Unit
 ) {
     val cs = MaterialTheme.colorScheme
- val isEligible = state.enrollment?.let { state.isActionEligible(action, it) } ?: false
-    val cardColor = if (isEligible) cs.surface else cs.surfaceVariant
-    val contentColor = if (isEligible) cs.onSurface else cs.onSurfaceVariant
-    val rippleEnabled = isEligible
+    val cardColor = if (!isOnCooldown) cs.surface else cs.surfaceVariant
+    val contentColor = if (!isOnCooldown) cs.onSurface else cs.onSurfaceVariant
+    val rippleEnabled = !isOnCooldown
 
     OutlinedCard(
+
         onClick = if (rippleEnabled) onClick else ({}),
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.outlinedCardColors(containerColor = cardColor, contentColor = contentColor),
@@ -355,7 +357,7 @@ private fun ActionPill(
             .widthIn(min = 220.dp)
             .clip(RoundedCornerShape(18.dp))
  ,
-        enabled = isEligible // Disable interaction if not eligible
+        enabled = true // Disable interaction if not eligible
 
 
     ) {
@@ -365,16 +367,7 @@ private fun ActionPill(
                 Spacer(Modifier.height(2.dp))
                 Text(subtitle, style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
             }
-            if (!isEligible) {
-                Spacer(Modifier.height(4.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
- Icons.Outlined.Timer,
-                        contentDescription = "On Cooldown",
-                        modifier = Modifier.size(16.dp),
- tint = LocalContentColor.current.copy(alpha = 0.7f)
-                    )
- Text(" On Cooldown", style = MaterialTheme.typography.labelSmall, color = LocalContentColor.current.copy(alpha = 0.7f))
+            if (!isOnCooldown) { // Corrected conditional check
                 Spacer(Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
@@ -395,7 +388,7 @@ private fun ActionPill(
                         modifier = Modifier.size(16.dp),
                         tint = LocalContentColor.current.copy(alpha = 0.7f)
                     )
-                    Text(" Mini-game", style = MaterialTheme.typography.labelSmall, color = LocalContentColor.current.copy(alpha = 0.7f))
+                    Text(" Mini-game", style = MaterialTheme.typography.labelSmall, color = LocalContentContent.current.copy(alpha = 0.7f))
                 }
             }
         }

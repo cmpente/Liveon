@@ -1,6 +1,7 @@
 // app/src/main/java/com/liveongames/liveon/models/SaveModels.kt
 package com.liveongames.liveon.models
 
+import com.liveongames.domain.model.education.Education
 import com.liveongames.domain.model.Education
 import java.util.*
 

@@ -12,12 +12,56 @@
       "items": {
         "type": "object",
         "required": ["text", "result"],
+        "required": ["text", "outcomes"],
         "properties": {
           "text": { "type": "string" },
-          "result": {
+          "conditions": {
             "type": "object",
-            "properties": {
-              "statChanges": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "enum": ["stat", "trait", "relationship", "flag"] },
+                "name": { "type": "string" },
+                "value": { "type": ["integer", "string", "boolean"] },
+                "comparison": { "type": "string", "enum": [">", "<", ">=", "<=", "==", "!="] }
+              },
+              "required": ["type", "name", "value"]
+            }
+          },
+          "outcomes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "conditions": {
+                  "type": "array",
+                   "items": {
+                      "type": "object",
+                      "properties": {
+                        "type": { "type": "string", "enum": ["stat", "trait", "relationship", "flag"] },
+                        "name": { "type": "string" },
+                        "value": { "type": ["integer", "string", "boolean"] },
+                        "comparison": { "type": "string", "enum": [">", "<", ">=", "<=", "==", "!="] }
+                      },
+                      "required": ["type", "name", "value"]
+                    }
+                },
+                "statChanges": {
+                  "type": "object",
+                  "properties": {
+                    "health": { "type": "integer" },
+                    "happiness": { "type": "integer" },
+                    "smarts": { "type": "integer" },
+                    "looks": { "type": "integer" },
+                    "money": { "type": "integer" },
+                    "reputation": { "type": "integer" }
+                  },
+                  "additionalProperties": false
+                },
+                "nextEventId": { "type": ["integer", "null"] },
+                "unlockAchievementId": { "type": [\"integer\", \"null\"] },
+                "consequences": {
                 "type": "object",
                 "properties": {
                   "health": { "type": "integer" },
@@ -29,13 +73,24 @@
                 },
                 "additionalProperties": false
               },
-              "nextEventId": { "type": ["integer", "null"] },
-              "unlockAchievementId": { "type": ["integer", "null"] }
-            },
-            "required": ["statChanges"]
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": { "type": "string", "enum": ["addTrait", "removeTrait", "setFlag", "addRelationship", "removeRelationship", "changeRelationshipStatus"] },
+                      "name": { "type": "string" },
+                      "value": { "type": ["string", "boolean", "integer"] }
+                    },
+                    "required": ["type", "name", "value"]
+                  }
+                }
+              },
+              "required": ["statChanges"]
+            }
           }
         }
-      }
+      },
+      "required": ["text", "outcomes"]
     }
   }
 }
