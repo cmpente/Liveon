@@ -209,7 +209,7 @@ class EducationViewModel @Inject constructor(
                                 repo.resetEducation()
                                 _uiState.update {
                                     it.copy(enrollment = null, grade = 0, message = "Program ended. Required GPA not met. You must repeat.")
-                                    )
+                                ) // Removed extra parenthesis here
                                 }
                             }
                         } else {
