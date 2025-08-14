@@ -254,9 +254,6 @@ class EducationRepositoryImpl @Inject constructor(
             Log.w(TAG, "Entity for program $programId not found or not active during retake attempt.")
             }
 
-        }
-    }
-
     override suspend fun onAgeUp(): Enrollment? {
         // This method is intended to reset age-dependent action caps.
         // It should not alter the core state of the enrollment (like progress or GPA).
