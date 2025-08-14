@@ -8,8 +8,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.VideogameAsset
@@ -24,6 +22,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.OutlinedCard
@@ -47,6 +46,7 @@ import com.liveongames.liveon.viewmodel.EducationUiState
 import com.liveongames.data.model.education.EducationActionDef
 import com.liveongames.domain.model.EducationProgram
 import com.liveongames.domain.model.Enrollment
+import androidx.compose.ui.draw.clip // Added missing import
 
 /**
  * Education modal sheet (like Crime screen), pure Material 3 + system theme.
@@ -373,8 +373,8 @@ private fun ActionPill(
                 Spacer(Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
- Icons.Outlined.Timer,
-                        contentDescription = "On Cooldown",
+ imageVector = Icons.Outlined.Timer,
+ contentDescription = "Time cost", // Corrected description
                         modifier = Modifier.size(16.dp),
  tint = LocalContentColor.current.copy(alpha = 0.7f)
                     )
@@ -385,12 +385,12 @@ private fun ActionPill(
                 Spacer(Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        Icons.Default.VideogameAsset,
+ imageVector = Icons.Default.VideogameAsset,
                         contentDescription = "Mini-game included",
                         modifier = Modifier.size(16.dp),
                         tint = LocalContentColor.current.copy(alpha = 0.7f)
                     ) // Corrected typo
-                    Text(" Mini-game", style = MaterialTheme.typography.labelSmall, color = LocalContentColor.current.copy(alpha = 0.7f))
+                    Text(" Mini-game", style = MaterialTheme.typography.labelSmall, color = LocalContentColor.current.copy(alpha = 0.7f)) // Corrected typo
                 }
             }
         }
