@@ -159,6 +159,7 @@ fun EducationSheet(
 
                             AnimatedVisibility(visible = actionsOpen) {
                                 Column(Modifier.padding(16.dp)) {
+                                    if (state.categorizedActions.isEmpty()) {
                                         Text(
                                             "No activities available.",
                                             color = cs.onSurfaceVariant
@@ -169,29 +170,25 @@ fun EducationSheet(
                                             // Placeholder for expandable content
                                             AnimatedVisibility(visible = expandedCategories[categoryName] ?: false) {
                                                 LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
- items(actions) { action ->
- ActionPill(
- state = state, // Pass the state to ActionPill
- action = action,
- title = action.title,
- subtitle = action.dialog.firstOrNull()?.text.orEmpty(), // Using dialog text as subtitle
- // Check eligibility for cooldown based on the specific action
- isOnCooldown = !viewModel.isActionEligible(action, state.enrollment),
- hasMiniGame = action.minigameId != null, // Assuming a minigameId indicates a mini-game
- onClick = { pickingAction = action },
- )
- }
-
+                                                    items(actions) { action ->
+                                                        ActionPill(
+                                                            state = state, // Pass the state to ActionPill
+                                                            action = action,
+                                                            title = action.title,
+                                                            subtitle = action.dialog.firstOrNull()?.text.orEmpty(), // Using dialog text as subtitle
+                                                            // Check eligibility for cooldown based on the specific action
+                                                            isOnCooldown = !viewModel.isActionEligible(action, state.enrollment),
+                                                            hasMiniGame = action.minigameId != null, // Assuming a minigameId indicates a mini-game
+                                                            onClick = { pickingAction = action },
+                                                        )
+                                                    }
+                                                }
                                             }
-
                                         }
                                     }
                                 }
                             }
-                        }
-                    }
-                }
-
+                            
                 // Catalog
                 item {
                     AnimatedVisibility(visible = state.enrollment == null) {
