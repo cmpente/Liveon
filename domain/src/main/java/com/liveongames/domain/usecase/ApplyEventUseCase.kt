@@ -15,8 +15,11 @@ class ApplyEventUseCase @Inject constructor() {
             when (statName) {
                 "health" -> updatedStats = updatedStats.copy(health = updatedStats.health + change)
                 "happiness" -> updatedStats = updatedStats.copy(happiness = updatedStats.happiness + change)
+                "intelligence" -> updatedStats = updatedStats.copy(intelligence = updatedStats.intelligence + change)
+                "money" -> updatedStats = updatedStats.copy(money = updatedStats.money + change)
+                "social" -> updatedStats = updatedStats.copy(social = updatedStats.social + change)
                 "smarts" -> updatedStats = updatedStats.copy(smarts = updatedStats.smarts + change)
-                "looks" -> updatedStats = updatedStats.copy(looks = updatedStats.looks + change)
+                "looks" -> {} // Ignore "looks" or handle other unknown stats as needed
                 "money" -> updatedStats = updatedStats.copy(money = updatedStats.money + change)
                 "reputation" -> updatedStats = updatedStats.copy(reputation = updatedStats.reputation + change)
                 // Add other stats here as needed
