@@ -11,16 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.unit.dp
-
-/**
- * DO NOT declare data class LiveonTheme here — it's in GameThemes.kt.
- * This file only:
- *  - exposes LocalLiveonTheme (CompositionLocal<LiveonTheme>)
- *  - maps your custom palette to Material3 colorScheme
- *  - provides two @Composable overloads named LiveonTheme(...)
- */
 
 // Uses the LiveonTheme data class from GameThemes.kt
 val LocalLiveonTheme = staticCompositionLocalOf {
@@ -51,7 +42,8 @@ fun LiveonTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    ProvideLiveonTheme(darkTheme = darkTheme, content = content)
+    val selectedTheme = AllGameThemes.firstOrNull() ?: LocalLiveonTheme.current
+    ProvideLiveonTheme(selectedTheme, darkTheme, content)
 }
 
 /** Overload #2 — provide an explicit theme instance */
@@ -70,8 +62,6 @@ private fun ProvideLiveonTheme(
     darkTheme: Boolean,
     content: @Composable () -> Unit
 ) {
-    // This overload is less relevant for system theme, keeping it for other uses.
-    // The primary overload now handles system theme based on the `darkTheme` parameter.
     val cs = if (darkTheme) {
         darkColorScheme(
             primary = theme.primary,
@@ -119,14 +109,41 @@ private fun ProvideLiveonTheme( // Modified overload for system theme
     darkTheme: Boolean,
     content: @Composable () -> Unit
 ) {
-    // Map YOUR palette to Material3 (no dynamic colors).
+    // Use the default theme from LocalLiveonTheme as fallback
+    val defaultTheme = LocalLiveonTheme.current
     val cs = if (darkTheme) {
-        darkColorScheme() // Use default Material 3 dark color scheme
+        darkColorScheme(
+            primary = defaultTheme.primary,
+            secondary = defaultTheme.secondary,
+            tertiary = defaultTheme.accent,
+            background = defaultTheme.background,
+            surface = defaultTheme.surface,
+            surfaceVariant = defaultTheme.surfaceVariant,
+            onPrimary = Color.White,
+            onSecondary = Color.White,
+            onTertiary = Color.White,
+            onBackground = defaultTheme.text,
+            onSurface = defaultTheme.text,
+            onSurfaceVariant = defaultTheme.text.copy(alpha = 0.78f)
+        )
     } else {
-        lightColorScheme() // Use default Material 3 light color scheme
+        lightColorScheme(
+            primary = defaultTheme.primary,
+            secondary = defaultTheme.secondary,
+            tertiary = defaultTheme.accent,
+            background = defaultTheme.background,
+            surface = defaultTheme.surface,
+            surfaceVariant = defaultTheme.surfaceVariant,
+            onPrimary = Color.White,
+            onSecondary = Color.White,
+            onTertiary = Color.White,
+            onBackground = defaultTheme.text,
+            onSurface = defaultTheme.text,
+            onSurfaceVariant = defaultTheme.text.copy(alpha = 0.78f)
+        )
     }
 
-    CompositionLocalProvider(LocalLiveonTheme provides theme) {
+    CompositionLocalProvider(LocalLiveonTheme provides defaultTheme) {
         MaterialTheme(
             colorScheme = cs,
             typography = Typography(),

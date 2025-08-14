@@ -1,3 +1,4 @@
+// app/src/main/java/com/liveongames/liveon/MainActivity.kt
 package com.liveongames.liveon
 
 import android.os.Build
@@ -8,16 +9,19 @@ import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.liveongames.liveon.ui.LiveonGameScreen
-import com.liveongames.liveon.ui.screens.CrimeScreen // Keep this import
+import com.liveongames.liveon.ui.screens.CrimeScreen
 import com.liveongames.liveon.ui.screens.SettingsScreen
 import com.liveongames.liveon.ui.screens.education.EducationSheet
+import com.liveongames.liveon.ui.theme.AllGameThemes
 import com.liveongames.liveon.ui.theme.LiveonTheme
-import com.liveongames.liveon.viewmodel.CrimeViewModel // Keep this import
+import com.liveongames.liveon.viewmodel.CrimeViewModel
 import com.liveongames.liveon.viewmodel.EducationViewModel
 import com.liveongames.liveon.viewmodel.GameViewModel
 import com.liveongames.liveon.viewmodel.SettingsViewModel
@@ -29,9 +33,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            LiveonTheme {
-                LiveonApp()
-            }
+            LiveonApp()
         }
 
         enableFullScreen()
@@ -63,42 +65,55 @@ fun LiveonApp() {
     val settingsViewModel: SettingsViewModel = hiltViewModel()
     val sharedGameViewModel: GameViewModel = hiltViewModel()
 
-    NavHost(
-        navController = navController,
-        startDestination = "main"
+    // Observe the selected theme index from settings
+    val selectedThemeIndex by settingsViewModel.selectedThemeIndex.collectAsStateWithLifecycle()
+
+    // Get the theme from AllGameThemes using the index, with bounds checking
+    val selectedTheme = AllGameThemes.getOrElse(selectedThemeIndex) {
+        AllGameThemes.firstOrNull() ?: AllGameThemes[0]
+    }
+
+    LiveonTheme(
+        theme = selectedTheme,
+        darkTheme = androidx.compose.foundation.isSystemInDarkTheme()
     ) {
-        composable("main") {
-            LiveonGameScreen(
-                gameViewModel = sharedGameViewModel,
-                settingsViewModel = settingsViewModel,
-                onNavigateToCrime = { navController.navigate("crime") },
-                onNavigateToPets = { navController.navigate("pets") }, // Note: This still navigates to "pets" route, which is now not defined
-                onNavigateToEducation = { navController.navigate("education_popup") },
-                onNavigateToSettings = { navController.navigate("settings") }
-            )
-        }
+        NavHost(
+            navController = navController,
+            startDestination = "main"
+        ) {
+            composable("main") {
+                LiveonGameScreen(
+                    gameViewModel = sharedGameViewModel,
+                    settingsViewModel = settingsViewModel,
+                    onNavigateToCrime = { navController.navigate("crime") },
+                    onNavigateToPets = { navController.navigate("pets") },
+                    onNavigateToEducation = { navController.navigate("education_popup") },
+                    onNavigateToSettings = { navController.navigate("settings") }
+                )
+            }
 
-        composable("crime") { // Keep this composable block
-            val crimeViewModel: CrimeViewModel = hiltViewModel()
-            CrimeScreen(
-                viewModel = crimeViewModel,
-                settingsViewModel = settingsViewModel,
-                onCrimeCommitted = { sharedGameViewModel.refreshPlayerStats() },
-                onDismiss = { navController.popBackStack() }
-            )
-        }
+            composable("crime") {
+                val crimeViewModel: CrimeViewModel = hiltViewModel()
+                CrimeScreen(
+                    viewModel = crimeViewModel,
+                    settingsViewModel = settingsViewModel,
+                    onCrimeCommitted = { sharedGameViewModel.refreshPlayerStats() },
+                    onDismiss = { navController.popBackStack() }
+                )
+            }
 
-        // Education POPUP destination -> show the new sheet
-        composable("education_popup") {
-            val eduVm: EducationViewModel = hiltViewModel()
-            EducationSheet(
-                onDismiss = { navController.popBackStack() },
-                viewModel = eduVm
-            )
-        }
+            // Education POPUP destination -> show the new sheet
+            composable("education_popup") {
+                val eduVm: EducationViewModel = hiltViewModel()
+                EducationSheet(
+                    onDismiss = { navController.popBackStack() },
+                    viewModel = eduVm
+                )
+            }
 
-        composable("settings") {
-            SettingsScreen(viewModel = settingsViewModel)
+            composable("settings") {
+                SettingsScreen(viewModel = settingsViewModel)
+            }
         }
     }
 }

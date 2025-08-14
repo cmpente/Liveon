@@ -11,25 +11,28 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.liveongames.liveon.R
 import com.liveongames.liveon.viewmodel.EducationEvent
 import com.liveongames.liveon.viewmodel.EducationViewModel
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import com.liveongames.domain.model.EducationProgram
+import com.liveongames.domain.model.Enrollment
+import com.liveongames.domain.model.EduTier
 import com.liveongames.data.model.education.EducationActionDef
-import androidx.compose.ui.res.painterResource
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
+import com.liveongames.liveon.ui.theme.LocalLiveonTheme
 
 /**
- * Education modal sheet (like Crime screen), pure Material 3 + system theme.
- * No semesters timeline; clean sections: Student Record, Activities, Catalog, Transcript.
+ * Education modal sheet using Liveon theme tokens.
  */
 @Composable
 fun EducationSheet(
@@ -37,15 +40,14 @@ fun EducationSheet(
     viewModel: EducationViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
-    val cs = MaterialTheme.colorScheme
+    val theme = LocalLiveonTheme.current
 
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
         Surface(
-            color = cs.surface,
-            tonalElevation = 2.dp,
+            color = theme.surface,
             shape = RoundedCornerShape(28.dp),
             modifier = Modifier
                 .fillMaxWidth()
@@ -72,7 +74,7 @@ fun EducationSheet(
                         Text(
                             "Education",
                             style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
-                            color = cs.onSurface
+                            color = theme.text
                         )
                         Text(
                             "Close",
@@ -80,7 +82,7 @@ fun EducationSheet(
                                 .clip(RoundedCornerShape(12.dp))
                                 .clickable { onDismiss() }
                                 .padding(horizontal = 8.dp, vertical = 4.dp),
-                            color = cs.primary
+                            color = theme.primary
                         )
                     }
                 }
@@ -99,7 +101,7 @@ fun EducationSheet(
                                 painter = painterResource(id = R.drawable.ic_person),
                                 contentDescription = "Player Avatar",
                                 modifier = Modifier.size(40.dp),
-                                tint = cs.onSecondaryContainer
+                                tint = theme.text
                             )
                         }
                     )
@@ -108,7 +110,7 @@ fun EducationSheet(
                 // Activities & Interests
                 item {
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = cs.surfaceVariant),
+                        colors = CardDefaults.cardColors(containerColor = theme.surfaceVariant),
                         shape = RoundedCornerShape(24.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -125,12 +127,12 @@ fun EducationSheet(
                                 Text(
                                     "Activities & Interests",
                                     style = MaterialTheme.typography.titleMedium,
-                                    color = cs.onSurface
+                                    color = theme.text
                                 )
                                 Icon(
                                     painter = painterResource(id = if (actionsOpen) R.drawable.ic_collapse else R.drawable.ic_expand),
                                     contentDescription = null,
-                                    tint = cs.onSurfaceVariant,
+                                    tint = theme.text.copy(alpha = 0.7f),
                                     modifier = Modifier.size(24.dp)
                                 )
                             }
@@ -140,7 +142,7 @@ fun EducationSheet(
                                     if (state.actions.isEmpty()) {
                                         Text(
                                             "No activities available.",
-                                            color = cs.onSurfaceVariant
+                                            color = theme.text.copy(alpha = 0.7f)
                                         )
                                     } else {
                                         LazyRow(
@@ -152,7 +154,7 @@ fun EducationSheet(
                                                     title = action.title,
                                                     subtitle = action.dialog.firstOrNull()?.text.orEmpty(),
                                                     isOnCooldown = !viewModel.isActionEligible(action, state.enrollment),
-                                                    hasMiniGame = false, // Simplified for now
+                                                    hasMiniGame = false,
                                                     onClick = { pickingAction = action },
                                                 )
                                             }
@@ -172,9 +174,12 @@ fun EducationSheet(
                                 Text(
                                     "Course Catalog",
                                     style = MaterialTheme.typography.titleLarge,
-                                    color = cs.onSurface
+                                    color = theme.text
                                 )
-                                Divider(Modifier.padding(top = 6.dp))
+                                Divider(
+                                    modifier = Modifier.padding(top = 6.dp),
+                                    color = theme.text.copy(alpha = 0.12f)
+                                )
                             }
                         }
                     }
@@ -191,27 +196,20 @@ fun EducationSheet(
                     }
                 }
 
-                // Transcript - simplified version
+                // Transcript
                 item {
                     TranscriptCard(
                         enrollment = state.enrollment,
-                        completedInstitutions = emptyList(), // Simplified
-                        academicHonors = emptyList(), // Simplified
-                        certifications = emptyList() // Simplified
+                        completedInstitutions = emptyList(),
+                        academicHonors = emptyList(),
+                        certifications = emptyList()
                     )
                 }
             }
 
-            // Action choice dialog
+            // Action choice dialog (placeholder)
             pickingAction?.let { act ->
-                ActionChoiceSheet(
-                    action = act,
-                    onChoose = { choiceId: String ->
-                        viewModel.handleEvent(EducationEvent.DoAction(act.id, choiceId))
-                        pickingAction = null
-                    },
-                    onDismiss = { pickingAction = null }
-                )
+                // TODO: Implement ActionChoiceSheet
             }
 
             // Program detail panel
@@ -222,7 +220,7 @@ fun EducationSheet(
                 ) {
                     Surface(
                         shape = RoundedCornerShape(24.dp),
-                        color = cs.surface
+                        color = theme.surface
                     ) {
                         Column(
                             modifier = Modifier.padding(24.dp),
@@ -231,24 +229,24 @@ fun EducationSheet(
                             Text(
                                 program.title,
                                 style = MaterialTheme.typography.headlineSmall,
-                                color = cs.onSurface
+                                color = theme.text
                             )
                             Text(
                                 program.description,
-                                color = cs.onSurfaceVariant
+                                color = theme.text.copy(alpha = 0.7f)
                             )
                             Text(
                                 "Min GPA: ${"%.2f".format(program.minGpa)}",
-                                color = cs.onSurface
+                                color = theme.text
                             )
                             Text(
                                 "Tuition: $${program.tuition}",
-                                color = cs.onSurface
+                                color = theme.text
                             )
                             val s = program.schema
                             Text(
                                 "${s.displayPeriodName} · ${s.periodsPerYear}/yr · ${s.totalPeriods} total",
-                                color = cs.onSurfaceVariant
+                                color = theme.text.copy(alpha = 0.7f)
                             )
                             Button(
                                 onClick = { selectedProgram = null },
@@ -264,7 +262,7 @@ fun EducationSheet(
     }
 }
 
-/* ---------- sub-components (same file for easy paste) ---------- */
+/* ---------- Sub-components ---------- */
 
 @Composable
 private fun StudentRecordCard(
@@ -272,9 +270,9 @@ private fun StudentRecordCard(
     enrollment: Enrollment?,
     playerAvatar: @Composable () -> Unit
 ) {
-    val cs = MaterialTheme.colorScheme
+    val theme = LocalLiveonTheme.current
     Card(
-        colors = CardDefaults.cardColors(containerColor = cs.secondaryContainer),
+        colors = CardDefaults.cardColors(containerColor = theme.surfaceElevated),
         shape = RoundedCornerShape(24.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -289,14 +287,14 @@ private fun StudentRecordCard(
                     Text(
                         title,
                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                        color = cs.onSecondaryContainer,
+                        color = theme.text,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
                         if (enrollment != null) "Student Record" else "Browse programs below",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = cs.onSecondaryContainer.copy(alpha = 0.75f)
+                        color = theme.text.copy(alpha = 0.75f)
                     )
                 }
             }
@@ -307,14 +305,14 @@ private fun StudentRecordCard(
                 Text(
                     "Progress: ${enrollment.progressPct}%",
                     style = MaterialTheme.typography.labelMedium,
-                    color = cs.onSecondaryContainer
+                    color = theme.text
                 )
                 Spacer(Modifier.height(4.dp))
                 LinearProgressIndicator(
-                    progress = enrollment.progressPct / 100f,
+                    progress = { enrollment.progressPct / 100f },
                     modifier = Modifier.fillMaxWidth(),
-                    color = cs.primary,
-                    trackColor = cs.onSecondaryContainer.copy(alpha = 0.2f)
+                    color = theme.primary,
+                    trackColor = theme.text.copy(alpha = 0.2f)
                 )
 
                 Spacer(Modifier.height(12.dp))
@@ -336,60 +334,60 @@ private fun StudentRecordCard(
                     )
                 }
 
-                // Optional school-specific info section
+                // School Details
                 Spacer(Modifier.height(12.dp))
                 Column {
                     Text(
                         "School Details:",
                         style = MaterialTheme.typography.titleMedium,
-                        color = cs.onSecondaryContainer
+                        color = theme.text
                     )
                     Spacer(Modifier.height(4.dp))
                     when (enrollment.tier) {
                         EduTier.ELEMENTARY -> Text(
                             "Current Grade: [Grade Level]",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = cs.onSecondaryContainer.copy(alpha = 0.75f)
+                            color = theme.text.copy(alpha = 0.75f)
                         )
                         EduTier.MIDDLE -> Text(
                             "Current Grade: [Grade Level]",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = cs.onSecondaryContainer.copy(alpha = 0.75f)
+                            color = theme.text.copy(alpha = 0.75f)
                         )
                         EduTier.HIGH -> Text(
                             "Enrolled Classes: [List of classes]",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = cs.onSecondaryContainer.copy(alpha = 0.75f)
+                            color = theme.text.copy(alpha = 0.75f)
                         )
                         EduTier.CERT -> Text(
                             "Certificate Program Details: [Details]",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = cs.onSecondaryContainer.copy(alpha = 0.75f)
+                            color = theme.text.copy(alpha = 0.75f)
                         )
                         EduTier.ASSOC -> Text(
                             "Associate Degree Details: [Details]",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = cs.onSecondaryContainer.copy(alpha = 0.75f)
+                            color = theme.text.copy(alpha = 0.75f)
                         )
                         EduTier.BACH -> Text(
                             "Bachelor's Degree Details: [Details]",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = cs.onSecondaryContainer.copy(alpha = 0.75f)
+                            color = theme.text.copy(alpha = 0.75f)
                         )
                         EduTier.MAST -> Text(
                             "Master's Degree Details: [Details]",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = cs.onSecondaryContainer.copy(alpha = 0.75f)
+                            color = theme.text.copy(alpha = 0.75f)
                         )
                         EduTier.PHD -> Text(
                             "Doctoral Program Details: [Details]",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = cs.onSecondaryContainer.copy(alpha = 0.75f)
+                            color = theme.text.copy(alpha = 0.75f)
                         )
                         else -> Text(
                             "Not enrolled in a recognized institution tier.",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = cs.onSecondaryContainer.copy(alpha = 0.75f)
+                            color = theme.text.copy(alpha = 0.75f)
                         )
                     }
                 }
@@ -409,10 +407,9 @@ private fun gradeFromProgress(progress: Int): String = when {
 
 @Composable
 private fun StatChip(label: String, value: String, icon: Int) {
-    val cs = MaterialTheme.colorScheme
+    val theme = LocalLiveonTheme.current
     Surface(
-        color = cs.surface,
-        tonalElevation = 2.dp,
+        color = theme.surface,
         shape = RoundedCornerShape(14.dp)
     ) {
         Row(
@@ -423,19 +420,19 @@ private fun StatChip(label: String, value: String, icon: Int) {
             Icon(
                 painter = painterResource(id = icon),
                 contentDescription = null,
-                tint = cs.primary,
+                tint = theme.primary,
                 modifier = Modifier.size(16.dp)
             )
             Column {
                 Text(
                     label,
                     style = MaterialTheme.typography.labelSmall,
-                    color = cs.onSurfaceVariant
+                    color = theme.text.copy(alpha = 0.7f)
                 )
                 Text(
                     value,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = cs.onSurface
+                    color = theme.text
                 )
             }
         }
@@ -451,12 +448,11 @@ private fun ActionPill(
     isOnCooldown: Boolean,
     onClick: () -> Unit
 ) {
-    val cs = MaterialTheme.colorScheme
-    val cardColor = if (!isOnCooldown) cs.surface else cs.surfaceVariant
-    val contentColor = if (!isOnCooldown) cs.onSurface else cs.onSurfaceVariant
+    val theme = LocalLiveonTheme.current
+    val cardColor = if (!isOnCooldown) theme.surface else theme.surfaceVariant
+    val contentColor = if (!isOnCooldown) theme.text else theme.text.copy(alpha = 0.7f)
     val rippleEnabled = !isOnCooldown
 
-    // Check if OutlinedCard has onClick (newer Material 3) or wrap with clickable (older versions)
     Card(
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(
@@ -478,14 +474,14 @@ private fun ActionPill(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_default_study),
                     contentDescription = null,
-                    tint = if (isOnCooldown) cs.onSurfaceVariant else cs.primary,
+                    tint = if (isOnCooldown) theme.text.copy(alpha = 0.7f) else theme.primary,
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
                     title,
                     style = MaterialTheme.typography.titleMedium,
-                    color = cs.onSurface,
+                    color = theme.text,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -495,7 +491,7 @@ private fun ActionPill(
                 Text(
                     subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = cs.onSurfaceVariant
+                    color = theme.text.copy(alpha = 0.7f)
                 )
             }
 
@@ -509,12 +505,12 @@ private fun ActionPill(
                         painter = painterResource(id = R.drawable.ic_hourglass),
                         contentDescription = "On Cooldown",
                         modifier = Modifier.size(16.dp),
-                        tint = cs.onSurfaceVariant
+                        tint = theme.text.copy(alpha = 0.7f)
                     )
                     Text(
                         "On Cooldown",
                         style = MaterialTheme.typography.labelSmall,
-                        color = cs.onSurfaceVariant
+                        color = theme.text.copy(alpha = 0.7f)
                     )
                 }
             }
@@ -525,17 +521,16 @@ private fun ActionPill(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    // Using a different icon since ic_game might not exist
                     Icon(
                         painter = painterResource(id = R.drawable.ic_default_study),
                         contentDescription = "Mini-game included",
                         modifier = Modifier.size(16.dp),
-                        tint = cs.onSurfaceVariant
+                        tint = theme.text.copy(alpha = 0.7f)
                     )
                     Text(
                         "Mini-game",
                         style = MaterialTheme.typography.labelSmall,
-                        color = cs.onSurfaceVariant
+                        color = theme.text.copy(alpha = 0.7f)
                     )
                 }
             }
@@ -549,12 +544,12 @@ private fun ProgramRow(
     enrolled: Boolean,
     onEnroll: () -> Unit
 ) {
-    val cs = MaterialTheme.colorScheme
+    val theme = LocalLiveonTheme.current
     ElevatedCard(
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = if (enrolled) cs.primaryContainer else cs.surface,
-            contentColor = if (enrolled) cs.onPrimaryContainer else cs.onSurface
+            containerColor = if (enrolled) theme.primary.copy(alpha = 0.2f) else theme.surface,
+            contentColor = if (enrolled) theme.primary else theme.text
         ),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -565,7 +560,7 @@ private fun ProgramRow(
             Icon(
                 painter = painterResource(id = R.drawable.ic_school),
                 contentDescription = null,
-                tint = if (enrolled) cs.onPrimaryContainer else cs.primary,
+                tint = if (enrolled) theme.primary else theme.primary,
                 modifier = Modifier.size(40.dp).padding(end = 16.dp)
             )
             Column(Modifier.weight(1f)) {
@@ -573,7 +568,7 @@ private fun ProgramRow(
                     program.title,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = if (enrolled) cs.onPrimaryContainer else cs.onSurface
+                    color = if (enrolled) theme.primary else theme.text
                 )
                 Spacer(Modifier.height(2.dp))
                 val tuition = if (program.tuition == 0) "$0" else "$${program.tuition}"
@@ -581,25 +576,29 @@ private fun ProgramRow(
                     "Min GPA ${"%.2f".format(program.minGpa)}   Tuition $tuition",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium,
-                    color = if (enrolled) cs.onPrimaryContainer.copy(alpha = 0.8f) else cs.onSurfaceVariant
+                    color = if (enrolled) theme.primary.copy(alpha = 0.8f) else theme.text.copy(alpha = 0.7f)
                 )
                 val s = program.schema
                 Text(
                     "${s.displayPeriodName} · ${s.periodsPerYear}/yr · ${s.totalPeriods} total",
                     style = MaterialTheme.typography.bodySmall,
-                    color = if (enrolled) cs.onPrimaryContainer.copy(alpha = 0.7f) else cs.onSurfaceVariant
+                    color = if (enrolled) theme.primary.copy(alpha = 0.7f) else theme.text.copy(alpha = 0.7f)
                 )
             }
             if (enrolled) {
                 AssistChip(
                     onClick = { },
-                    label = { Text("Enrolled") },
+                    label = { Text("Enrolled", color = theme.primary) },
                     enabled = false
                 )
             } else {
                 Button(
                     onClick = onEnroll,
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = theme.primary,
+                        contentColor = theme.surface
+                    )
                 ) {
                     Text("Enroll")
                 }
@@ -611,14 +610,14 @@ private fun ProgramRow(
 @Composable
 private fun TranscriptCard(
     enrollment: Enrollment?,
-    completedInstitutions: List<Any>, // Simplified type
-    academicHonors: List<Any>, // Simplified type
-    certifications: List<Any> // Simplified type
+    completedInstitutions: List<Any>,
+    academicHonors: List<Any>,
+    certifications: List<Any>
 ) {
-    val cs = MaterialTheme.colorScheme
+    val theme = LocalLiveonTheme.current
     Card(
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = cs.surfaceVariant),
+        colors = CardDefaults.cardColors(containerColor = theme.surfaceVariant),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
@@ -632,19 +631,19 @@ private fun TranscriptCard(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_diploma),
                     contentDescription = null,
-                    tint = cs.primary,
+                    tint = theme.primary,
                     modifier = Modifier.size(24.dp)
                 )
                 Text(
                     "Transcript & Honors",
                     style = MaterialTheme.typography.titleLarge,
-                    color = cs.onSurface
+                    color = theme.text
                 )
             }
 
             Text(
                 "Transcript information will be available here",
-                color = cs.onSurfaceVariant
+                color = theme.text.copy(alpha = 0.7f)
             )
         }
     }
