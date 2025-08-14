@@ -239,6 +239,10 @@ class EducationRepositoryImpl @Inject constructor(
         }
     }
     
+ override suspend fun getCertifications(): List<Certification> = withContext(Dispatchers.IO) {
+ emptyList() // TODO: Implement actual logic
+ }
+
  override suspend fun getAcademicHonors(): List<AcademicHonor> = withContext(Dispatchers.IO) {
  emptyList() // TODO: Implement actual logic
  }
