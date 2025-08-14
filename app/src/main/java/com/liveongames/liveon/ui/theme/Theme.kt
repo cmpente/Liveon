@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.unit.dp
 
 /**
@@ -50,8 +51,7 @@ fun LiveonTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val chosen = AllGameThemes.firstOrNull() ?: LocalLiveonTheme.current
-    ProvideLiveonTheme(chosen, darkTheme, content)
+    ProvideLiveonTheme(darkTheme = darkTheme, content = content)
 }
 
 /** Overload #2 — provide an explicit theme instance */
@@ -70,7 +70,8 @@ private fun ProvideLiveonTheme(
     darkTheme: Boolean,
     content: @Composable () -> Unit
 ) {
-    // Map YOUR palette to Material3 (no dynamic colors).
+    // This overload is less relevant for system theme, keeping it for other uses.
+    // The primary overload now handles system theme based on the `darkTheme` parameter.
     val cs = if (darkTheme) {
         darkColorScheme(
             primary = theme.primary,
@@ -100,6 +101,29 @@ private fun ProvideLiveonTheme(
             onBackground = theme.text,
             onSurface = theme.text,
             onSurfaceVariant = theme.text.copy(alpha = 0.78f)
+        )
+    }
+
+    CompositionLocalProvider(LocalLiveonTheme provides theme) {
+        MaterialTheme(
+            colorScheme = cs,
+            typography = Typography(),
+            shapes = LiveonShapes,
+            content = content
+        )
+    }
+}
+
+@Composable
+private fun ProvideLiveonTheme( // Modified overload for system theme
+    darkTheme: Boolean,
+    content: @Composable () -> Unit
+) {
+    // Map YOUR palette to Material3 (no dynamic colors).
+    val cs = if (darkTheme) {
+        darkColorScheme() // Use default Material 3 dark color scheme
+    } else {
+        lightColorScheme() // Use default Material 3 light color scheme
         )
     }
 
