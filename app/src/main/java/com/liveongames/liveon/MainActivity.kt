@@ -14,7 +14,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.liveongames.liveon.ui.LiveonGameScreen
-import com.liveongames.liveon.ui.screens.CrimeScreen
 import com.liveongames.liveon.ui.screens.PetsScreen
 import com.liveongames.liveon.ui.screens.SettingsScreen
 import com.liveongames.liveon.ui.screens.education.EducationSheet
@@ -22,7 +21,6 @@ import com.liveongames.liveon.ui.theme.LiveonTheme
 import com.liveongames.liveon.viewmodel.CrimeViewModel
 import com.liveongames.liveon.viewmodel.EducationViewModel
 import com.liveongames.liveon.viewmodel.GameViewModel
-import com.liveongames.liveon.viewmodel.PetsViewModel
 import com.liveongames.liveon.viewmodel.SettingsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
