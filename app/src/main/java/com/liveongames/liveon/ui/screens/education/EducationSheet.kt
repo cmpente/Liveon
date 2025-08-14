@@ -342,28 +342,31 @@ private fun StudentRecordCard(
                         style = MaterialTheme.typography.titleMedium,
                         color = theme.text
                     )
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(8.dp))
+                    // TODO: Dynamically display enrolled courses/grade level based on enrollment.courses and enrollment.tier
                     when (enrollment.tier) {
                         EduTier.ELEMENTARY -> Text(
-                            "Current Grade: [Grade Level]",
+                            "Current Grade: 5th Grade", // Placeholder
                             style = MaterialTheme.typography.bodyMedium,
                             color = theme.text.copy(alpha = 0.75f)
                         )
                         EduTier.MIDDLE -> Text(
-                            "Current Grade: [Grade Level]",
+                            "Current Grade: 7th Grade", // Placeholder
                             style = MaterialTheme.typography.bodyMedium,
                             color = theme.text.copy(alpha = 0.75f)
                         )
                         EduTier.HIGH -> Text(
-                            "Enrolled Classes: [List of classes]",
+                            "Enrolled Classes: English, Math, Science", // Placeholder
                             style = MaterialTheme.typography.bodyMedium,
                             color = theme.text.copy(alpha = 0.75f)
                         )
                         EduTier.CERT -> Text(
-                            "Certificate Program Details: [Details]",
+                            "Certificate Program Details: Completing the requirements for a Software Development certification.", // Placeholder
                             style = MaterialTheme.typography.bodyMedium,
                             color = theme.text.copy(alpha = 0.75f)
                         )
+
+
                         EduTier.ASSOC -> Text(
                             "Associate Degree Details: [Details]",
                             style = MaterialTheme.typography.bodyMedium,
@@ -443,8 +446,8 @@ private fun StatChip(label: String, value: String, icon: Int) {
 private fun ActionPill(
     action: EducationActionDef,
     title: String,
-    subtitle: String,
-    hasMiniGame: Boolean,
+    subtitle: String?,
+    hasMiniGame: Boolean = false, // Default to false if not explicitly passed
     isOnCooldown: Boolean,
     onClick: () -> Unit
 ) {
@@ -486,13 +489,13 @@ private fun ActionPill(
                 )
             }
 
-            if (subtitle.isNotBlank()) {
+            if (!subtitle.isNullOrBlank()) {
                 Spacer(Modifier.height(8.dp))
                 Text(
                     subtitle,
                     style = MaterialTheme.typography.bodySmall,
                     color = theme.text.copy(alpha = 0.7f)
-                )
+                , maxLines = 2, overflow = TextOverflow.Ellipsis)
             }
 
             if (isOnCooldown) {
