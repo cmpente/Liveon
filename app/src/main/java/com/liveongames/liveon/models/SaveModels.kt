@@ -2,7 +2,6 @@
 package com.liveongames.liveon.models
 
 import com.liveongames.domain.model.education.Education
-import com.liveongames.domain.model.Education
 import java.util.*
 
 data class PlayerSaveData(

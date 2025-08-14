@@ -19,7 +19,8 @@ data class EducationActionDef(
     override val gpaDeltaMin: Double,
     override val gpaDeltaMax: Double,
     @Contextual
-    override val dialog: List<DialogStep>
+    override val dialog: List<DialogStep>,
+    val minigameId: String? = null // Added nullable minigameId property
 ) : ActionDef {
     override val tiers: List<EduTier> = tiersList.mapNotNull { tierStr ->
         EduTier.values().find { it.name.equals(tierStr, ignoreCase = true) }

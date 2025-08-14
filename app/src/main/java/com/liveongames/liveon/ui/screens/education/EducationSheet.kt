@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.VideogameAsset
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.AssistChip
@@ -42,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.liveongames.liveon.viewmodel.EducationEvent
 import com.liveongames.liveon.viewmodel.EducationViewModel
+import com.liveongames.liveon.viewmodel.EducationUiState
 import com.liveongames.data.model.education.EducationActionDef
 import com.liveongames.domain.model.EducationProgram
 import com.liveongames.domain.model.Enrollment
