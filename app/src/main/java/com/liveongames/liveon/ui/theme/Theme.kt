@@ -124,7 +124,6 @@ private fun ProvideLiveonTheme( // Modified overload for system theme
         darkColorScheme() // Use default Material 3 dark color scheme
     } else {
         lightColorScheme() // Use default Material 3 light color scheme
-        )
     }
 
     CompositionLocalProvider(LocalLiveonTheme provides theme) {
