@@ -281,3 +281,4 @@ data class EducationProgramImpl(
     override val tuition: Int,
     override val requirements: Set<String>
 ) : EducationProgram
+

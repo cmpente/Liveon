@@ -1,50 +1,403 @@
 {
+  "version": 3,
   "category": "MASTERMIND",
-  "riskTier": "EXTREME_RISK",
+  "defaults": {
+    "messageIntervalSec": 6,
+    "phaseSplit": { "setup": 0.30, "execution": 0.50, "climax": 0.20 },
+    "cooldowns": { "onFailSec": 120, "onArrestSec": 180 }
+  },
   "crimes": [
     {
       "type": "ARMED_ROBBERY",
+      "name": "Armed robbery",
+      "durationSeconds": 140,
       "paths": [
-        {"setup":["Bank lobby","Masks on","Shotgun in hand"],"execution":["Shout orders","Jump counter","Bag cash fast"],"climax":{"success":"Vault emptied","fail":"Bag tears open","caught":"Silent alarm trips SWAT"},"outcomes":[{"type":"success","weight":40},{"type":"fail","weight":45},{"type":"caught","weight":15}]},
-        {"setup":["Casino floor","Security distracted","Crew ready"],"execution":["Draw pistols","Sweep chips","Rush exit"],"climax":{"success":"Haul in van","fail":"Security blocks path","caught":"Cameras catch faces"},"outcomes":[{"type":"success","weight":41},{"type":"fail","weight":44},{"type":"caught","weight":15}]},
-        {"setup":["Armored truck","Intersection stop","Driver unaware"],"execution":["Block truck","Yank door","Grab bags"],"climax":{"success":"Truck looted","fail":"Bag chain snag","caught":"Driver fights back"},"outcomes":[{"type":"success","weight":39},{"type":"fail","weight":46},{"type":"caught","weight":15}]},
-        {"setup":["Jewelry store","Crowd outside","Inside guard alone"],"execution":["Shatter case","Fill bag","Cover exit"],"climax":{"success":"Diamonds secured","fail":"Glass cuts hand","caught":"Police arrive early"},"outcomes":[{"type":"success","weight":40},{"type":"fail","weight":45},{"type":"caught","weight":15}]},
-        {"setup":["Gold vault","Fake maintenance call","Team in uniforms"],"execution":["Enter vault","Overpower guard","Load cart"],"climax":{"success":"Gold wheeled out","fail":"Cart tips","caught":"Alarm shuts vault"},"outcomes":[{"type":"success","weight":39},{"type":"fail","weight":46},{"type":"caught","weight":15}]},
-        {"setup":["Luxury boutique","Owner present","Crowd distracted"],"execution":["Lock door","Sweep racks","Force back door"],"climax":{"success":"Designer goods stolen","fail":"Back door jammed","caught":"Passerby films"},"outcomes":[{"type":"success","weight":40},{"type":"fail","weight":45},{"type":"caught","weight":15}]},
-        {"setup":["Bank truck vault","Team split","Crowd noise high"],"execution":["Cut lock","Load bags","Retreat fast"],"climax":{"success":"Vault emptied","fail":"Drill bit breaks","caught":"Security returns"},"outcomes":[{"type":"success","weight":41},{"type":"fail","weight":44},{"type":"caught","weight":15}]},
-        {"setup":["VIP gala","Security thin","Auction ongoing"],"execution":["Grab art","Push through crowd","Reach getaway"],"climax":{"success":"Art in van","fail":"Trip on stairs","caught":"Guard wrestles you"},"outcomes":[{"type":"success","weight":40},{"type":"fail","weight":45},{"type":"caught","weight":15}]},
-        {"setup":["Downtown bank","Rainstorm","Crew in ponchos"],"execution":["Blend in","Draw weapons","Force teller"],"climax":{"success":"Cash in duffels","fail":"Ink pack explodes","caught":"Rain cam shows faces"},"outcomes":[{"type":"success","weight":39},{"type":"fail","weight":46},{"type":"caught","weight":15}]},
-        {"setup":["Armored cash van","Parking garage","Backup ready"],"execution":["Block exit","Force driver out","Empty crates"],"climax":{"success":"Crates loaded","fail":"Lift gate stuck","caught":"Garage patrol spots"},"outcomes":[{"type":"success","weight":40},{"type":"fail","weight":45},{"type":"caught","weight":15}]}
+        {
+          "setup": [
+            "You count cameras and exits until numbers turn to music.",
+            "Inside voices run the script again and again."
+          ],
+          "execution": [
+            "Masks on; the room snaps to silence.",
+            "Bags open; seconds bleed away like they’re expensive.",
+            "You keep your team inside the plan and the plan inside your head."
+          ],
+          "climax": [
+            "Siren wails drift closer through concrete.",
+            "You signal the getaway and hope the city cooperates."
+          ],
+          "outcomes": [
+            { "type": "success", "weight": 40 },
+            { "type": "partial", "weight": 18 },
+            { "type": "fail", "weight": 27 },
+            { "type": "caught", "weight": 15 }
+          ]
+        },
+        {
+          "setup": [
+            "You trade nods with a guard who knows nothing and suspects everything.",
+            "A timer in your head clacks like old machinery."
+          ],
+          "execution": [
+            "Someone shouts; it isn’t you.",
+            "Money moves like water; time doesn’t move at all."
+          ],
+          "climax": [
+            "Doors feel heavier on the way out.",
+            "You don’t look back. Everyone does anyway."
+          ],
+          "outcomes": [
+            { "type": "success", "weight": 36 },
+            { "type": "partial", "weight": 20 },
+            { "type": "fail", "weight": 29 },
+            { "type": "caught", "weight": 15 }
+          ]
+        }
       ]
     },
     {
       "type": "EXTORTION",
+      "name": "Extortion",
+      "durationSeconds": 130,
       "paths": [
-        {"setup":["Night meeting","Briefcase in hand","Target arrives nervous"],"execution":["State demands","Show evidence","Set deadline"],"climax":{"success":"Target agrees","fail":"Target stalls","caught":"Undercover cop listening"},"outcomes":[{"type":"success","weight":45},{"type":"fail","weight":40},{"type":"caught","weight":15}]},
-        {"setup":["Crowded café","Sit near target","File folder on table"],"execution":["Slide folder","Whisper threats","Collect payment"],"climax":{"success":"Money in pocket","fail":"Folder drops","caught":"Patron calls police"},"outcomes":[{"type":"success","weight":46},{"type":"fail","weight":39},{"type":"caught","weight":15}]},
-        {"setup":["Back alley","Rain falling","Target late"],"execution":["Lean on wall","Flash weapon","State terms"],"climax":{"success":"Payment handed","fail":"Target bolts","caught":"Patrol car arrives"},"outcomes":[{"type":"success","weight":44},{"type":"fail","weight":41},{"type":"caught","weight":15}]},
-        {"setup":["Corporate office","Fake badge","Meeting booked"],"execution":["Close blinds","Issue threat","Name price"],"climax":{"success":"Check signed","fail":"Exec laughs","caught":"Security barges in"},"outcomes":[{"type":"success","weight":45},{"type":"fail","weight":40},{"type":"caught","weight":15}]},
-        {"setup":["Target's home","Dim porch light","Envelope ready"],"execution":["Knock door","State demand","Leave with cash"],"climax":{"success":"Cash secured","fail":"Dog chases","caught":"Neighbor calls police"},"outcomes":[{"type":"success","weight":46},{"type":"fail","weight":39},{"type":"caught","weight":15}]},
-        {"setup":["Underground bar","Target at counter","Music loud"],"execution":["Sit beside","Slip photo","Threaten softly"],"climax":{"success":"Money handed","fail":"Drink spills","caught":"Bouncer intervenes"},"outcomes":[{"type":"success","weight":44},{"type":"fail","weight":41},{"type":"caught","weight":15}]},
-        {"setup":["Docks","Freight cranes moving","Crate as seat"],"execution":["Call target","Show shipment manifest","Name cut"],"climax":{"success":"Payment wired","fail":"Manifest fake","caught":"Harbor patrol listens"},"outcomes":[{"type":"success","weight":45},{"type":"fail","weight":40},{"type":"caught","weight":15}]},
-        {"setup":["Warehouse","Dim lights","Metal table between"],"execution":["Slide photos","Make offer","Shake hands"],"climax":{"success":"Deal closed","fail":"Target backs off","caught":"Hidden camera live"},"outcomes":[{"type":"success","weight":46},{"type":"fail","weight":39},{"type":"caught","weight":15}]},
-        {"setup":["Luxury suite","Curtains drawn","Target pacing"],"execution":["Sit calm","State info held","Price up"],"climax":{"success":"Funds wired","fail":"Target refuses","caught":"Room service is SWAT"},"outcomes":[{"type":"success","weight":44},{"type":"fail","weight":41},{"type":"caught","weight":15}]},
-        {"setup":["Gym locker room","Target lifting","Towel in hand"],"execution":["Corner target","Lay terms","Walk away"],"climax":{"success":"Money later delivered","fail":"Target laughs","caught":"Security called"},"outcomes":[{"type":"success","weight":45},{"type":"fail","weight":40},{"type":"caught","weight":15}]}
+        {
+          "setup": [
+            "You collect leverage and names.",
+            "Threats polished to a business shine."
+          ],
+          "execution": [
+            "Ultimatums go out with deadlines.",
+            "Phones light like a storm front.",
+            "You hold the line when they push back."
+          ],
+          "climax": [
+            "They blink first—or do you?",
+            "Someone has to fold."
+          ],
+          "outcomes": [
+            { "type": "success", "weight": 44 },
+            { "type": "partial", "weight": 18 },
+            { "type": "fail", "weight": 24 },
+            { "type": "caught", "weight": 14 }
+          ]
+        },
+        {
+          "setup": [
+            "You rehearse empathy as a weapon.",
+            "Documents wait in neat little stacks of ruin."
+          ],
+          "execution": [
+            "A lawyer calls your bluff; you don’t blink.",
+            "Pressure sings in the copper lines."
+          ],
+          "climax": [
+            "A single email drafts itself toward history.",
+            "You decide who owns the next morning."
+          ],
+          "outcomes": [
+            { "type": "success", "weight": 41 },
+            { "type": "partial", "weight": 20 },
+            { "type": "fail", "weight": 25 },
+            { "type": "caught", "weight": 14 }
+          ]
+        }
       ]
     },
     {
       "type": "KIDNAPPING_FOR_RANSOM",
+      "name": "Kidnapping for ransom",
+      "durationSeconds": 160,
       "paths": [
-        {"setup":["Night street","Target walking","Van idling nearby"],"execution":["Grab target","Cover mouth","Push inside"],"climax":{"success":"Target secured","fail":"Target screams","caught":"Bystander intervenes"},"outcomes":[{"type":"success","weight":38},{"type":"fail","weight":47},{"type":"caught","weight":15}]},
-        {"setup":["Busy mall","Child wanders","Parent distracted"],"execution":["Approach fast","Lead away","Exit to lot"],"climax":{"success":"Child in van","fail":"Parent spots","caught":"Security radios police"},"outcomes":[{"type":"success","weight":39},{"type":"fail","weight":46},{"type":"caught","weight":15}]},
-        {"setup":["Suburban driveway","Garage open","Target loading car"],"execution":["Rush forward","Force inside","Drive off"],"climax":{"success":"Gone in seconds","fail":"Door slams","caught":"Neighbor records plate"},"outcomes":[{"type":"success","weight":38},{"type":"fail","weight":47},{"type":"caught","weight":15}]},
-        {"setup":["Hotel lobby","Target at desk","Bellhop distracted"],"execution":["Grab bag","Drag to stairwell","Exit rear"],"climax":{"success":"Target restrained","fail":"Elevator opens","caught":"Desk clerk screams"},"outcomes":[{"type":"success","weight":39},{"type":"fail","weight":46},{"type":"caught","weight":15}]},
-        {"setup":["Park bench","Target reading","Path empty"],"execution":["Cover face","Lift target","Walk quickly"],"climax":{"success":"Into van","fail":"Book drops loudly","caught":"Jogger blocks path"},"outcomes":[{"type":"success","weight":38},{"type":"fail","weight":47},{"type":"caught","weight":15}]},
-        {"setup":["Alley exit","Shadow cover","Lookout ready"],"execution":["Signal crew","Grab target","Drive fast"],"climax":{"success":"Clear escape","fail":"Target fights","caught":"Marked patrol pulls in"},"outcomes":[{"type":"success","weight":39},{"type":"fail","weight":46},{"type":"caught","weight":15}]},
-        {"setup":["Private dock","Yacht moored","Owner on deck"],"execution":["Climb aboard","Subdue quickly","Sail away"],"climax":{"success":"Boat out of harbor","fail":"Rope slips","caught":"Harbor patrol speeds up"},"outcomes":[{"type":"success","weight":38},{"type":"fail","weight":47},{"type":"caught","weight":15}]},
-        {"setup":["School gate","Crowd dispersing","Target alone"],"execution":["Approach casually","Guide to car","Close door"],"climax":{"success":"Drive away","fail":"Teacher yells","caught":"Parent blocks exit"},"outcomes":[{"type":"success","weight":39},{"type":"fail","weight":46},{"type":"caught","weight":15}]},
-        {"setup":["Grocery lot","Target loading trunk","Lot empty"],"execution":["Rush forward","Push inside","Peel out"],"climax":{"success":"Gone quick","fail":"Drop keys","caught":"Security camera pans"},"outcomes":[{"type":"success","weight":38},{"type":"fail","weight":47},{"type":"caught","weight":15}]},
-        {"setup":["Concert crowd","Target VIP","Backstage pass faked"],"execution":["Escort away","Into car","Lock doors"],"climax":{"success":"Clear escape","fail":"Pass questioned","caught":"Guard stops car"},"outcomes":[{"type":"success","weight":39},{"type":"fail","weight":46},{"type":"caught","weight":15}]}
+        {
+          "setup": [
+            "You trace schedules to the minute.",
+            "Safehouse keys bite your palm."
+          ],
+          "execution": [
+            "Van doors slide; time compresses.",
+            "Negotiations creep over crackling lines.",
+            "Every word can tilt the scale."
+          ],
+          "climax": [
+            "Drop site set. Nerves razor-thin.",
+            "It all balances on this trade."
+          ],
+          "outcomes": [
+            { "type": "success", "weight": 33 },
+            { "type": "partial", "weight": 19 },
+            { "type": "fail", "weight": 30 },
+            { "type": "caught", "weight": 18 }
+          ]
+        },
+        {
+          "setup": [
+            "You plan the pickup with a metronome and a prayer.",
+            "Blindfolds, burner phones, routes with no history."
+          ],
+          "execution": [
+            "A convoy of ordinary cars makes an extraordinary mess.",
+            "The negotiator’s voice trembles; yours can’t."
+          ],
+          "climax": [
+            "Sirens bloom too close to ignore.",
+            "A helicopter writes doubt in the sky."
+          ],
+          "outcomes": [
+            { "type": "success", "weight": 30 },
+            { "type": "partial", "weight": 20 },
+            { "type": "fail", "weight": 32 },
+            { "type": "caught", "weight": 18 }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "PONZI_SCHEME",
+      "name": "Ponzi scheme",
+      "durationSeconds": 180,
+      "paths": [
+        {
+          "setup": [
+            "You court whales with polished decks.",
+            "Returns look unreal by design."
+          ],
+          "execution": [
+            "New money props the old.",
+            "You juggle payouts like knives.",
+            "Auditors sniff at the edges."
+          ],
+          "climax": [
+            "A redemption request lands hard.",
+            "Cards tremble in the tower."
+          ],
+          "outcomes": [
+            { "type": "success", "weight": 36 },
+            { "type": "partial", "weight": 22 },
+            { "type": "fail", "weight": 28 },
+            { "type": "caught", "weight": 14 }
+          ]
+        },
+        {
+          "setup": [
+            "You rehearse charm until it sounds like truth.",
+            "Charts climb like they forgot gravity."
+          ],
+          "execution": [
+            "Referrals loop into referrals; the web pretends to be a ladder.",
+            "A journalist asks better questions than usual."
+          ],
+          "climax": [
+            "An investor wants out—now.",
+            "You buy time with time you don’t have."
+          ],
+          "outcomes": [
+            { "type": "success", "weight": 34 },
+            { "type": "partial", "weight": 23 },
+            { "type": "fail", "weight": 29 },
+            { "type": "caught", "weight": 14 }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "CONTRACT_KILLING",
+      "name": "Contract killing",
+      "durationSeconds": 200,
+      "paths": [
+        {
+          "setup": [
+            "You learn routes and habits.",
+            "Weather app matters more than luck."
+          ],
+          "execution": [
+            "Windows of opportunity slide by.",
+            "You keep your distance and your nerve.",
+            "No second shots tonight."
+          ],
+          "climax": [
+            "A single moment stretches thin.",
+            "Decision made. No undo."
+          ],
+          "outcomes": [
+            { "type": "success", "weight": 30 },
+            { "type": "partial", "weight": 18 },
+            { "type": "fail", "weight": 34 },
+            { "type": "caught", "weight": 18 }
+          ]
+        },
+        {
+          "setup": [
+            "You tune out the city until only one address exists.",
+            "Tools sit in a case that smells like gun oil and consequence."
+          ],
+          "execution": [
+            "Doors open where you predicted; luck is just math with better branding.",
+            "A neighbor ruins your timing with a friendly wave."
+          ],
+          "climax": [
+            "Your shot window is a breath long.",
+            "You take it—or you don’t—and both feel permanent."
+          ],
+          "outcomes": [
+            { "type": "success", "weight": 27 },
+            { "type": "partial", "weight": 20 },
+            { "type": "fail", "weight": 35 },
+            { "type": "caught", "weight": 18 }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "DARK_WEB_SALES",
+      "name": "Dark web sales",
+      "durationSeconds": 150,
+      "paths": [
+        {
+          "setup": [
+            "You spin up boxes and routes.",
+            "PGP dances with burner opsec."
+          ],
+          "execution": [
+            "Orders blink in hidden queues.",
+            "Escrow ticks like a metronome.",
+            "You ship without leaving footprints."
+          ],
+          "climax": [
+            "A moderator flags your thread.",
+            "Reputation on the line."
+          ],
+          "outcomes": [
+            { "type": "success", "weight": 42 },
+            { "type": "partial", "weight": 22 },
+            { "type": "fail", "weight": 24 },
+            { "type": "caught", "weight": 12 }
+          ]
+        },
+        {
+          "setup": [
+            "You change handles the way other people change shirts.",
+            "Cold storage hums like a lullaby."
+          ],
+          "execution": [
+            "A buyer wants proofs nobody should have.",
+            "You feed them breadcrumbs that taste like certainty."
+          ],
+          "climax": [
+            "An LE honeypot smells sweeter than usual.",
+            "You cut the connection like a fuse."
+          ],
+          "outcomes": [
+            { "type": "success", "weight": 40 },
+            { "type": "partial", "weight": 23 },
+            { "type": "fail", "weight": 25 },
+            { "type": "caught", "weight": 12 }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ART_THEFT",
+      "name": "Art theft",
+      "durationSeconds": 220,
+      "paths": [
+        {
+          "setup": [
+            "You blueprint the museum’s belly.",
+            "Frame weights and sensors noted."
+          ],
+          "execution": [
+            "Cameras blink at odd intervals.",
+            "You float the canvas free.",
+            "Copy swaps into the light."
+          ],
+          "climax": [
+            "Courier route feels exposed.",
+            "Nothing rattles like empty hands."
+          ],
+          "outcomes": [
+            { "type": "success", "weight": 28 },
+            { "type": "partial", "weight": 22 },
+            { "type": "fail", "weight": 30 },
+            { "type": "caught", "weight": 20 }
+          ]
+        },
+        {
+          "setup": [
+            "You tour like a donor, memorize like a thief.",
+            "Guards rotate on a schedule that begs to be tested."
+          ],
+          "execution": [
+            "A laser grid hiccups on the hour; you breathe with it.",
+            "The frame whispers loose—the loudest quiet you’ve heard."
+          ],
+          "climax": [
+            "A docent rounds the corner humming.",
+            "You become one more shadow among many."
+          ],
+          "outcomes": [
+            { "type": "success", "weight": 26 },
+            { "type": "partial", "weight": 24 },
+            { "type": "fail", "weight": 30 },
+            { "type": "caught", "weight": 20 }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "DIAMOND_HEIST",
+      "name": "Diamond heist",
+      "durationSeconds": 300,
+      "paths": [
+        {
+          "setup": [
+            "Blueprints sprawl across a table that smells like coffee and stress.",
+            "Your inside contact texts one word: \"Clear.\"",
+            "The gala’s string quartet tunes up—music is the best alibi.",
+            "You rehearse the exit until it feels like a memory."
+          ],
+          "execution": [
+            "You ghost the service corridor, tuxedo playing bodyguard.",
+            "Laser grids blink like tired eyes; you time your breathing to the gaps.",
+            "Glass lifts without a gasp; the velvet tray doesn’t argue.",
+            "In your ear, the driver counts down streets you can’t see.",
+            "Every step back to the crowd feels like wading upstream."
+          ],
+          "climax": [
+            "A guard pivots, eyes skating over you and then snapping back.",
+            "Applause erupts in the ballroom—cover or curtain call?",
+            "Your hand closes on a door handle that decides your fate."
+          ],
+          "outcomes": [
+            { "type": "success", "weight": 34 },
+            { "type": "partial", "weight": 16 },
+            { "type": "fail", "weight": 30 },
+            { "type": "caught", "weight": 20 }
+          ]
+        },
+        {
+          "setup": [
+            "Financial district after hours—glass and steel holding its breath.",
+            "A janitor waves; you wave back, both of you lying politely.",
+            "The vault lobby hums with electricity and expensive bad choices."
+          ],
+          "execution": [
+            "Your crew moves like a sentence with no commas.",
+            "Cameras glide; you give them angles that mean nothing.",
+            "You trade a minute for a miracle and hope the math forgives you.",
+            "The case opens on a galaxy of stones and problems."
+          ],
+          "climax": [
+            "Somewhere above, an elevator dings like a judge’s gavel.",
+            "The bag suddenly weighs as much as your future.",
+            "Your reflection asks if this was worth it."
+          ],
+          "outcomes": [
+            { "type": "success", "weight": 28 },
+            { "type": "partial", "weight": 20 },
+            { "type": "fail", "weight": 32 },
+            { "type": "caught", "weight": 20 }
+          ]
+        }
       ]
     }
   ]

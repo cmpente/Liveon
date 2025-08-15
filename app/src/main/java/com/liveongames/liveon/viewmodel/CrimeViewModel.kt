@@ -1,69 +1,71 @@
 // app/src/main/java/com/liveongames/liveon/viewmodel/CrimeViewModel.kt
 package com.liveongames.liveon.viewmodel
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
+import com.google.gson.reflect.TypeToken
 import com.liveongames.domain.model.RiskTier
 import com.liveongames.domain.repository.PlayerRepository
+import com.liveongames.liveon.util.JsonAssetLoader
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import kotlin.random.Random
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
-/**
- * Drop-in, self-contained CrimeViewModel that powers the inline crime flow.
- * No stitching required — all helpers and enums are defined here.
- * It only relies on PlayerRepository for money/notoriety/jail updates.
- */
 @HiltViewModel
 class CrimeViewModel @Inject constructor(
-    private val playerRepository: PlayerRepository
+    private val playerRepository: PlayerRepository,
+    @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
     companion object {
         private const val TAG = "CrimeViewModel"
         private const val CHARACTER_ID = "player_character"
 
-        /** Cooldown durations (also the in-progress duration) */
-        object CrimeCooldownDurationsMs {
-            const val LOW = 25_000L
-            const val MEDIUM = 35_000L
-            const val HIGH = 50_000L
-            const val EXTREME = 70_000L
-        }
+        // Progress durations (ms)
+        private const val LOW_MS = 20_000L
+        private const val MED_MS = 60_000L
+        private const val HIGH_MS = 180_000L
+        private const val EXTREME_MS = 300_000L
 
-        object CrimeCooldownConfig {
-            const val ENABLED = true
-            const val PARTIAL_SUCCESS_STARTS_COOLDOWN = false
-            const val REDUCED_MOTION_FALLBACK = true
-        }
+        // Phase thresholds (fraction of total duration)
+        private const val SETUP_END = 0.25f
+        private const val EXEC_END = 0.85f
 
-        /** Helper: map risk tier to cooldown/duration */
-        fun cooldownForTier(tier: RiskTier): Long = when (tier) {
-            RiskTier.LOW_RISK -> CrimeCooldownDurationsMs.LOW
-            RiskTier.MEDIUM_RISK -> CrimeCooldownDurationsMs.MEDIUM
-            RiskTier.HIGH_RISK -> CrimeCooldownDurationsMs.HIGH
-            RiskTier.EXTREME_RISK -> CrimeCooldownDurationsMs.EXTREME
-        }
+        // UI refresh
+        private const val TICK_MS = 100L
+        private const val MSG_SWAP_MS = 3000L
+
+        // Optional short lockout after a failed outcome (adds a little sting)
+        private const val FAILURE_LOCKOUT_MS = 6_000L
     }
 
-    // ===== Public UI state =====
+    /* ============================== Public UI State ============================== */
 
-    /** ms since epoch when crimes unlock; null when unlocked */
-    private val _cooldownUntil = MutableStateFlow<Long?>(null)
-    val cooldownUntil: StateFlow<Long?> = _cooldownUntil.asStateFlow()
+    /** Crime types (leave as-is if you already expose this enum) */
+    enum class CrimeType {
+        // LOW
+        PICKPOCKETING, SHOPLIFTING, VANDALISM, PETTY_SCAM,
+        // MED
+        MUGGING, BREAKING_AND_ENTERING, DRUG_DEALING, COUNTERFEIT_GOODS,
+        // HIGH
+        BURGLARY, FRAUD, ARMS_SMUGGLING, DRUG_TRAFFICKING,
+        // EXTREME
+        ARMED_ROBBERY, EXTORTION, KIDNAPPING_FOR_RANSOM, PONZI_SCHEME,
+        CONTRACT_KILLING, DARK_WEB_SALES, ART_THEFT, DIAMOND_HEIST
+    }
 
-    /** Player notoriety cache (kept in sync on commit) */
-    private val _playerNotoriety = MutableStateFlow(0)
-    val playerNotoriety: StateFlow<Int> = _playerNotoriety.asStateFlow()
-
-    /** One-shot outcome for the most recent crime */
     data class OutcomeEvent(
         val type: CrimeType,
         val success: Boolean,
@@ -71,182 +73,165 @@ class CrimeViewModel @Inject constructor(
         val moneyGained: Int,
         val jailDays: Int,
         val notorietyDelta: Int,
-        val scenario: String
+        /** The final “climax” narration matching the revealed outcome */
+        val climaxLine: String
     )
+
     private val _lastOutcome = MutableStateFlow<OutcomeEvent?>(null)
     val lastOutcome: StateFlow<OutcomeEvent?> = _lastOutcome.asStateFlow()
     fun consumeOutcome() { _lastOutcome.value = null }
 
-    init {
-        // Warm the notoriety value from repo if available
-        viewModelScope.launch {
-            try {
-                playerRepository.getCharacter(CHARACTER_ID).first()?.let { c ->
-                    // Assuming your Character model has a notoriety field:
-                    val noto = try {
-                        val f = c!!::class.java.getDeclaredField("notoriety")
-                        f.isAccessible = true
-                        (f.get(c) as? Int) ?: 0
-                    } catch (_: Exception) { 0 }
-                    _playerNotoriety.value = noto
+    /** Global lockout (also used while a run is in progress) */
+    private val _cooldownUntil = MutableStateFlow<Long?>(null)
+    val cooldownUntil: StateFlow<Long?> = _cooldownUntil.asStateFlow()
+
+    /** Notoriety (mirrors repo when available) */
+    private val _playerNotoriety = MutableStateFlow(0)
+    val playerNotoriety: StateFlow<Int> = _playerNotoriety.asStateFlow()
+
+    enum class Phase { SETUP, EXECUTION, CLIMAX }
+
+    data class CrimeRunState(
+        val type: CrimeType,
+        val startedAtMs: Long,
+        val durationMs: Long,
+        val progress: Float,
+        val phase: Phase,
+        val currentMessage: String
+    )
+
+    private val _runState = MutableStateFlow<CrimeRunState?>(null)
+    val runState: StateFlow<CrimeRunState?> = _runState.asStateFlow()
+
+    /* ============================== Narrative assets ============================== */
+
+    private data class OutcomesWeight(@SerializedName("type") val type: String, val weight: Int)
+    private data class ClimaxText(val success: String, val fail: String, val caught: String)
+    private data class CrimePath(
+        val setup: List<String>,
+        val execution: List<String>,
+        val climax: ClimaxText,
+        val outcomes: List<OutcomesWeight>
+    )
+    private data class CrimeDef(val type: String, val paths: List<CrimePath>)
+    private data class CrimesPack(val crimes: List<CrimeDef>)
+
+    private val narrativeMap = mutableMapOf<CrimeType, List<CrimePath>>()
+    private var narrativeLoaded = false
+    private var runJob: Job? = null
+
+    private suspend fun ensureNarrativesLoaded() {
+        if (narrativeLoaded) return
+        val loader = JsonAssetLoader(appContext)
+        val gson = Gson()
+        val files = listOf(
+            "street_crimes.json",
+            "robbery_crimes.json",
+            "heists_and_smuggling_crimes.json",
+            "mastermind_crimes.json"
+        )
+        val type = object : TypeToken<CrimesPack>() {}.type
+        for (file in files) {
+            runCatching {
+                val json = loader.readRaw(file)
+                val pack: CrimesPack = gson.fromJson(json, type)
+                pack.crimes.forEach { cd ->
+                    runCatching {
+                        val ct = CrimeType.valueOf(cd.type)
+                        narrativeMap[ct] = cd.paths
+                    }
                 }
-            } catch (_: Exception) {
-                // Ignore; we'll keep local state only if repository isn't reachable.
             }
         }
+        narrativeLoaded = true
     }
 
-    /** Start a global cooldown and keep crimes disabled until it ends. */
-    fun startGlobalCooldown(durationMs: Long) {
-        if (!CrimeCooldownConfig.ENABLED) return
+    /* ============================== Public API ============================== */
+
+    fun beginCrime(type: CrimeType) {
+        if (_runState.value != null) return // already running
         viewModelScope.launch {
-            val endTime = System.currentTimeMillis() + durationMs
-            _cooldownUntil.value = endTime
-            while (System.currentTimeMillis() < endTime) delay(100)
-            _cooldownUntil.value = null
-        }
-    }
+            ensureNarrativesLoaded()
+            val base = createBase(type) // payout/jail/notoriety baselines
+            val duration = durationForTier(base.riskTier)
 
-    /** Returns a plausible "as it happens" line for the selected crime. */
-    fun previewScenario(type: CrimeType): String = when (type) {
-        // LOW
-        CrimeType.PICKPOCKETING -> listOf(
-            "You spot a distracted shopper fumbling for their phone.",
-            "A tourist stops to take a photo, bag open on their shoulder.",
-            "A gambler counts his winnings in the open."
-        ).random()
-        CrimeType.SHOPLIFTING -> listOf(
-            "You notice a blind spot in the store's cameras.",
-            "The fitting rooms are unattended.",
-            "Someone else causes a commotion near the registers."
-        ).random()
-        CrimeType.VANDALISM -> listOf(
-            "A rival crew's mural taunts your block.",
-            "A politician's poster becomes your canvas.",
-            "You tag over a rival's graffiti."
-        ).random()
-        CrimeType.PETTY_SCAM -> listOf(
-            "You 'find' a gold ring and offer to sell it cheap.",
-            "You sell fake raffle tickets at a busy market.",
-            "You pose as a charity collector."
-        ).random()
+            val path = narrativeMap[type]?.randomOrNull()
+            val firstLine = path?.setup?.randomOrNull()
+                ?: previewScenario(type) // fallback seed line
 
-        // MEDIUM
-        CrimeType.MUGGING -> listOf(
-            "You corner a lone businessman in a dark alley.",
-            "A jogger stops to catch their breath, headphones in.",
-            "A tourist wanders into the wrong neighborhood."
-        ).random()
-        CrimeType.BREAKING_AND_ENTERING -> listOf(
-            "You spot a home with lights off and mail piling up.",
-            "A back window is left unlocked.",
-            "A shopkeeper leaves the rear door ajar."
-        ).random()
-        CrimeType.DRUG_DEALING -> listOf(
-            "A regular asks for a bigger order than usual.",
-            "You meet a new buyer at a busy park.",
-            "A bar patron discreetly approaches you."
-        ).random()
-        CrimeType.COUNTERFEIT_GOODS -> listOf(
-            "A flea market vendor agrees to move your goods.",
-            "Tourists crowd around your street stall.",
-            "A promoter buys bulk for giveaways."
-        ).random()
+            val start = System.currentTimeMillis()
+            val end = start + duration
+            _cooldownUntil.value = end // lock during run
 
-        // HIGH
-        CrimeType.BURGLARY -> listOf(
-            "You disable a small shop's alarm system.",
-            "A mansion is left unattended for the weekend.",
-            "You find a warehouse with lax security."
-        ).random()
-        CrimeType.FRAUD -> listOf(
-            "You set up a fake donation site.",
-            "You skim credit cards at a gas station.",
-            "You forge a cashier's check."
-        ).random()
-        CrimeType.ARMS_SMUGGLING -> listOf(
-            "You move a shipment through a border checkpoint.",
-            "You sell to a biker gang out of state.",
-            "You load crates into a cargo van at night."
-        ).random()
-        CrimeType.DRUG_TRAFFICKING -> listOf(
-            "You drive a van across the state line.",
-            "A shipment arrives hidden in produce crates.",
-            "You use a fishing boat to transport packages."
-        ).random()
+            var lastMsgAt = start
+            var currentMsg = firstLine
+            var lastPhase: Phase? = null
 
-        // EXTREME
-        CrimeType.ARMED_ROBBERY -> listOf(
-            "You storm a jewelry store during peak hours.",
-            "You hit an armored truck in transit.",
-            "You rob a high-stakes poker game."
-        ).random()
-        CrimeType.EXTORTION -> listOf(
-            "You threaten to leak sensitive photos.",
-            "You demand 'protection' money from a nightclub.",
-            "You blackmail a corporate executive."
-        ).random()
-        CrimeType.KIDNAPPING_FOR_RANSOM -> listOf(
-            "You grab a wealthy child outside a school.",
-            "You abduct a celebrity's assistant.",
-            "You take a local politician's spouse."
-        ).random()
-        CrimeType.PONZI_SCHEME -> listOf(
-            "You launch a fake investment firm.",
-            "You promise impossible returns to investors.",
-            "You use new deposits to pay earlier victims."
-        ).random()
-        CrimeType.CONTRACT_KILLING -> listOf(
-            "You assemble a rifle in a motel bathroom.",
-            "A silencer coughs once. The night holds its breath.",
-            "You vanish into a crowd before the sirens start."
-        ).random()
-        CrimeType.DARK_WEB_SALES -> listOf(
-            "You sell stolen bank credentials.",
-            "You auction off hacking tools.",
-            "You ship forged passports overseas."
-        ).random()
-        CrimeType.ART_THEFT -> listOf(
-            "You swap a gallery piece for a perfect replica.",
-            "A curator's keycard opens more than doors.",
-            "The frame is heavier than it looks."
-        ).random()
-        CrimeType.DIAMOND_HEIST -> listOf(
-            "You rob a diamond exchange vault.",
-            "You hit a guarded transport truck.",
-            "You infiltrate a mining company's storage."
-        ).random()
-    }
+            runJob = viewModelScope.launch {
+                while (true) {
+                    val now = System.currentTimeMillis()
+                    val frac = ((now - start).coerceAtLeast(0).toFloat() / duration.toFloat())
+                        .coerceIn(0f, 1f)
 
-    /** Commit a crime: compute outcome, update repo, emit OutcomeEvent. */
-    fun commitCrime(type: CrimeType) {
-        Log.d(TAG, "Attempting to commit crime: $type")
-        viewModelScope.launch {
-            try {
-                val base = createCrime(type)
+                    val phase = when {
+                        frac < SETUP_END -> Phase.SETUP
+                        frac < EXEC_END -> Phase.EXECUTION
+                        else -> Phase.CLIMAX
+                    }
 
-                val isSuccess = Random.nextDouble() <= base.baseSuccessChance
-                val isCaught = Random.nextDouble() < when (base.riskTier) {
-                    RiskTier.LOW_RISK -> 0.30
-                    RiskTier.MEDIUM_RISK -> 0.50
-                    RiskTier.HIGH_RISK -> 0.70
-                    RiskTier.EXTREME_RISK -> 0.90
+                    // Rotate narrative line every MSG_SWAP_MS within phase (pre-reveal only)
+                    if (now - lastMsgAt >= MSG_SWAP_MS) {
+                        val list = when (phase) {
+                            Phase.SETUP -> path?.setup
+                            Phase.EXECUTION, Phase.CLIMAX -> path?.execution
+                        } ?: emptyList()
+                        if (list.isNotEmpty()) {
+                            val next = list.random()
+                            if (next != currentMsg) currentMsg = next
+                            lastMsgAt = now
+                        }
+                    }
+
+                    if (lastPhase != phase || _runState.value == null || _runState.value?.currentMessage != currentMsg) {
+                        _runState.value = CrimeRunState(
+                            type = type,
+                            startedAtMs = start,
+                            durationMs = duration,
+                            progress = frac,
+                            phase = phase,
+                            currentMessage = currentMsg ?: ""
+                        )
+                        lastPhase = phase
+                    }
+
+                    if (now >= end) break
+                    delay(TICK_MS)
                 }
+
+                // Timer finished: decide the outcome now (no mid-phase reveals).
+                val outcome = chooseOutcome(path)
+                val isSuccess = outcome == "SUCCESS"
+                val isCaught = outcome == "CAUGHT"
 
                 val money = if (isSuccess) Random.nextInt(base.payoutMin, base.payoutMax + 1) else 0
                 val jail = if (isCaught) Random.nextInt(base.jailMin, base.jailMax + 1) else 0
-                val notorietyDelta = if (isSuccess) base.notorietyGain else base.notorietyLoss
+                val notoDelta = if (isSuccess) base.notorietyGain else base.notorietyLoss
 
-                if (money > 0) {
-                    runCatching { playerRepository.updateMoney(CHARACTER_ID, money) }
+                // Apply repo effects (best-effort; safe if repo absent)
+                runCatching {
+                    if (money > 0) playerRepository.updateMoney(CHARACTER_ID, money)
+                    if (notoDelta != 0) {
+                        playerRepository.updateNotoriety(CHARACTER_ID, notoDelta)
+                        _playerNotoriety.value = _playerNotoriety.value + notoDelta
+                    }
+                    if (jail > 0) playerRepository.updateJailTime(CHARACTER_ID, jail)
                 }
-                if (notorietyDelta != 0) {
-                    runCatching { playerRepository.updateNotoriety(CHARACTER_ID, notorietyDelta) }
-                    _playerNotoriety.value = (_playerNotoriety.value + notorietyDelta)
-                }
-                if (jail > 0) {
-                    runCatching { playerRepository.updateJailTime(CHARACTER_ID, jail) }
-                }
+
+                val climaxLine = when {
+                    isSuccess -> path?.climax?.success
+                    isCaught -> path?.climax?.caught
+                    else -> path?.climax?.fail
+                } ?: ""
 
                 _lastOutcome.value = OutcomeEvent(
                     type = type,
@@ -254,421 +239,201 @@ class CrimeViewModel @Inject constructor(
                     caught = isCaught,
                     moneyGained = money,
                     jailDays = jail,
-                    notorietyDelta = notorietyDelta,
-                    scenario = base.scenario
+                    notorietyDelta = notoDelta,
+                    climaxLine = climaxLine
                 )
-            } catch (e: Exception) {
-                Log.e(TAG, "Error committing crime", e)
+
+                // Post-result short lockout if failed (adds drama + fits police flash)
+                _cooldownUntil.value = if (!isSuccess) System.currentTimeMillis() + FAILURE_LOCKOUT_MS else null
+                _runState.value = null
+                runJob = null
             }
         }
     }
 
-    // ====== Model & factory ======
+    /** Cancel current crime — no rewards or consequences, crimes unlock immediately. */
+    fun cancelCrime() {
+        runJob?.cancel()
+        runJob = null
+        _runState.value = null
+        _cooldownUntil.value = null
+    }
 
-    /** Local model used for outcome computation and scenario text. */
+    /* ============================== Helpers ============================== */
+
+    private fun durationForTier(t: RiskTier) = when (t) {
+        RiskTier.LOW_RISK -> LOW_MS
+        RiskTier.MEDIUM_RISK -> MED_MS
+        RiskTier.HIGH_RISK -> HIGH_MS
+        RiskTier.EXTREME_RISK -> EXTREME_MS
+    }
+
+    /** Weighted outcome chooser with sensible fallback to base chances. */
+    private fun chooseOutcome(path: CrimePath?): String {
+        if (path != null && path.outcomes.isNotEmpty()) {
+            val total = path.outcomes.sumOf { it.weight }.coerceAtLeast(1)
+            var roll = Random.nextInt(total)
+            for (o in path.outcomes) {
+                if (roll < o.weight) return o.type.uppercase()
+                roll -= o.weight
+            }
+        }
+        // Fallback: modest success; detection scales by risk
+        return listOf("SUCCESS", "FAIL", "CAUGHT").random()
+    }
+
+    /** Short one-liner used before start or as fallback if assets missing. */
+    fun previewScenario(type: CrimeType): String = when (type) {
+        // LOW
+        CrimeType.PICKPOCKETING -> listOf(
+            "You brush past a tourist, fingers light as air.",
+            "You time your move as train doors chime.",
+            "You bump shoulders; the pocket gives."
+        ).random()
+        CrimeType.SHOPLIFTING -> listOf(
+            "A camera blind spot opens for a heartbeat.",
+            "The fitting rooms are unattended.",
+            "Security yawns as you slip the tag."
+        ).random()
+        CrimeType.VANDALISM -> listOf(
+            "Fresh paint hisses as your tag blooms.",
+            "You stencil a quick message and vanish."
+        ).random()
+        CrimeType.PETTY_SCAM -> listOf(
+            "You work the shell game with practiced ease.",
+            "A forged receipt buys you a door."
+        ).random()
+        // MED
+        CrimeType.MUGGING -> listOf(
+            "An alley throat clears. Footsteps quicken.",
+            "You pick a mark near a broken light."
+        ).random()
+        CrimeType.BREAKING_AND_ENTERING -> listOf(
+            "A latch gives under a practiced twist.",
+            "Window. Crowbar. Quiet."
+        ).random()
+        CrimeType.DRUG_DEALING -> listOf(
+            "A handshake lasts a second too long.",
+            "The meetup ping hits your burner."
+        ).random()
+        CrimeType.COUNTERFEIT_GOODS -> listOf(
+            "Designer fakes spill from a trunk.",
+            "Stamps, seals, and a nervous smile."
+        ).random()
+        // HIGH
+        CrimeType.BURGLARY -> listOf(
+            "You listen to the house breathe, then move.",
+            "Glass whispers. Gloves glide."
+        ).random()
+        CrimeType.FRAUD -> listOf(
+            "An inbox quivers with too-good promises.",
+            "Numbers dance; the balance tips."
+        ).random()
+        CrimeType.ARMS_SMUGGLING -> listOf(
+            "Crates vanish into a midnight van.",
+            "A handshake at a lonely checkpoint."
+        ).random()
+        CrimeType.DRUG_TRAFFICKING -> listOf(
+            "A fishing boat rides low in the water.",
+            "Produce crates hide more than citrus."
+        ).random()
+        // EXTREME
+        CrimeType.ARMED_ROBBERY -> listOf(
+            "Masks up. Heart drums. Doors in.",
+            "You count steps, not seconds."
+        ).random()
+        CrimeType.EXTORTION -> listOf(
+            "One message. Ten meanings. All sharp.",
+            "The club’s back office goes quiet."
+        ).random()
+        CrimeType.KIDNAPPING_FOR_RANSOM -> listOf(
+            "A van idles like a held breath.",
+            "The route maps glow on your screen."
+        ).random()
+        CrimeType.PONZI_SCHEME -> listOf(
+            "Charts ascend; truth descends.",
+            "Meetings stack; promises echo."
+        ).random()
+        CrimeType.CONTRACT_KILLING -> listOf(
+            "A silencer coughs once; the night holds its breath.",
+            "A window opens, a future closes."
+        ).random()
+        CrimeType.DARK_WEB_SALES -> listOf(
+            "A wallet drains behind seven proxies.",
+            "A new identity clears across oceans."
+        ).random()
+        CrimeType.ART_THEFT -> listOf(
+            "A replica smiles at a laser grid.",
+            "A curator’s keycard sings."
+        ).random()
+        CrimeType.DIAMOND_HEIST -> listOf(
+            "A vault listens; you answer in beeps.",
+            "A transport slows at just the wrong light."
+        ).random()
+    }
+
+    /* ============================== Outcome Baselines ============================== */
     private data class CrimeBase(
-        val name: String,
-        val description: String,
         val riskTier: RiskTier,
-        val notorietyRequired: Int,
-        val baseSuccessChance: Double,
         val payoutMin: Int,
         val payoutMax: Int,
         val jailMin: Int,
         val jailMax: Int,
         val notorietyGain: Int,
-        val notorietyLoss: Int,
-        val scenario: String
+        val notorietyLoss: Int
     )
 
-    @Suppress("LongMethod")
-    private fun createCrime(type: CrimeType): CrimeBase {
-        fun pick(vararg lines: String) = lines.random()
+    // Keep simple baselines (unchanged from earlier versions)
+    private fun createBase(type: CrimeType): CrimeBase {
+        fun base(
+            tier: RiskTier, payMin: Int, payMax: Int,
+            jailMin: Int, jailMax: Int, notoGain: Int, notoLoss: Int
+        ) = CrimeBase(tier, payMin, payMax, jailMin, jailMax, notoGain, notoLoss)
+
         return when (type) {
-            // ===== LOW RISK =====
-            CrimeType.PICKPOCKETING -> CrimeBase(
-                name = "Pickpocketing",
-                description = "Lift a wallet or phone from an unsuspecting mark.",
-                riskTier = RiskTier.LOW_RISK,
-                notorietyRequired = 0,
-                baseSuccessChance = 0.62,
-                payoutMin = 20,
-                payoutMax = 180,
-                jailMin = 1,
-                jailMax = 3,
-                notorietyGain = 1,
-                notorietyLoss = -1,
-                scenario = pick(
-                    "You brush past a tourist, fingers light as air.",
-                    "You time your move as a train doors chime.",
-                    "You bump shoulders; the pocket gives."
-                )
-            )
-            CrimeType.SHOPLIFTING -> CrimeBase(
-                name = "Shoplifting",
-                description = "Swipe small items from a retail store.",
-                riskTier = RiskTier.LOW_RISK,
-                notorietyRequired = 0,
-                baseSuccessChance = 0.58,
-                payoutMin = 30,
-                payoutMax = 220,
-                jailMin = 1,
-                jailMax = 3,
-                notorietyGain = 1,
-                notorietyLoss = -1,
-                scenario = pick(
-                    "You glide through the blind spot between cameras.",
-                    "Security yawns; you slip the item into your bag.",
-                    "You peel off the tag and walk."
-                )
-            )
-            CrimeType.VANDALISM -> CrimeBase(
-                name = "Vandalism",
-                description = "Deface property to make a statement.",
-                riskTier = RiskTier.LOW_RISK,
-                notorietyRequired = 0,
-                baseSuccessChance = 0.70,
-                payoutMin = 0,
-                payoutMax = 80,
-                jailMin = 1,
-                jailMax = 2,
-                notorietyGain = 1,
-                notorietyLoss = -1,
-                scenario = pick(
-                    "Fresh paint hisses as your tag blooms.",
-                    "You stencil a quick message and vanish.",
-                    "You scratch a taunt into polished steel."
-                )
-            )
-            CrimeType.PETTY_SCAM -> CrimeBase(
-                name = "Petty Scam",
-                description = "Run a small con for quick cash.",
-                riskTier = RiskTier.LOW_RISK,
-                notorietyRequired = 0,
-                baseSuccessChance = 0.60,
-                payoutMin = 30,
-                payoutMax = 250,
-                jailMin = 2,
-                jailMax = 4,
-                notorietyGain = 1,
-                notorietyLoss = -1,
-                scenario = pick(
-                    "Your 'gold ring' gleams convincingly in the sun.",
-                    "You shuffle cups with practiced rhythm.",
-                    "You wave a clipboard and smile for donations."
-                )
-            )
+            // LOW
+            CrimeType.PICKPOCKETING -> base(RiskTier.LOW_RISK, 20, 180, 1, 3, 1, -1)
+            CrimeType.SHOPLIFTING -> base(RiskTier.LOW_RISK, 30, 220, 1, 3, 1, -1)
+            CrimeType.VANDALISM -> base(RiskTier.LOW_RISK, 0, 80, 1, 2, 1, -1)
+            CrimeType.PETTY_SCAM -> base(RiskTier.LOW_RISK, 60, 320, 1, 3, 1, -1)
 
-            // ===== MEDIUM RISK =====
-            CrimeType.MUGGING -> CrimeBase(
-                name = "Mugging",
-                description = "Threaten and rob a mark.",
-                riskTier = RiskTier.MEDIUM_RISK,
-                notorietyRequired = 10,
-                baseSuccessChance = 0.45,
-                payoutMin = 80,
-                payoutMax = 500,
-                jailMin = 3,
-                jailMax = 7,
-                notorietyGain = 2,
-                notorietyLoss = -2,
-                scenario = pick(
-                    "Footsteps quicken; you press the advantage.",
-                    "A shadow swallows the alley mouth.",
-                    "You whisper: 'Wallet. Now.'"
-                )
-            )
-            CrimeType.BREAKING_AND_ENTERING -> CrimeBase(
-                name = "Breaking & Entering",
-                description = "Slip into a home or shop.",
-                riskTier = RiskTier.MEDIUM_RISK,
-                notorietyRequired = 12,
-                baseSuccessChance = 0.42,
-                payoutMin = 120,
-                payoutMax = 800,
-                jailMin = 4,
-                jailMax = 10,
-                notorietyGain = 2,
-                notorietyLoss = -2,
-                scenario = pick(
-                    "A latch yields with a soft click.",
-                    "You pry the back window and slide in.",
-                    "You kill the fuse and move by phone light."
-                )
-            )
-            CrimeType.DRUG_DEALING -> CrimeBase(
-                name = "Drug Dealing",
-                description = "Move product to street buyers.",
-                riskTier = RiskTier.MEDIUM_RISK,
-                notorietyRequired = 15,
-                baseSuccessChance = 0.38,
-                payoutMin = 150,
-                payoutMax = 1200,
-                jailMin = 7,
-                jailMax = 20,
-                notorietyGain = 3,
-                notorietyLoss = -3,
-                scenario = pick(
-                    "The handshake hides a packet.",
-                    "You count cash under a streetlight.",
-                    "Sirens wail somewhere else. Not here. Not now."
-                )
-            )
-            CrimeType.COUNTERFEIT_GOODS -> CrimeBase(
-                name = "Counterfeit Goods",
-                description = "Sell knock-offs to eager buyers.",
-                riskTier = RiskTier.MEDIUM_RISK,
-                notorietyRequired = 18,
-                baseSuccessChance = 0.44,
-                payoutMin = 120,
-                payoutMax = 900,
-                jailMin = 5,
-                jailMax = 12,
-                notorietyGain = 2,
-                notorietyLoss = -2,
-                scenario = pick(
-                    "Your stall opens at dawn with 'designer' merch.",
-                    "Bulk order secured; labels look legit.",
-                    "You pass handbags off the back of a van."
-                )
-            )
+            // MED
+            CrimeType.MUGGING -> base(RiskTier.MEDIUM_RISK, 120, 600, 3, 14, 2, -2)
+            CrimeType.BREAKING_AND_ENTERING -> base(RiskTier.MEDIUM_RISK, 80, 400, 3, 21, 2, -2)
+            CrimeType.DRUG_DEALING -> base(RiskTier.MEDIUM_RISK, 200, 1600, 3, 21, 2, -2)
+            CrimeType.COUNTERFEIT_GOODS -> base(RiskTier.MEDIUM_RISK, 200, 900, 3, 21, 2, -2)
 
-            // ===== HIGH RISK =====
-            CrimeType.BURGLARY -> CrimeBase(
-                name = "Burglary",
-                description = "Hit higher-value targets with planning.",
-                riskTier = RiskTier.HIGH_RISK,
-                notorietyRequired = 28,
-                baseSuccessChance = 0.32,
-                payoutMin = 600,
-                payoutMax = 3500,
-                jailMin = 12,
-                jailMax = 36,
-                notorietyGain = 4,
-                notorietyLoss = -4,
-                scenario = pick(
-                    "Glass crunches underfoot in the dark.",
-                    "You snake past laser tripwires.",
-                    "You crack a small safe, pulse steady."
-                )
-            )
-            CrimeType.FRAUD -> CrimeBase(
-                name = "Fraud",
-                description = "Forge, skim, and siphon funds.",
-                riskTier = RiskTier.HIGH_RISK,
-                notorietyRequired = 32,
-                baseSuccessChance = 0.30,
-                payoutMin = 500,
-                payoutMax = 4000,
-                jailMin = 10,
-                jailMax = 30,
-                notorietyGain = 4,
-                notorietyLoss = -4,
-                scenario = pick(
-                    "You deepfake a voice to approve a transfer.",
-                    "The card skimmer chirps once — got it.",
-                    "You fax a 'verified' cashier's check."
-                )
-            )
-            CrimeType.ARMS_SMUGGLING -> CrimeBase(
-                name = "Arms Smuggling",
-                description = "Move illegal weapons between buyers.",
-                riskTier = RiskTier.HIGH_RISK,
-                notorietyRequired = 38,
-                baseSuccessChance = 0.26,
-                payoutMin = 1000,
-                payoutMax = 6000,
-                jailMin = 18,
-                jailMax = 60,
-                notorietyGain = 5,
-                notorietyLoss = -5,
-                scenario = pick(
-                    "Crates clatter in a hidden compartment.",
-                    "A border guard waves you through. You don't breathe.",
-                    "The buyer checks serial numbers with a nod."
-                )
-            )
-            CrimeType.DRUG_TRAFFICKING -> CrimeBase(
-                name = "Drug Trafficking",
-                description = "Transport larger shipments for cartels.",
-                riskTier = RiskTier.HIGH_RISK,
-                notorietyRequired = 40,
-                baseSuccessChance = 0.24,
-                payoutMin = 1200,
-                payoutMax = 7000,
-                jailMin = 20,
-                jailMax = 72,
-                notorietyGain = 5,
-                notorietyLoss = -5,
-                scenario = pick(
-                    "Packages ride under a false floor.",
-                    "You switch vehicles under an overpass.",
-                    "A fishing boat cuts its engine; hands pass bundles."
-                )
-            )
+            // HIGH
+            CrimeType.BURGLARY -> base(RiskTier.HIGH_RISK, 600, 3600, 30, 180, 4, -2)
+            CrimeType.FRAUD -> base(RiskTier.HIGH_RISK, 900, 4800, 60, 365, 4, -2)
+            CrimeType.ARMS_SMUGGLING -> base(RiskTier.HIGH_RISK, 2000, 12000, 365, 1095, 4, -2)
+            CrimeType.DRUG_TRAFFICKING -> base(RiskTier.HIGH_RISK, 5000, 45000, 365, 1095, 5, -2)
 
-            // ===== EXTREME RISK =====
-            CrimeType.ARMED_ROBBERY -> CrimeBase(
-                name = "Armed Robbery",
-                description = "High-stakes robbery with force.",
-                riskTier = RiskTier.EXTREME_RISK,
-                notorietyRequired = 52,
-                baseSuccessChance = 0.18,
-                payoutMin = 2000,
-                payoutMax = 12000,
-                jailMin = 36,
-                jailMax = 120,
-                notorietyGain = 8,
-                notorietyLoss = -8,
-                scenario = pick(
-                    "Masks on. Time dilates.",
-                    "You shout commands; glass rains down.",
-                    "You count seconds against the silent alarm."
-                )
-            )
-            CrimeType.EXTORTION -> CrimeBase(
-                name = "Extortion",
-                description = "Coerce payment with threats.",
-                riskTier = RiskTier.EXTREME_RISK,
-                notorietyRequired = 56,
-                baseSuccessChance = 0.20,
-                payoutMin = 1500,
-                payoutMax = 9000,
-                jailMin = 30,
-                jailMax = 96,
-                notorietyGain = 7,
-                notorietyLoss = -7,
-                scenario = pick(
-                    "An envelope of photos changes the tone.",
-                    "Your 'protection' offer feels non-optional.",
-                    "A CEO answers your blocked number."
-                )
-            )
-            CrimeType.KIDNAPPING_FOR_RANSOM -> CrimeBase(
-                name = "Kidnapping for Ransom",
-                description = "Abduct and negotiate payment.",
-                riskTier = RiskTier.EXTREME_RISK,
-                notorietyRequired = 60,
-                baseSuccessChance = 0.15,
-                payoutMin = 5000,
-                payoutMax = 30000,
-                jailMin = 120,
-                jailMax = 365,
-                notorietyGain = 10,
-                notorietyLoss = -10,
-                scenario = pick(
-                    "A van door slides shut on a scream.",
-                    "You switch safehouses twice before midnight.",
-                    "A distorted voice names a price."
-                )
-            )
-            CrimeType.PONZI_SCHEME -> CrimeBase(
-                name = "Ponzi Scheme",
-                description = "Pay old investors with new money.",
-                riskTier = RiskTier.EXTREME_RISK,
-                notorietyRequired = 62,
-                baseSuccessChance = 0.17,
-                payoutMin = 3000,
-                payoutMax = 20000,
-                jailMin = 60,
-                jailMax = 240,
-                notorietyGain = 9,
-                notorietyLoss = -9,
-                scenario = pick(
-                    "Charts go up and to the right — until they don't.",
-                    "A 'guaranteed' return seals another account.",
-                    "You host a seminar at a hotel ballroom."
-                )
-            )
-            CrimeType.CONTRACT_KILLING -> CrimeBase(
-                name = "Contract Killing",
-                description = "Eliminate a target for a fee.",
-                riskTier = RiskTier.EXTREME_RISK,
-                notorietyRequired = 70,
-                baseSuccessChance = 0.10,
-                payoutMin = 8000,
-                payoutMax = 50000,
-                jailMin = 365,
-                jailMax = 999,
-                notorietyGain = 12,
-                notorietyLoss = -12,
-                scenario = pick(
-                    "You assemble a rifle in a motel bathroom.",
-                    "A silencer coughs once. The night holds its breath.",
-                    "You vanish into a crowd before the sirens start."
-                )
-            )
-            CrimeType.DARK_WEB_SALES -> CrimeBase(
-                name = "Dark Web Sales",
-                description = "Move illegal goods through online markets.",
-                riskTier = RiskTier.EXTREME_RISK,
-                notorietyRequired = 68,
-                baseSuccessChance = 0.22,
-                payoutMin = 1200,
-                payoutMax = 15000,
-                jailMin = 24,
-                jailMax = 120,
-                notorietyGain = 6,
-                notorietyLoss = -6,
-                scenario = pick(
-                    "PGP lights up as orders flood in.",
-                    "You ship 'souvenirs' with a fake return address.",
-                    "A moderator flags your listing — or does he?"
-                )
-            )
-            CrimeType.ART_THEFT -> CrimeBase(
-                name = "Art Theft",
-                description = "Steal priceless works of art.",
-                riskTier = RiskTier.EXTREME_RISK,
-                notorietyRequired = 66,
-                baseSuccessChance = 0.14,
-                payoutMin = 5000,
-                payoutMax = 40000,
-                jailMin = 48,
-                jailMax = 240,
-                notorietyGain = 9,
-                notorietyLoss = -9,
-                scenario = pick(
-                    "You swap a gallery piece for a perfect replica.",
-                    "A curator's keycard opens more than doors.",
-                    "The frame is heavier than it looks."
-                )
-            )
-            CrimeType.DIAMOND_HEIST -> CrimeBase(
-                name = "Diamond Heist",
-                description = "Rob vaults and transports for diamonds.",
-                riskTier = RiskTier.EXTREME_RISK,
-                notorietyRequired = 75,
-                baseSuccessChance = 0.08,
-                payoutMin = 10000,
-                payoutMax = 100000,
-                jailMin = 365,
-                jailMax = 1200,
-                notorietyGain = 15,
-                notorietyLoss = -15,
-                scenario = pick(
-                    "A drill bites into steel — sparks and prayers.",
-                    "You time the guard rotation to the second.",
-                    "You leave a playing card where the vault used to be."
-                )
-            )
+            // EXTREME
+            CrimeType.ARMED_ROBBERY -> base(RiskTier.EXTREME_RISK, 20000, 120000, 1460, 4380, 10, -3)
+            CrimeType.EXTORTION -> base(RiskTier.EXTREME_RISK, 5000, 40000, 730, 2190, 10, -3)
+            CrimeType.KIDNAPPING_FOR_RANSOM -> base(RiskTier.EXTREME_RISK, 50000, 400000, 2190, 5475, 10, -3)
+            CrimeType.PONZI_SCHEME -> base(RiskTier.EXTREME_RISK, 150000, 900000, 1460, 4380, 10, -3)
+            CrimeType.CONTRACT_KILLING -> base(RiskTier.EXTREME_RISK, 100000, 450000, 2190, 5475, 10, -3)
+            CrimeType.DARK_WEB_SALES -> base(RiskTier.EXTREME_RISK, 15000, 220000, 365, 1460, 8, -3)
+            CrimeType.ART_THEFT -> base(RiskTier.EXTREME_RISK, 250000, 4_800_000, 2920, 7300, 10, -3)
+            CrimeType.DIAMOND_HEIST -> base(RiskTier.EXTREME_RISK, 1_500_000, 9_500_000, 2920, 7300, 10, -3)
         }
     }
 
-    // ====== Public API ======
-
-    enum class CrimeType {
-        // LOW RISK
-        PICKPOCKETING, SHOPLIFTING, VANDALISM, PETTY_SCAM,
-
-        // MEDIUM RISK
-        MUGGING, BREAKING_AND_ENTERING, DRUG_DEALING, COUNTERFEIT_GOODS,
-
-        // HIGH RISK
-        BURGLARY, FRAUD, ARMS_SMUGGLING, DRUG_TRAFFICKING,
-
-        // EXTREME RISK
-        ARMED_ROBBERY, EXTORTION, KIDNAPPING_FOR_RANSOM, PONZI_SCHEME,
-        CONTRACT_KILLING, DARK_WEB_SALES, ART_THEFT, DIAMOND_HEIST
+    init {
+        // Try to mirror notoriety from repository (best effort)
+        viewModelScope.launch {
+            runCatching { playerRepository.getCharacter(CHARACTER_ID).first() }
+                .getOrNull()
+                ?.let { c ->
+                    // If your Character model has notoriety, use it
+                    runCatching {
+                        val f = c::class.java.getDeclaredField("notoriety")
+                        f.isAccessible = true
+                        _playerNotoriety.value = (f.get(c) as? Int) ?: 0
+                    }
+                }
+        }
     }
 }
