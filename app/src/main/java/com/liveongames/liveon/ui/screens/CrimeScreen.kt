@@ -1,3 +1,4 @@
+// app/src/main/java/com/liveongames/liveon/ui/screens/CrimeScreen.kt
 package com.liveongames.liveon.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
@@ -41,8 +42,7 @@ import com.liveongames.liveon.viewmodel.CrimeViewModel
 import kotlinx.coroutines.delay
 
 /* =========================================================================================
- * Crime screen — inline action flow (no popup dialog)
- * Fixes: stable phases, inline outcome reveal.
+ * Crime screen — steady build: typewriter narrative + smooth progress bar
  * ========================================================================================= */
 
 @Composable
@@ -57,11 +57,10 @@ fun CrimeScreen(
     val runState by viewModel.runState.collectAsState()
     val lastOutcomeVm by viewModel.lastOutcome.collectAsState()
 
-    // We capture the outcome locally so UI can show it after VM consumes it
+    // Capture outcome locally so the panel can stay visible
     var revealedOutcome by remember { mutableStateOf<CrimeViewModel.OutcomeEvent?>(null) }
     var policeFlash by remember { mutableStateOf(false) }
 
-    // Police flash + capture outcome; then consume VM event
     LaunchedEffect(lastOutcomeVm) {
         lastOutcomeVm?.let { out ->
             if (!out.success) {
@@ -336,28 +335,19 @@ private fun CrimeListItem(
             ) {
                 when {
                     runState != null -> {
-                        // In progress — centered live narration + progress bar + Cancel
-                        Box(modifier = Modifier.fillMaxWidth()) {
-                            Text(
-                                runState.currentMessage,
-                                color = textColor,
-                                style = MaterialTheme.typography.bodyMedium,
-                                textAlign = TextAlign.Center,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier
-                                    .align(Alignment.Center)
-                                    .padding(horizontal = 8.dp)
-                            )
-                        }
+                        // ===== In progress: typewriter narrative + smooth progress =====
+                        PhaseTypewriter(
+                            lines = runState.phaseLines,
+                            phaseStartMs = runState.phaseStartMs,
+                            phaseEndMs = runState.phaseEndMs,
+                            textColor = textColor
+                        )
                         Spacer(Modifier.height(6.dp))
-                        LinearProgressIndicator(
-                            progress = runState.progress,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(8.dp),
-                            trackColor = textColor.copy(alpha = 0.15f),
-                            color = accent
+                        SmoothProgressBar(
+                            startedAt = runState.startedAtMs,
+                            durationMs = runState.durationMs,
+                            track = textColor.copy(alpha = 0.15f),
+                            bar = accent
                         )
                         Spacer(Modifier.height(8.dp))
                         Row(
@@ -378,7 +368,7 @@ private fun CrimeListItem(
                         }
                     }
                     outcome != null -> {
-                        // Outcome reveal block (climax line + rewards/penalties)
+                        // Outcome reveal block
                         Text(
                             outcome.climaxLine.ifBlank { "It’s done." },
                             color = textColor,
@@ -438,7 +428,85 @@ private fun CrimeListItem(
     }
 }
 
-/* ============================== Catalog / labels / icons ============================== */
+/* ============================== Typewriter + Smooth Progress ============================== */
+
+@Composable
+private fun PhaseTypewriter(
+    lines: List<String>,
+    phaseStartMs: Long,
+    phaseEndMs: Long,
+    textColor: Color
+) {
+    // simple frame ticker (~60fps) without withFrameNanos
+    var frameTick by remember(phaseStartMs, phaseEndMs) { mutableStateOf(System.currentTimeMillis()) }
+    LaunchedEffect(phaseStartMs, phaseEndMs) {
+        while (true) {
+            frameTick = System.currentTimeMillis()
+            delay(16)
+        }
+    }
+
+    val total = (phaseEndMs - phaseStartMs).coerceAtLeast(1L)
+    val p = ((frameTick - phaseStartMs).toFloat() / total.toFloat()).coerceIn(0f, 1f)
+
+    val list = if (lines.isEmpty()) listOf("") else lines
+    val slots = list.size
+    val pos = (p * slots).coerceIn(0f, slots.toFloat() - 1f)
+    val idx = pos.toInt().coerceIn(0, slots - 1)
+    val intra = (p * slots) - idx // 0..1 inside the current line
+
+    val line = list[idx]
+    val visibleChars = (line.length * intra).toInt().coerceIn(0, line.length)
+    val visible = line.take(visibleChars)
+
+    // subtle "written from left" feel: small slide-in + fade as it completes
+    val offsetPx = (1f - intra) * 12f // 12dp slide
+    val alpha = 0.6f + 0.4f * intra
+
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            visible,
+            color = textColor.copy(alpha = alpha),
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+            overflow = TextOverflow.Clip,
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(horizontal = 8.dp)
+                .offset(x = (-offsetPx).dp)
+        )
+    }
+}
+
+@Composable
+private fun SmoothProgressBar(
+    startedAt: Long,
+    durationMs: Long,
+    track: Color,
+    bar: Color
+) {
+    // simple frame ticker (~60fps) without withFrameNanos
+    var frameTick by remember(startedAt, durationMs) { mutableStateOf(System.currentTimeMillis()) }
+    LaunchedEffect(startedAt, durationMs) {
+        while (true) {
+            frameTick = System.currentTimeMillis()
+            delay(16)
+        }
+    }
+    val p = ((frameTick - startedAt).coerceAtLeast(0L).toFloat() / durationMs.toFloat()).coerceIn(0f, 1f)
+
+    LinearProgressIndicator(
+        progress = p,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(8.dp),
+        trackColor = track,
+        color = bar
+    )
+}
+
+/* ============================== Catalog / labels / icons / rank helpers ============================== */
 
 private data class CrimeUiItem(val type: CrimeViewModel.CrimeType)
 private data class CrimeSubcat(val title: String, val items: List<CrimeUiItem>)
@@ -562,18 +630,25 @@ private fun getCrimeDesc(type: CrimeViewModel.CrimeType) = when (type) {
 private fun getCrimeDescShort(full: String): String = if (full.length <= 36) full else full.take(33) + "…"
 
 private fun getCrimeRiskTier(type: CrimeViewModel.CrimeType): RiskTier = when (type) {
+    // LOW
     CrimeViewModel.CrimeType.PICKPOCKETING,
     CrimeViewModel.CrimeType.SHOPLIFTING,
     CrimeViewModel.CrimeType.VANDALISM,
     CrimeViewModel.CrimeType.PETTY_SCAM -> RiskTier.LOW_RISK
+
+    // MED
     CrimeViewModel.CrimeType.MUGGING,
     CrimeViewModel.CrimeType.BREAKING_AND_ENTERING,
     CrimeViewModel.CrimeType.DRUG_DEALING,
     CrimeViewModel.CrimeType.COUNTERFEIT_GOODS -> RiskTier.MEDIUM_RISK
+
+    // HIGH
     CrimeViewModel.CrimeType.BURGLARY,
     CrimeViewModel.CrimeType.FRAUD,
     CrimeViewModel.CrimeType.ARMS_SMUGGLING,
     CrimeViewModel.CrimeType.DRUG_TRAFFICKING -> RiskTier.HIGH_RISK
+
+    // EXTREME
     else -> RiskTier.EXTREME_RISK
 }
 

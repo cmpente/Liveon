@@ -36,9 +36,8 @@ class CrimeViewModel @Inject constructor(
         private const val HIGH_MS = 180_000L
         private const val EXTREME_MS = 300_000L
 
-        // UI timing
+        // UI update cadence (VM internal tick; UI animates smoothly itself)
         private const val TICK_MS = 100L
-        private const val MSG_SWAP_MS = 3000L
 
         // Lockout after fail/caught
         private const val FAILURE_LOCKOUT_MS = 6_000L
@@ -62,9 +61,12 @@ class CrimeViewModel @Inject constructor(
         val type: CrimeType,
         val startedAtMs: Long,
         val durationMs: Long,
-        val progress: Float,
+        val progress: Float,          // 0f..1f whole-crime progress
         val phase: Phase,
-        val currentMessage: String
+        val phaseStartMs: Long,       // timing window for phase (for UI pacing)
+        val phaseEndMs: Long,
+        val phaseLines: List<String>, // lines to reveal during this phase
+        val currentMessage: String    // first line as a convenience/preview
     )
 
     data class OutcomeEvent(
@@ -126,15 +128,9 @@ class CrimeViewModel @Inject constructor(
         val end = start + durationMs
         _cooldownUntil.value = end // lock during run
 
-        // Stable UI phase boundaries (no flicker)
+        // Stable UI phase boundaries to avoid flicker
         val setupUntil = start + (durationMs * 0.25f).toLong()
         val execUntil  = start + (durationMs * 0.80f).toLong()
-
-        // ---- NEW: stateful, one-way cursors per phase (no wrap, no ping-pong) ----
-        var idxSetup = 0
-        var idxExec = 0
-        var idxClimax = 0
-        var nextMsgAt = start
 
         fun linesFor(phase: Phase): List<String> = when (phase) {
             Phase.SETUP     -> path.setup
@@ -142,10 +138,7 @@ class CrimeViewModel @Inject constructor(
             Phase.CLIMAX    -> if (path.execution.isNotEmpty()) path.execution else path.setup
         }
 
-        var lastUiPhase: Phase? = null
-        var currentMsg: String = linesFor(Phase.SETUP).firstOrNull()
-            ?: linesFor(Phase.EXECUTION).firstOrNull()
-            ?: previewScenario(type)
+        var lastPhase: Phase? = null
 
         runJob = viewModelScope.launch {
             while (true) {
@@ -159,50 +152,38 @@ class CrimeViewModel @Inject constructor(
                     else             -> Phase.CLIMAX
                 }
 
-                // On phase change, reset index for the new phase and show its first line (if any)
-                if (uiPhase != lastUiPhase) {
-                    val list = linesFor(uiPhase)
-                    when (uiPhase) {
-                        Phase.SETUP     -> idxSetup = 0
-                        Phase.EXECUTION -> idxExec = 0
-                        Phase.CLIMAX    -> idxClimax = 0
-                    }
-                    currentMsg = list.getOrNull(0) ?: currentMsg
-                    nextMsgAt = now + MSG_SWAP_MS
-                    lastUiPhase = uiPhase
+                val pStart = when (uiPhase) {
+                    Phase.SETUP     -> start
+                    Phase.EXECUTION -> setupUntil
+                    Phase.CLIMAX    -> execUntil
                 }
-
-                // Advance message on a fixed cadence, but NEVER wrap — hold at last line
-                if (now >= nextMsgAt) {
-                    val list = linesFor(uiPhase)
-                    if (list.isNotEmpty()) {
-                        when (uiPhase) {
-                            Phase.SETUP -> {
-                                if (idxSetup < list.lastIndex) idxSetup++
-                                currentMsg = list[idxSetup]
-                            }
-                            Phase.EXECUTION -> {
-                                if (idxExec < list.lastIndex) idxExec++
-                                currentMsg = list[idxExec]
-                            }
-                            Phase.CLIMAX -> {
-                                if (idxClimax < list.lastIndex) idxClimax++
-                                currentMsg = list[idxClimax]
-                            }
-                        }
-                    }
-                    nextMsgAt = now + MSG_SWAP_MS
+                val pEnd = when (uiPhase) {
+                    Phase.SETUP     -> setupUntil
+                    Phase.EXECUTION -> execUntil
+                    Phase.CLIMAX    -> end
                 }
+                val lines = linesFor(uiPhase)
 
-                // Push UI state
-                _runState.value = CrimeRunState(
-                    type = type,
-                    startedAtMs = start,
-                    durationMs = durationMs,
-                    progress = frac,
-                    phase = uiPhase,
-                    currentMessage = currentMsg
-                )
+                if (lastPhase != uiPhase || _runState.value == null ||
+                    _runState.value?.progress != frac ||
+                    _runState.value?.currentMessage != (lines.firstOrNull() ?: _runState.value?.currentMessage ?: "")
+                ) {
+                    _runState.value = CrimeRunState(
+                        type = type,
+                        startedAtMs = start,
+                        durationMs = durationMs,
+                        progress = frac,
+                        phase = uiPhase,
+                        phaseStartMs = pStart,
+                        phaseEndMs = pEnd,
+                        phaseLines = lines,
+                        currentMessage = lines.firstOrNull()
+                            ?: path.execution.firstOrNull()
+                            ?: path.setup.firstOrNull()
+                            ?: previewScenario(type)
+                    )
+                    lastPhase = uiPhase
+                }
 
                 if (now >= end) break
                 delay(TICK_MS)
@@ -274,9 +255,7 @@ class CrimeViewModel @Inject constructor(
         val setupUntil = start + (durationMs * 0.25f).toLong()
         val execUntil  = start + (durationMs * 0.80f).toLong()
 
-        var nextMsgAt = start
-        var lastUiPhase: Phase? = null
-        var currentMsg = previewScenario(type)
+        var lastPhase: Phase? = null
 
         runJob = viewModelScope.launch {
             while (true) {
@@ -288,25 +267,32 @@ class CrimeViewModel @Inject constructor(
                     else             -> Phase.CLIMAX
                 }
 
-                if (uiPhase != lastUiPhase) {
-                    currentMsg = previewScenario(type)
-                    nextMsgAt = now + MSG_SWAP_MS
-                    lastUiPhase = uiPhase
+                val pStart = when (uiPhase) {
+                    Phase.SETUP     -> start
+                    Phase.EXECUTION -> setupUntil
+                    Phase.CLIMAX    -> execUntil
                 }
-
-                if (now >= nextMsgAt) {
-                    currentMsg = previewScenario(type)
-                    nextMsgAt = now + MSG_SWAP_MS
+                val pEnd = when (uiPhase) {
+                    Phase.SETUP     -> setupUntil
+                    Phase.EXECUTION -> execUntil
+                    Phase.CLIMAX    -> end
                 }
+                val lines = listOf(previewScenario(type))
 
-                _runState.value = CrimeRunState(
-                    type = type,
-                    startedAtMs = start,
-                    durationMs = durationMs,
-                    progress = frac,
-                    phase = uiPhase,
-                    currentMessage = currentMsg
-                )
+                if (lastPhase != uiPhase || _runState.value == null || _runState.value?.progress != frac) {
+                    _runState.value = CrimeRunState(
+                        type = type,
+                        startedAtMs = start,
+                        durationMs = durationMs,
+                        progress = frac,
+                        phase = uiPhase,
+                        phaseStartMs = pStart,
+                        phaseEndMs = pEnd,
+                        phaseLines = lines,
+                        currentMessage = lines.first()
+                    )
+                    lastPhase = uiPhase
+                }
 
                 if (now >= end) break
                 delay(TICK_MS)
