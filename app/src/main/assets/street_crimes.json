@@ -14,23 +14,23 @@
       "paths": [
         {
           "setup": [
-            "You pick a mark who walks like time matters more than pockets.",
-            "The platform hums; announcements blur into air."
+            "You spot a commuter reading a text, purse strap hanging loose.",
+            "A tourist studies a map with both hands, leaving pockets unguarded."
           ],
           "execution": [
-            "You drift closer, eyes on the schedule board, body on the zipper.",
-            "The strap creaks—warning or just leather breathing?",
-            "Fingertips read the stitch like braille; breath stays level.",
-            "A jostle from behind grants cover you didn’t ask for."
+            "You pretend to tie your shoe while edging close enough to reach.",
+            "Your fingers slide over the zipper as if brushing past by accident.",
+            "You lift the wallet with a practiced motion, never breaking stride.",
+            "You pull the zipper halfway open before the crowd swallows you again."
           ],
           "climax": [
-            "Their head tilts half a degree—did they feel it?",
-            "You pivot with the crowd; laughter somewhere masks your exit."
+            "They suddenly pat their pocket, scanning the people nearby.",
+            "A street performer shouts, masking your exit into the crowd."
           ],
           "ambient": [
-            "A train screeches two tracks over.",
-            "Someone argues on a phone without listening.",
-            "Vents push warm air that smells like dust."
+            "A train brakes hard, metal screech echoing off the platform.",
+            "An announcement blares through a distorted speaker.",
+            "Warm air from a vent smells faintly of oil and dust."
           ],
           "outcomes": [
             { "type": "success", "weight": 65 },
@@ -40,21 +40,21 @@
         },
         {
           "setup": [
-            "You match cadence in a river of coats.",
-            "Your shoulder turns; the bag grazes your sleeve—muscle memory wakes."
+            "You notice a shopper with a backpack half-unzipped in a crowded crosswalk.",
+            "A man walks with his jacket open, wallet bulging from the inside pocket."
           ],
           "execution": [
-            "Heat from their coat warms your knuckles; distance shrinks.",
-            "Cloth sighs; the zipper hesitates like a breath.",
-            "Weight loosens—gravity votes your way."
+            "You match his pace, reaching as if adjusting your own coat.",
+            "You hook two fingers into the open zipper and pull gently.",
+            "You ease the wallet out in one motion before veering away."
           ],
           "climax": [
-            "Footsteps speed up behind you; your spine listens hard.",
-            "It’s either yours now… or a conversation you don’t want."
+            "They turn around suddenly, forcing you to keep walking past.",
+            "You slip behind a delivery truck before anyone calls out."
           ],
           "ambient": [
-            "Shoes squeak on tile in nervous little bursts.",
-            "A busker misses a note and laughs at himself."
+            "Shoes squeak on the tiled station floor.",
+            "A busker strums a guitar, notes bouncing through the underpass."
           ],
           "outcomes": [
             { "type": "success", "weight": 60 },
@@ -71,21 +71,22 @@
       "paths": [
         {
           "setup": [
-            "Fluorescents buzz; the aisle smells like plastic and citrus cleaner.",
-            "You loop twice, letting the cameras grow bored."
+            "You stroll into the store with an empty shopping bag ready.",
+            "You hang near the self-checkout lanes, watching for distracted staff."
           ],
           "execution": [
-            "Package edges kiss your palm—lighter than your heartbeat.",
-            "The cart rolls, buying seconds and innocence.",
-            "An endcap display wobbles; your hand catches it without looking."
+            "You slide a package into your bag while pretending to compare prices.",
+            "A small box disappears into your sleeve before you turn the corner.",
+            "You drop the item under a folded sweater in your cart."
           ],
           "climax": [
-            "Security domes glare like tiny moons.",
-            "The sensor gate waits, red LED a single judgment."
+            "The security gate waits ahead, red light steady.",
+            "A clerk glances up from the register as you pass."
           ],
           "ambient": [
-            "A child negotiates for candy and loses.",
-            "Barcode beeps stack like metronomes."
+            "Barcode scanners beep steadily from the registers.",
+            "Fluorescent lights hum overhead.",
+            "A child whines for candy near the checkout."
           ],
           "outcomes": [
             { "type": "success", "weight": 62 },
@@ -95,20 +96,20 @@
         },
         {
           "setup": [
-            "A clerk jokes with a customer, eyes drifting elsewhere.",
-            "Your reflection in a freezer door practices indifference."
+            "You spot an endcap display with no cameras pointed toward it.",
+            "A store clerk steps into the back room, leaving an aisle empty."
           ],
           "execution": [
-            "The item slides where certainty looks like routine.",
-            "You pick a lane where no one learns your name."
+            "You slip the product into your bag in one clean motion.",
+            "You palm the item and keep walking until it’s hidden away."
           ],
           "climax": [
-            "You breathe in, out; shoes whisper over tile.",
-            "Air on the other side always tastes different."
+            "The exit feels a lot farther than it looked when you came in.",
+            "You step outside, glancing once over your shoulder."
           ],
           "ambient": [
-            "HVAC hum paints the ceiling with noise.",
-            "Cart wheels rattle, one with a flat."
+            "A cart wheel rattles with each push.",
+            "The air conditioner blows cold air down the aisles."
           ],
           "outcomes": [
             { "type": "success", "weight": 58 },
@@ -125,21 +126,21 @@
       "paths": [
         {
           "setup": [
-            "You choose a wall that tried to forget the city.",
-            "Wind tugs at your hood; night presses close."
+            "You find a blank wall on a side street with no foot traffic.",
+            "You approach a boarded-up storefront just after dark."
           ],
           "execution": [
-            "The can rattles—your signature waking up.",
-            "Color blooms where concrete gave up years ago.",
-            "Your line finds the curve your hand wanted all day."
+            "You shake the spray can once and start your tag.",
+            "A fresh coat of paint covers an old, faded mural.",
+            "You add quick lines, working from muscle memory."
           ],
           "climax": [
-            "A porch light snicks on; the plan edits itself.",
-            "You dot the last letter like you mean it."
+            "A light switches on in a nearby window.",
+            "You step back, admiring your work before moving on."
           ],
           "ambient": [
-            "Distant bass rolls out of a passing car.",
-            "A bottle clinks in a trash bin and settles."
+            "A distant bass beat thuds from a passing car.",
+            "Glass clinks in a trash bin down the block."
           ],
           "outcomes": [
             { "type": "success", "weight": 70 },
@@ -149,20 +150,20 @@
         },
         {
           "setup": [
-            "A siren sketches rhythm you could color inside.",
-            "You listen for footsteps that might be your own nerves."
+            "You wait behind a dumpster until the street is quiet.",
+            "You walk past a concrete wall tagged by someone else and decide to add your own."
           ],
           "execution": [
-            "Paint fog hangs like a halo around your crime.",
-            "Somewhere glass bumps glass; you call it applause."
+            "Paint mist hangs in the cool night air as you work.",
+            "You keep glancing over your shoulder between each line."
           ],
           "climax": [
-            "You step back once to see if it was worth it.",
-            "The wall looks louder than the street."
+            "A car turns onto the street, headlights sweeping over you.",
+            "The wall’s colors pop under the dim streetlamp."
           ],
           "ambient": [
-            "A stray cat owns the sidewalk for six seconds.",
-            "Wind combs weeds through a chain-link fence."
+            "A stray cat trots across the sidewalk.",
+            "Wind hums through a chain-link fence."
           ],
           "outcomes": [
             { "type": "success", "weight": 68 },
@@ -179,21 +180,21 @@
       "paths": [
         {
           "setup": [
-            "You warm the pitch until it sounds like their idea.",
-            "A passerby slows, curiosity tugging their sleeve."
+            "You wave over a passerby who slowed when they saw your table.",
+            "You greet a tourist who’s glancing between your stand and a guidebook."
           ],
           "execution": [
-            "You lay out choices that all point to you.",
-            "They laugh on cue—good sign or bait.",
-            "You nod like you’ve known each other for years."
+            "You pitch a deal that sounds too good to ignore.",
+            "You act friendly while steering them toward the choice you want.",
+            "You make the price seem like a special offer just for them."
           ],
           "climax": [
-            "They glance at a watch; a decision lives in that look.",
-            "You hold the silence until it pays."
+            "They hesitate, eyes flicking between you and the item.",
+            "They reach for their wallet but don’t commit yet."
           ],
           "ambient": [
-            "A bus wheezes against the curb and hisses away.",
-            "Pigeons burst, then change their minds."
+            "A bus wheezes to a stop nearby.",
+            "Pigeons scatter as someone walks past too quickly."
           ],
           "outcomes": [
             { "type": "success", "weight": 60 },
@@ -203,20 +204,20 @@
         },
         {
           "setup": [
-            "You ask a question with the answer already pocketed.",
-            "Their smile flickers; a door opens and waits."
+            "You catch the attention of someone leaning against a storefront.",
+            "You open with a joke to break the ice with a stranger walking past."
           ],
           "execution": [
-            "Your hands stay still; your story does the moving.",
-            "They test a detail; you pass like you studied."
+            "You keep your hands still and let your story carry the pitch.",
+            "You answer their questions with quick, confident replies."
           ],
           "climax": [
-            "A phone buzz splits the moment.",
-            "One word from them turns the world either way."
+            "A phone buzz interrupts their focus.",
+            "They give you one last look before deciding."
           ],
           "ambient": [
-            "Someone claps once, unsure why.",
-            "Street musicians argue about tempo."
+            "Someone claps once from across the street.",
+            "Two musicians argue about who’s off-beat."
           ],
           "outcomes": [
             { "type": "success", "weight": 58 },

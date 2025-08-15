@@ -1,18 +1,17 @@
 // domain/src/main/java/com/liveongames/domain/repository/CrimeRepository.kt
 package com.liveongames.domain.repository
 
-import com.liveongames.domain.model.Crime
+import com.liveongames.domain.model.CrimeRecordEntry
+import com.liveongames.domain.model.CrimeStats
 import kotlinx.coroutines.flow.Flow
 
-data class CrimeStats(
-    val totalCrimes: Int = 0,
-    val crimesByTier: Map<String, Int> = emptyMap(),
-    val lastCrimeDate: Long? = null
-)
-
 interface CrimeRepository {
-    fun getCrimes(): Flow<List<Crime>>
-    suspend fun recordCrime(characterId: String, crime: Crime)
-    suspend fun clearCriminalRecord(characterId: String)
-    suspend fun getCrimeStats(characterId: String): CrimeStats
+    fun observeStats(): Flow<CrimeStats>
+
+    suspend fun ensureYear(year: Int)
+    suspend fun getEarnedThisYear(): Int
+    suspend fun setEarnedThisYear(value: Int)
+    suspend fun resetEarnedForNewYear(year: Int)
+
+    suspend fun appendRecord(entry: CrimeRecordEntry, maxKeep: Int = 200)
 }

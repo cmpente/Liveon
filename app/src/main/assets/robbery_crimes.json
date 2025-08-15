@@ -14,21 +14,21 @@
       "paths": [
         {
           "setup": [
-            "You stalk a side street where neon can’t reach.",
-            "Footfalls sync with your target; distance turns into a decision."
+            "You trail a lone pedestrian turning onto a quiet side street.",
+            "You spot someone counting cash outside a corner store."
           ],
           "execution": [
-            "You close the gap; your voice is low, even.",
-            "They freeze at the tone more than the words.",
-            "Hands rise slow—compliance or a stall?"
+            "You close in, voice low enough for only them to hear.",
+            "You step into their path, forcing them to stop.",
+            "You demand their wallet without raising your voice."
           ],
           "climax": [
-            "They fumble for a wallet; a window lights across the way.",
-            "You scan for witnesses, and worse."
+            "They hand over their money while glancing for help.",
+            "A light comes on in a nearby window as you grab the cash."
           ],
           "ambient": [
-            "Rain ticks from a loose gutter chain.",
-            "A taxi idles, turn signal tapping time."
+            "Rain drips steadily from a loose gutter chain.",
+            "A taxi idles nearby, turn signal clicking."
           ],
           "outcomes": [
             { "type": "success", "weight": 62 },
@@ -38,20 +38,20 @@
         },
         {
           "setup": [
-            "Pavement shines; everyone walks faster but you.",
-            "A silhouette hesitates; you don’t."
+            "You watch someone hesitate at a crosswalk, clearly lost.",
+            "You follow a man walking alone with his bag slung behind him."
           ],
           "execution": [
-            "Words land like a door closing.",
-            "They nod too quickly—fear can be a shortcut or a trap."
+            "You cut them off with a firm step forward.",
+            "You keep your tone calm but your stance blocking their way."
           ],
           "climax": [
-            "A siren mutters a block away.",
-            "You count to three that feel like thirty."
+            "A siren sounds faintly in the distance.",
+            "They look at you, then down at your hand, and comply."
           ],
           "ambient": [
-            "Steam lifts from a grate and disappears.",
-            "A biker ghosts through a red light."
+            "Steam rises from a street grate.",
+            "A cyclist weaves through the intersection without stopping."
           ],
           "outcomes": [
             { "type": "success", "weight": 58 },
@@ -68,21 +68,21 @@
       "paths": [
         {
           "setup": [
-            "Porch lights sleep; curtains keep secrets badly.",
-            "Neighborhood dogs have nothing to say tonight."
+            "You find a house with no cars in the driveway and lights off.",
+            "You pass a quiet home where the curtains are only half-closed."
           ],
           "execution": [
-            "Room to room like a rumor.",
-            "Air smells like lavender and risk.",
-            "You take only what won’t weigh down your exit."
+            "You slip through the unlocked back door.",
+            "You move room to room, taking only what you can carry.",
+            "You avoid turning on any lights."
           ],
           "climax": [
-            "A floorboard confesses—too loud.",
-            "Shadows shift that aren’t yours."
+            "A floorboard creaks loudly under your weight.",
+            "Shadows move across the wall in the next room."
           ],
           "ambient": [
-            "Fridge motor kicks on and off like a heartbeat.",
-            "A clock ticks in a room you don’t enter."
+            "A refrigerator hums steadily in the kitchen.",
+            "A wall clock ticks in the distance."
           ],
           "outcomes": [
             { "type": "success", "weight": 58 },
@@ -92,20 +92,20 @@
         },
         {
           "setup": [
-            "Back door paint flakes like old snow.",
-            "A TV whispers from somewhere deeper."
+            "You notice a back gate left open in a dimly lit yard.",
+            "You approach a side door with peeling paint and no security camera."
           ],
           "execution": [
-            "You pace your steps with the laugh track.",
-            "An empty frame stares back."
+            "You turn the handle slowly until it clicks open.",
+            "You walk through the hall, avoiding rugs that might hide squeaky boards."
           ],
           "climax": [
-            "Headlights wash the windows.",
-            "You stop breathing just to see what moves."
+            "Headlights flash through the front windows.",
+            "You freeze in place, listening for footsteps."
           ],
           "ambient": [
-            "A neighbor coughs through a wall.",
-            "Heater pipes pop and settle."
+            "A neighbor coughs from across the fence.",
+            "Pipes knock softly as the heater kicks on."
           ],
           "outcomes": [
             { "type": "success", "weight": 56 },
@@ -122,21 +122,21 @@
       "paths": [
         {
           "setup": [
-            "You pick a corner with exits and excuses.",
-            "Phone buzz patterns mean hello where you work."
+            "You take up a spot on a street corner with a clear line of sight to both ends.",
+            "You wait in a quiet alley where customers know to find you."
           ],
           "execution": [
-            "Buyers drift in ones and twos.",
-            "Exchanges stay short; pockets shorter.",
-            "Eyes keep a map to the farthest door."
+            "You hand off small packets in quick exchanges.",
+            "You keep transactions short and eyes scanning the street.",
+            "You nod to buyers and send them on their way."
           ],
           "climax": [
-            "A car slows—friend or heat?",
-            "Pulse spikes; hands stay calm."
+            "A car slows down, watching you too closely.",
+            "Your heart rate spikes, but your hands stay calm."
           ],
           "ambient": [
-            "Tires hiss through puddles, over and over.",
-            "A streetlight flickers like it owes someone money."
+            "Tires hiss through shallow puddles.",
+            "A flickering streetlight blinks overhead."
           ],
           "outcomes": [
             { "type": "success", "weight": 64 },
@@ -146,20 +146,20 @@
         },
         {
           "setup": [
-            "Streetlights blink like they’re in on it.",
-            "The stash rides where a pat-down gets bored early."
+            "You stand under a broken streetlight to avoid being seen clearly.",
+            "You carry your stash where a quick pat-down wouldn’t find it."
           ],
           "execution": [
-            "Business gets brisk; chatter thins.",
-            "Someone lingers two beats too long."
+            "You keep moving so no one stands near you too long.",
+            "You spot someone hanging back, pretending to be on the phone."
           ],
           "climax": [
-            "A siren coughs awake nearby.",
-            "You collapse the scene into angles and exits."
+            "A siren sounds from a few streets over.",
+            "You fold into the nearest crowd and walk away."
           ],
           "ambient": [
-            "A bus announces stops to no one.",
-            "Metal shutters rattle half a block away."
+            "A bus rolls by, announcing stops to no one.",
+            "Metal shutters rattle two shops down."
           ],
           "outcomes": [
             { "type": "success", "weight": 60 },
@@ -176,21 +176,21 @@
       "paths": [
         {
           "setup": [
-            "You lay out convincing stock and a more convincing smile.",
-            "Sales talk rehearsed down to the comma."
+            "You set up a stall with convincing knockoffs neatly arranged.",
+            "You position yourself in a busy market where foot traffic is heavy."
           ],
           "execution": [
-            "Shoppers nibble at the bait.",
-            "You answer doubts before they form.",
-            "A plainclothes glance lingers too long."
+            "You talk up the quality before buyers can ask questions.",
+            "You make small talk to distract from the too-good price.",
+            "You watch for anyone lingering too long without buying."
           ],
           "climax": [
-            "You fold the stall fast.",
-            "Cash or cuffs—moment of truth."
+            "You start packing the stall quickly just in case.",
+            "A man in plain clothes starts walking straight toward you."
           ],
           "ambient": [
-            "Music from the next vendor smooths the edges.",
-            "Bills snap and whisper between fingers."
+            "Music from a nearby vendor blends with the crowd noise.",
+            "Cash changes hands in a steady rhythm."
           ],
           "outcomes": [
             { "type": "success", "weight": 61 },
@@ -200,20 +200,20 @@
         },
         {
           "setup": [
-            "You swap logos like masks.",
-            "Heat plays at the back of your neck."
+            "You unpack bags of fake merchandise, swapping brand labels.",
+            "You work in a spot where customers come looking for bargains."
           ],
           "execution": [
-            "A buyer wants stories; you sell those too.",
-            "Footsteps match yours a little too well."
+            "You spin a backstory for each item to make it seem authentic.",
+            "You notice someone’s eyes scanning your stall instead of your products."
           ],
           "climax": [
-            "Time to be somewhere else.",
-            "Or talk your way through the next minute."
+            "You step away before they start asking questions.",
+            "You offer one last deal to the nearest buyer and prepare to leave."
           ],
           "ambient": [
-            "Someone haggles for sport.",
-            "A drone of generators fills the stalls."
+            "A customer loudly haggles at the next stall.",
+            "The steady hum of generators fills the market."
           ],
           "outcomes": [
             { "type": "success", "weight": 58 },
