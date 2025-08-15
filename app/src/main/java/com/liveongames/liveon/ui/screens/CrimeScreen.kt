@@ -49,8 +49,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -58,10 +56,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
@@ -85,26 +81,53 @@ import com.liveongames.domain.model.CrimeRecordEntry
 import com.liveongames.liveon.R
 import com.liveongames.liveon.ui.theme.LocalLiveonTheme
 import com.liveongames.liveon.viewmodel.CrimeViewModel
+import com.liveongames.liveon.viewmodel.CrimeViewModel.CrimeType
 import kotlinx.coroutines.delay
 import kotlin.math.pow
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.runtime.key
+import androidx.compose.ui.text.TextStyle
+
+// Labels & icons reused from Education-style util file
 import com.liveongames.liveon.util.getCrimeName
+import com.liveongames.liveon.util.getCrimeDesc
+import com.liveongames.liveon.util.getCrimeDescShort
+import com.liveongames.liveon.util.getCrimeIconRes
+import com.liveongames.liveon.util.rankForNotoriety
+import android.graphics.RenderEffect
+import android.graphics.Shader
+import androidx.compose.animation.*
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.dp
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 
 /* =========================================================================================
  * Crime screen — aligned with Education:
- *  - Criminal card at top (avatar + rank), notoriety hidden.
- *  - Accordion of categories (first open by default, only one open at a time).
- *  - In‑row crime progression (phase lines + centered ambient + progress + cancel).
- *  - Dramatic outcome reveal (no notoriety shown).
- *  - Criminal Record section below the accordion.
+ * 1) Criminal card at top (avatar + rank), notoriety hidden.
+ * 2) Accordion of categories; tap row to start a crime (no Continue/Backout).
+ * 3) In-row progression: phase lines + centered ambient (fixed height) + progress + Cancel.
+ * 4) Dramatic outcome reveal after the run (Success/Fail/Caught), no notoriety here.
+ * 5) Criminal Record at bottom: name, outcome, category, notoriety delta (here only), newest first.
+ * Only one crime can be active at a time; other items visually disabled.
  * ========================================================================================= */
 
 @Composable
 fun CrimeScreen(
     onDismiss: () -> Unit,
     viewModel: CrimeViewModel = hiltViewModel(),
-    onCrimeCommitted: () -> Unit = {}   // <- add this
+    onCrimeCommitted: () -> Unit = {}
 ) {
-
     val t = LocalLiveonTheme.current
 
     val notoriety by viewModel.playerNotoriety.collectAsState()
@@ -118,14 +141,19 @@ fun CrimeScreen(
 
     LaunchedEffect(lastOutcomeVm) {
         lastOutcomeVm?.let { out ->
-            if (!out.success || out.wasCaught) { policeFlash = true; delay(1400); policeFlash = false }
+            if (!out.success || out.wasCaught) {
+                policeFlash = true
+                delay(1400)
+                policeFlash = false
+            }
             revealedOutcome = out
-            onCrimeCommitted()            // <- notify caller to refresh stats
+            onCrimeCommitted()
             viewModel.consumeOutcome()
         }
     }
 
-    val isLocked = (cooldownUntil ?: 0L) > System.currentTimeMillis()
+    val isGlobalLock = (cooldownUntil ?: 0L) > System.currentTimeMillis()
+    val activeType = runState?.type ?: revealedOutcome?.type
 
     Box(
         modifier = Modifier
@@ -168,11 +196,11 @@ fun CrimeScreen(
 
             Spacer(Modifier.height(6.dp))
 
-            // ---- Criminal Card (mirrors Education's student card) ----
+            // 1) Criminal Card (matches Education's student card)
             Surface(
                 color = t.surfaceElevated,
                 shape = RoundedCornerShape(18.dp),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -203,12 +231,12 @@ fun CrimeScreen(
                             overflow = TextOverflow.Ellipsis
                         )
                         Text(
-                            "Criminal Record",
+                            "Criminal Profile",
                             color = t.text.copy(alpha = 0.6f),
                             style = MaterialTheme.typography.labelMedium
                         )
                     }
-                    if (isLocked) {
+                    if (isGlobalLock) {
                         val secs = ((((cooldownUntil ?: 0L) - System.currentTimeMillis()) / 1000).toInt()).coerceAtLeast(0)
                         Text("Locked ${secs}s", color = t.text.copy(alpha = 0.75f), style = MaterialTheme.typography.labelMedium)
                     }
@@ -217,9 +245,10 @@ fun CrimeScreen(
 
             Spacer(Modifier.height(10.dp))
 
-            // ---- Accordion of Crime Categories (single-open; first open) ----
+            // 2) Accordion of Crime Categories (single-open; first open)
             val catalog = remember { buildCrimeCatalog() }
             var expandedCategory by rememberSaveable { mutableStateOf(catalog.firstOrNull()?.title) }
+            val sortedRecords = remember(records) { records.sortedByDescending { it.timestamp } }
 
             LazyColumn(
                 modifier = Modifier.weight(1f),
@@ -241,14 +270,18 @@ fun CrimeScreen(
                             SubCategoryHeader(sub.title, t.text)
                             sub.items.forEachIndexed { iIdx, item ->
                                 val accentColor = accentForCrime(item.type)
+                                val thisIsActive = activeType == item.type
+                                val canStartThis = !isGlobalLock && activeType == null
+                                val rowEnabled = canStartThis || thisIsActive
+
                                 CrimeListItem(
                                     type = item.type,
-                                    enabled = !isLocked,
+                                    enabled = rowEnabled,
                                     textColor = t.text,
                                     accent = accentColor,
                                     runState = if (runState?.type == item.type) runState else null,
                                     outcome = revealedOutcome?.takeIf { it.type == item.type },
-                                    onContinue = { viewModel.beginCrime(item.type) },
+                                    onStart = { if (canStartThis) viewModel.beginCrime(item.type) },
                                     onCancel = viewModel::cancelCrime,
                                     onDismissOutcome = { revealedOutcome = null }
                                 )
@@ -264,12 +297,13 @@ fun CrimeScreen(
                     }
                 }
 
-                // ----- Criminal Record Section -----
+                // 5) Criminal Record (Bottom)
                 item {
                     Spacer(Modifier.height(6.dp))
                     SectionHeader("Criminal Record", t.text, t.accent)
                 }
-                items(items = records.take(25), key = { it.id }) { rec ->
+
+                items(items = sortedRecords, key = { it.id }) { rec ->
                     CrimeRecordRow(rec)
                 }
 
@@ -277,7 +311,7 @@ fun CrimeScreen(
             }
         }
 
-        // Police flash overlay on failure / caught
+        // Light police flash overlay on failure / caught
         AnimatedVisibility(visible = policeFlash, enter = fadeIn(), exit = fadeOut()) {
             Box(
                 modifier = Modifier
@@ -289,7 +323,7 @@ fun CrimeScreen(
     }
 }
 
-/* ============================== Accordion / Rows ============================== */
+/* ============================== Accordion ============================== */
 
 @Composable
 private fun Accordion(
@@ -358,6 +392,8 @@ private fun SubCategoryHeader(label: String, textColor: Color) {
     }
 }
 
+/* ============================== Row + In-row flow ============================== */
+
 @Composable
 private fun CrimeRow(
     iconRes: Int,
@@ -402,40 +438,44 @@ private fun CrimeRow(
     }
 }
 
-/* Row with inline “continue/back out” -> in-progress OR outcome reveal */
+/**
+ * One line item that:
+ *  - Starts immediately on row tap when idle (no continue/backout).
+ *  - While running: shows stacked phase text, centered ambient (fixed height),
+ *    smooth progress bar, and Cancel button.
+ *  - After finish: shows dramatic outcome card (no notoriety), with Try again / Close.
+ */
 @Composable
 private fun CrimeListItem(
-    type: CrimeViewModel.CrimeType,
+    type: CrimeType,
     enabled: Boolean,
     textColor: Color,
     accent: Color,
     runState: CrimeViewModel.CrimeRunState?,
     outcome: CrimeViewModel.OutcomeEvent?,
-    onContinue: () -> Unit,
+    onStart: () -> Unit,
     onCancel: () -> Unit,
     onDismissOutcome: () -> Unit
 ) {
     val title = getCrimeName(type)
     val subtitle = getCrimeDescShort(getCrimeDesc(type))
 
-    var expanded by rememberSaveable(type) { mutableStateOf(false) }
-    LaunchedEffect(runState?.type) { if (runState?.type == type) expanded = true }
-    LaunchedEffect(outcome?.type) { if (outcome?.type == type) expanded = true }
-
     Column {
         CrimeRow(
             iconRes = getCrimeIconRes(type),
             title = title,
             subtitle = subtitle,
-            enabled = enabled || runState != null || outcome != null,
+            enabled = enabled,
             textColor = textColor,
             accent = accent
         ) {
-            if (enabled || runState != null || outcome != null) expanded = !expanded
+            // Tap row to initiate when idle; if running or outcome present, do nothing here.
+            if (runState == null && outcome == null) onStart()
         }
 
+        // Expanded area appears ONLY during run or outcome reveal.
         AnimatedVisibility(
-            visible = expanded,
+            visible = runState != null || outcome != null,
             enter = fadeIn() + expandVertically(),
             exit = fadeOut() + shrinkVertically()
         ) {
@@ -446,13 +486,14 @@ private fun CrimeListItem(
             ) {
                 when {
                     runState != null -> {
-                        // ===== In progress: stacked narration + centered ambient + smooth progress =====
+                        // 3) In progress: stacked narration + centered ambient + progress + cancel
                         PhaseNarration(
                             phase = runState.phase,
                             lines = runState.phaseLines,
                             phaseStartMs = runState.phaseStartMs,
                             phaseEndMs = runState.phaseEndMs,
-                            textColor = textColor
+                            textColor = textColor,
+                            windowSize = 4
                         )
 
                         Spacer(Modifier.height(4.dp))
@@ -460,7 +501,7 @@ private fun CrimeListItem(
                         AmbientTicker(
                             ambient = runState.ambientLines,
                             startedAt = runState.startedAtMs,
-                            cadenceMs = 4_000L,
+                            totalDurationMs = runState.durationMs,
                             textColor = textColor
                         )
 
@@ -485,8 +526,9 @@ private fun CrimeListItem(
                             TextButton(onClick = onCancel) { Text("Cancel") }
                         }
                     }
+
                     outcome != null -> {
-                        // ===== Dramatic outcome reveal (no notoriety text) =====
+                        // 4) Dramatic outcome reveal (no notoriety)
                         AnimatedVisibility(
                             visible = true,
                             enter = scaleIn(animationSpec = tween(220, easing = FastOutSlowInEasing)) + fadeIn(),
@@ -516,7 +558,7 @@ private fun CrimeListItem(
                                         Text("Payout: \$${outcome.moneyGained}", color = textColor.copy(alpha = 0.9f))
                                     if (outcome.jailDays > 0)
                                         Text("Jail time: ${outcome.jailDays} day(s)", color = textColor.copy(alpha = 0.9f))
-                                    // Notoriety is intentionally hidden from the player
+                                    // Notoriety intentionally hidden here
                                 }
                             }
                         }
@@ -524,15 +566,7 @@ private fun CrimeListItem(
                         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                             TextButton(onClick = onDismissOutcome) { Text("Close") }
                             Spacer(Modifier.weight(1f))
-                            Button(onClick = onContinue) { Text("Try again") }
-                        }
-                    }
-                    else -> {
-                        // Not started yet — Continue / Back out
-                        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                            Button(onClick = onContinue, enabled = enabled) { Text("Continue") }
-                            Spacer(Modifier.width(12.dp))
-                            TextButton(onClick = { expanded = false }, enabled = enabled) { Text("Back out") }
+                            Button(onClick = onStart) { Text("Try again") }
                         }
                     }
                 }
@@ -541,7 +575,7 @@ private fun CrimeListItem(
     }
 }
 
-/* ============================== Stacked narration (no ambient here) ============================== */
+/* ============================== Phase narration ============================== */
 
 @Composable
 private fun PhaseNarration(
@@ -549,55 +583,115 @@ private fun PhaseNarration(
     lines: List<String>,
     phaseStartMs: Long,
     phaseEndMs: Long,
-    textColor: Color
+    textColor: Color,
+    windowSize: Int = 4 // visible rolling window (3–5 recommended)
 ) {
-    val safeLines = if (lines.isEmpty()) listOf("") else lines
-    val totalPhaseMs = (phaseEndMs - phaseStartMs).coerceAtLeast(1L)
+    val safe = if (lines.isEmpty()) listOf("") else lines
+    val totalMs = (phaseEndMs - phaseStartMs).coerceAtLeast(1L)
 
-    var nowMs by remember(phaseStartMs, phaseEndMs) { mutableStateOf(System.currentTimeMillis()) }
+    // Pace each line evenly within the phase; clamp for readability
+    val perLineMs = (totalMs / safe.size.coerceAtLeast(1)).coerceIn(900L, 2500L)
+
+    var now by remember(phaseStartMs, phaseEndMs) { mutableStateOf(System.currentTimeMillis()) }
     LaunchedEffect(phaseStartMs, phaseEndMs) {
-        while (true) withFrameNanos { nowMs = System.currentTimeMillis() }
+        while (true) withFrameNanos { now = System.currentTimeMillis() }
     }
 
-    val elapsedMs = (nowMs - phaseStartMs).coerceIn(0L, totalPhaseMs)
-    val rawT = elapsedMs.toFloat() / totalPhaseMs.toFloat()
+    val elapsed = (now - phaseStartMs).coerceIn(0L, totalMs)
+    val currentIdx = (elapsed / perLineMs).toInt().coerceAtMost(safe.lastIndex)
+    val revealedCountExpected = currentIdx + 1
 
-    val t = when (phase) {
-        CrimeViewModel.Phase.SETUP     -> rawT.toDouble().pow(0.75).toFloat()
-        CrimeViewModel.Phase.EXECUTION -> rawT.toDouble().pow(1.15).toFloat()
-        CrimeViewModel.Phase.CLIMAX    -> rawT.toDouble().pow(0.95).toFloat()
-    }.coerceIn(0f, 1f)
+    // Monotonic reveal count: never decreases (prevents any flip/jitter)
+    var revealedCount by remember(phase, phaseStartMs) { mutableStateOf(0) }
+    revealedCount = revealedCount.coerceAtLeast(revealedCountExpected)
 
-    val revealCount = (t * safeLines.size).toInt().coerceIn(1, safeLines.size)
+    // Reserve a stable, readable area: windowSize × line height (prevents layout jumps)
+    val lineHeightDp = with(LocalDensity.current) { MaterialTheme.typography.bodyMedium.lineHeight.toDp() }
+    val reservedHeight = lineHeightDp * windowSize + 8.dp
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 6.dp)
+            .height(reservedHeight) // fixed space; content animates inside
+            .padding(horizontal = 6.dp),
+        contentAlignment = Alignment.BottomStart
     ) {
-        for (i in 0 until revealCount) {
-            AnimatedContent(
-                targetState = i,
-                transitionSpec = {
-                    (slideInHorizontally(animationSpec = tween(240)) { full -> -full / 4 } + fadeIn(tween(220)))
-                        .togetherWith(fadeOut(tween(180)))
-                        .using(SizeTransform(clip = false))
-                },
-                label = "phase-line-$i"
-            ) { idx ->
-                val isLast = idx == revealCount - 1
-                Text(
-                    text = safeLines[idx],
-                    color = if (isLast) textColor else textColor.copy(alpha = 0.92f),
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = if (isLast) 2.dp else 1.dp)
-                )
+        Column(Modifier.fillMaxWidth()) {
+            // Iterate up to revealedCount so items leaving the window get exit animations.
+            for (i in 0 until revealedCount) {
+                val inWindow = i >= (revealedCount - windowSize).coerceAtLeast(0) && i <= (revealedCount - 1)
+                val isNewest = i == currentIdx
+
+                key(i) {
+                    AnimatedVisibility(
+                        visible = inWindow,
+                        // Enter: rise + fade; newest slightly stronger
+                        enter =
+                            slideInVertically(animationSpec = tween(if (isNewest) 280 else 200)) { fullHeight: Int -> fullHeight / 3 } +
+                                    fadeIn(animationSpec = tween(if (isNewest) 280 else 200)),
+                        // Exit: drift upward + fade (no snap)
+                        exit =
+                            slideOutVertically(animationSpec = tween(220)) { fullHeight: Int -> -fullHeight / 3 } +
+                                    fadeOut(animationSpec = tween(220)),
+                        label = "phase-line-$i"
+                    ) {
+                        if (isNewest) {
+                            // Ghost-write ONLY the active line; older lines are solid text
+                            val lineStart = phaseStartMs + i * perLineMs
+                            val perCharMs = (perLineMs / safe[i].length.coerceAtLeast(8)).coerceIn(14L, 120L)
+                            TypewriterText(
+                                fullText = safe[i],
+                                lineStartMs = lineStart,
+                                perCharMs = perCharMs,
+                                nowProvider = { now }, // shares the same clock
+                                color = textColor,
+                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 2.dp)
+                            )
+                        } else {
+                            Text(
+                                text = safe[i],
+                                color = textColor.copy(alpha = 0.88f),
+                                style = MaterialTheme.typography.bodyMedium,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 1.dp)
+                            )
+                        }
+                    }
+                }
             }
         }
     }
+}
+
+@Composable
+private fun TypewriterText(
+    fullText: String,
+    lineStartMs: Long,
+    perCharMs: Long,
+    nowProvider: () -> Long,
+    color: Color,
+    style: TextStyle,
+    modifier: Modifier = Modifier
+) {
+    // Monotonic char counter — never goes backward and never exceeds text length
+    var charCount by remember(lineStartMs, fullText) { mutableStateOf(0) }
+    val now = nowProvider()
+    val elapsed = (now - lineStartMs).coerceAtLeast(0L)
+    val expected = (elapsed / perCharMs).toInt() + 1
+    charCount = charCount.coerceAtLeast(expected.coerceAtMost(fullText.length))
+
+    Text(
+        text = fullText.take(charCount),
+        color = color,
+        style = style,
+        textAlign = TextAlign.Start,
+        modifier = modifier
+    )
 }
 
 /* ============================== Ambient ticker (fixed height + centered) ============================== */
@@ -606,31 +700,31 @@ private fun PhaseNarration(
 private fun AmbientTicker(
     ambient: List<String>,
     startedAt: Long,
-    cadenceMs: Long,
+    totalDurationMs: Long,
     textColor: Color
 ) {
-    // reserve a stable height ≈ one small line (prevents layout jumps)
     val lineHeightDp = with(LocalDensity.current) { MaterialTheme.typography.bodySmall.lineHeight.toDp() }
-    val boxHeight = (lineHeightDp * 1.2f)
+    val boxHeight = (lineHeightDp * 1.2f) // fixed single-line reserve
 
     if (ambient.isEmpty()) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(boxHeight),
-            contentAlignment = Alignment.Center
-        ) { /* reserved space */ }
+        Box(Modifier.fillMaxWidth().height(boxHeight))
         return
     }
 
-    var nowMs by remember(startedAt, cadenceMs) { mutableStateOf(System.currentTimeMillis()) }
-    LaunchedEffect(startedAt, cadenceMs) {
-        while (true) withFrameNanos { nowMs = System.currentTimeMillis() }
+    // Evenly pace ambient across the entire run; no loop; stop on last line
+    val perMsgMs = (totalDurationMs / ambient.size.coerceAtLeast(1)).coerceIn(1500L, 6000L)
+
+    var now by remember(startedAt, totalDurationMs) { mutableStateOf(System.currentTimeMillis()) }
+    LaunchedEffect(startedAt, totalDurationMs) {
+        while (true) withFrameNanos { now = System.currentTimeMillis() }
     }
 
-    val bucket = ((nowMs - startedAt).coerceAtLeast(0L) / cadenceMs).toInt()
-    val idx = bucket.mod(ambient.size)
-    val current = ambient[idx]
+    val elapsed = (now - startedAt).coerceAtLeast(0L)
+    val expectedIdx = (elapsed / perMsgMs).toInt().coerceAtMost(ambient.lastIndex)
+
+    // Monotonic index; never reverse; finish at last line
+    var shownIdx by remember(startedAt) { mutableStateOf(0) }
+    shownIdx = shownIdx.coerceAtLeast(expectedIdx)
 
     Box(
         modifier = Modifier
@@ -639,13 +733,16 @@ private fun AmbientTicker(
         contentAlignment = Alignment.Center
     ) {
         AnimatedContent(
-            targetState = current,
-            transitionSpec = { fadeIn(tween(200)) togetherWith fadeOut(tween(200)) },
+            targetState = shownIdx,
+            transitionSpec = {
+                (slideInVertically(animationSpec = tween(220)) { fullHeight: Int -> fullHeight / 4 } + fadeIn(tween(220))) togetherWith
+                        (slideOutVertically(animationSpec = tween(220)) { fullHeight: Int -> -fullHeight / 4 } + fadeOut(tween(200)))
+            },
             label = "ambient-crossfade"
-        ) { text ->
+        ) { idx ->
             Text(
-                text = text,
-                color = textColor.copy(alpha = 0.70f),
+                text = ambient[idx],
+                color = textColor.copy(alpha = 0.72f),
                 style = MaterialTheme.typography.bodySmall,
                 fontStyle = FontStyle.Italic,
                 textAlign = TextAlign.Center,
@@ -685,6 +782,21 @@ private fun SmoothProgressBar(
 @Composable
 private fun CrimeRecordRow(rec: CrimeRecordEntry) {
     val t = LocalLiveonTheme.current
+
+    // Derive type & labels
+    val type = parseCrimeType(rec.typeKey)
+    val name = type?.let { getCrimeName(it) } ?: rec.typeKey
+    val category = type?.let { categoryLabelFor(it) } ?: "—"
+    val outcome = when {
+        rec.caught -> "Caught"
+        rec.success -> "Success"
+        else -> "Failed"
+    }
+    val notorietyDelta = type?.let { estimateNotorietyDelta(it, rec.success, rec.caught) }
+    val notoText = notorietyDelta?.let { (sign, abs) ->
+        if (abs == 0) null else "Notoriety ${if (sign > 0) "+" else "−"}$abs"
+    }
+
     Surface(
         color = t.surfaceElevated,
         shape = RoundedCornerShape(12.dp),
@@ -693,8 +805,11 @@ private fun CrimeRecordRow(rec: CrimeRecordEntry) {
             .padding(vertical = 6.dp)
     ) {
         Column(Modifier.padding(12.dp)) {
-            Text(rec.summary, color = t.text, style = MaterialTheme.typography.bodyMedium)
-            Spacer(Modifier.height(4.dp))
+            Text("$name • $outcome", color = t.text, style = MaterialTheme.typography.bodyMedium)
+            Spacer(Modifier.height(2.dp))
+            Text("Category: $category", color = t.text.copy(alpha = 0.75f), style = MaterialTheme.typography.labelMedium)
+
+            Spacer(Modifier.height(6.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (rec.money > 0) {
                     Text("+$${rec.money}", color = t.text.copy(alpha = 0.85f), style = MaterialTheme.typography.labelMedium)
@@ -702,6 +817,10 @@ private fun CrimeRecordRow(rec: CrimeRecordEntry) {
                 if (rec.jailDays > 0) {
                     if (rec.money > 0) Spacer(Modifier.width(12.dp))
                     Text("Jail: ${rec.jailDays}d", color = t.text.copy(alpha = 0.85f), style = MaterialTheme.typography.labelMedium)
+                }
+                if (notoText != null) {
+                    if (rec.money > 0 || rec.jailDays > 0) Spacer(Modifier.width(12.dp))
+                    Text(notoText, color = t.text.copy(alpha = 0.85f), style = MaterialTheme.typography.labelMedium)
                 }
             }
         }
@@ -727,9 +846,9 @@ private fun SectionHeader(title: String, text: Color, accent: Color) {
     }
 }
 
-/* ============================== Catalog / labels / icons / rank helpers ============================== */
+/* ============================== Catalog model & helpers ============================== */
 
-private data class CrimeUiItem(val type: CrimeViewModel.CrimeType)
+private data class CrimeUiItem(val type: CrimeType)
 private data class CrimeSubcat(val title: String, val items: List<CrimeUiItem>)
 private data class CrimeCat(val title: String, val subtitle: String, val subs: List<CrimeSubcat>)
 
@@ -742,10 +861,10 @@ private fun buildCrimeCatalog(): List<CrimeCat> {
                 CrimeSubcat(
                     title = "",
                     items = listOf(
-                        CrimeUiItem(CrimeViewModel.CrimeType.PICKPOCKETING),
-                        CrimeUiItem(CrimeViewModel.CrimeType.SHOPLIFTING),
-                        CrimeUiItem(CrimeViewModel.CrimeType.VANDALISM),
-                        CrimeUiItem(CrimeViewModel.CrimeType.PETTY_SCAM)
+                        CrimeUiItem(CrimeType.PICKPOCKETING),
+                        CrimeUiItem(CrimeType.SHOPLIFTING),
+                        CrimeUiItem(CrimeType.VANDALISM),
+                        CrimeUiItem(CrimeType.PETTY_SCAM)
                     )
                 )
             )
@@ -757,10 +876,10 @@ private fun buildCrimeCatalog(): List<CrimeCat> {
                 CrimeSubcat(
                     title = "",
                     items = listOf(
-                        CrimeUiItem(CrimeViewModel.CrimeType.MUGGING),
-                        CrimeUiItem(CrimeViewModel.CrimeType.BREAKING_AND_ENTERING),
-                        CrimeUiItem(CrimeViewModel.CrimeType.DRUG_DEALING),
-                        CrimeUiItem(CrimeViewModel.CrimeType.COUNTERFEIT_GOODS)
+                        CrimeUiItem(CrimeType.MUGGING),
+                        CrimeUiItem(CrimeType.BREAKING_AND_ENTERING),
+                        CrimeUiItem(CrimeType.DRUG_DEALING),
+                        CrimeUiItem(CrimeType.COUNTERFEIT_GOODS)
                     )
                 )
             )
@@ -772,10 +891,10 @@ private fun buildCrimeCatalog(): List<CrimeCat> {
                 CrimeSubcat(
                     title = "",
                     items = listOf(
-                        CrimeUiItem(CrimeViewModel.CrimeType.BURGLARY),
-                        CrimeUiItem(CrimeViewModel.CrimeType.FRAUD),
-                        CrimeUiItem(CrimeViewModel.CrimeType.ARMS_SMUGGLING),
-                        CrimeUiItem(CrimeViewModel.CrimeType.DRUG_TRAFFICKING)
+                        CrimeUiItem(CrimeType.BURGLARY),
+                        CrimeUiItem(CrimeType.FRAUD),
+                        CrimeUiItem(CrimeType.ARMS_SMUGGLING),
+                        CrimeUiItem(CrimeType.DRUG_TRAFFICKING)
                     )
                 )
             )
@@ -787,14 +906,14 @@ private fun buildCrimeCatalog(): List<CrimeCat> {
                 CrimeSubcat(
                     title = "",
                     items = listOf(
-                        CrimeUiItem(CrimeViewModel.CrimeType.ARMED_ROBBERY),
-                        CrimeUiItem(CrimeViewModel.CrimeType.EXTORTION),
-                        CrimeUiItem(CrimeViewModel.CrimeType.KIDNAPPING_FOR_RANSOM),
-                        CrimeUiItem(CrimeViewModel.CrimeType.PONZI_SCHEME),
-                        CrimeUiItem(CrimeViewModel.CrimeType.CONTRACT_KILLING),
-                        CrimeUiItem(CrimeViewModel.CrimeType.DARK_WEB_SALES),
-                        CrimeUiItem(CrimeViewModel.CrimeType.ART_THEFT),
-                        CrimeUiItem(CrimeViewModel.CrimeType.DIAMOND_HEIST)
+                        CrimeUiItem(CrimeType.ARMED_ROBBERY),
+                        CrimeUiItem(CrimeType.EXTORTION),
+                        CrimeUiItem(CrimeType.KIDNAPPING_FOR_RANSOM),
+                        CrimeUiItem(CrimeType.PONZI_SCHEME),
+                        CrimeUiItem(CrimeType.CONTRACT_KILLING),
+                        CrimeUiItem(CrimeType.DARK_WEB_SALES),
+                        CrimeUiItem(CrimeType.ART_THEFT),
+                        CrimeUiItem(CrimeType.DIAMOND_HEIST)
                     )
                 )
             )
@@ -802,112 +921,64 @@ private fun buildCrimeCatalog(): List<CrimeCat> {
     )
 }
 
-private fun getCrimeName(type: CrimeViewModel.CrimeType) = when (type) {
-    CrimeViewModel.CrimeType.PICKPOCKETING -> "Pickpocketing"
-    CrimeViewModel.CrimeType.SHOPLIFTING -> "Shoplifting"
-    CrimeViewModel.CrimeType.VANDALISM -> "Vandalism"
-    CrimeViewModel.CrimeType.PETTY_SCAM -> "Petty scam"
-    CrimeViewModel.CrimeType.MUGGING -> "Mugging"
-    CrimeViewModel.CrimeType.BREAKING_AND_ENTERING -> "Breaking & entering"
-    CrimeViewModel.CrimeType.DRUG_DEALING -> "Drug dealing"
-    CrimeViewModel.CrimeType.COUNTERFEIT_GOODS -> "Counterfeit goods"
-    CrimeViewModel.CrimeType.BURGLARY -> "Burglary"
-    CrimeViewModel.CrimeType.FRAUD -> "Fraud"
-    CrimeViewModel.CrimeType.ARMS_SMUGGLING -> "Arms smuggling"
-    CrimeViewModel.CrimeType.DRUG_TRAFFICKING -> "Drug trafficking"
-    CrimeViewModel.CrimeType.ARMED_ROBBERY -> "Armed robbery"
-    CrimeViewModel.CrimeType.EXTORTION -> "Extortion"
-    CrimeViewModel.CrimeType.KIDNAPPING_FOR_RANSOM -> "Kidnapping for ransom"
-    CrimeViewModel.CrimeType.PONZI_SCHEME -> "Ponzi scheme"
-    CrimeViewModel.CrimeType.CONTRACT_KILLING -> "Contract killing"
-    CrimeViewModel.CrimeType.DARK_WEB_SALES -> "Dark web sales"
-    CrimeViewModel.CrimeType.ART_THEFT -> "Art theft"
-    CrimeViewModel.CrimeType.DIAMOND_HEIST -> "Diamond heist"
-}
-
-private fun getCrimeDesc(type: CrimeViewModel.CrimeType) = when (type) {
-    CrimeViewModel.CrimeType.PICKPOCKETING -> "Lift a wallet or phone."
-    CrimeViewModel.CrimeType.SHOPLIFTING -> "Swipe small items from a store."
-    CrimeViewModel.CrimeType.VANDALISM -> "Deface property to make a statement."
-    CrimeViewModel.CrimeType.PETTY_SCAM -> "Run a street con."
-    CrimeViewModel.CrimeType.MUGGING -> "Corner a mark and demand valuables."
-    CrimeViewModel.CrimeType.BREAKING_AND_ENTERING -> "Slip into a building."
-    CrimeViewModel.CrimeType.DRUG_DEALING -> "Move small product to buyers."
-    CrimeViewModel.CrimeType.COUNTERFEIT_GOODS -> "Sell convincing fakes."
-    CrimeViewModel.CrimeType.BURGLARY -> "Hit a residence or business."
-    CrimeViewModel.CrimeType.FRAUD -> "Confidence games at scale."
-    CrimeViewModel.CrimeType.ARMS_SMUGGLING -> "Move weapons quietly."
-    CrimeViewModel.CrimeType.DRUG_TRAFFICKING -> "Transport heavy product."
-    CrimeViewModel.CrimeType.ARMED_ROBBERY -> "High-stakes, high-risk robbery."
-    CrimeViewModel.CrimeType.EXTORTION -> "Money by threat or pressure."
-    CrimeViewModel.CrimeType.KIDNAPPING_FOR_RANSOM -> "Abduct and negotiate."
-    CrimeViewModel.CrimeType.PONZI_SCHEME -> "Pay old investors with new."
-    CrimeViewModel.CrimeType.CONTRACT_KILLING -> "Assassination for hire."
-    CrimeViewModel.CrimeType.DARK_WEB_SALES -> "Illicit marketplace hustle."
-    CrimeViewModel.CrimeType.ART_THEFT -> "Steal priceless works."
-    CrimeViewModel.CrimeType.DIAMOND_HEIST -> "Rob the vault."
-}
-
-private fun getCrimeDescShort(full: String): String =
-    if (full.length <= 36) full else full.take(33) + "…"
-
-private fun getCrimeIconRes(type: CrimeViewModel.CrimeType): Int = when (type) {
-    // STREET
-    CrimeViewModel.CrimeType.PICKPOCKETING -> R.drawable.ic_pickpocket
-    CrimeViewModel.CrimeType.SHOPLIFTING -> R.drawable.ic_shoplifting
-    CrimeViewModel.CrimeType.VANDALISM -> R.drawable.ic_vandalism
-    CrimeViewModel.CrimeType.PETTY_SCAM -> R.drawable.ic_petty_scam
-    // ROBBERY
-    CrimeViewModel.CrimeType.MUGGING -> R.drawable.ic_mugging
-    CrimeViewModel.CrimeType.BREAKING_AND_ENTERING -> R.drawable.ic_break_and_enter
-    CrimeViewModel.CrimeType.DRUG_DEALING -> R.drawable.ic_drug_deal
-    CrimeViewModel.CrimeType.COUNTERFEIT_GOODS -> R.drawable.ic_counterfeit_goods
-    // HEISTS & SMUGGLING
-    CrimeViewModel.CrimeType.BURGLARY -> R.drawable.ic_burglary
-    CrimeViewModel.CrimeType.FRAUD -> R.drawable.ic_fraud
-    CrimeViewModel.CrimeType.ARMS_SMUGGLING -> R.drawable.ic_arms_smuggling
-    CrimeViewModel.CrimeType.DRUG_TRAFFICKING -> R.drawable.ic_drug_trafficking
-    // MASTERMIND
-    CrimeViewModel.CrimeType.ARMED_ROBBERY -> R.drawable.ic_armed_robbery
-    CrimeViewModel.CrimeType.EXTORTION -> R.drawable.ic_extortion
-    CrimeViewModel.CrimeType.KIDNAPPING_FOR_RANSOM -> R.drawable.ic_kidnapping
-    CrimeViewModel.CrimeType.PONZI_SCHEME -> R.drawable.ic_ponzi
-    CrimeViewModel.CrimeType.CONTRACT_KILLING -> R.drawable.ic_contract_killing
-    CrimeViewModel.CrimeType.DARK_WEB_SALES -> R.drawable.ic_dark_web
-    CrimeViewModel.CrimeType.ART_THEFT -> R.drawable.ic_art_theft
-    CrimeViewModel.CrimeType.DIAMOND_HEIST -> R.drawable.ic_diamond_heist
-}
-
 /** Accent color per crime type */
-private fun accentForCrime(type: CrimeViewModel.CrimeType): Color = when (type) {
+private fun accentForCrime(type: CrimeType): Color = when (type) {
     // Lower risk-ish
-    CrimeViewModel.CrimeType.PICKPOCKETING,
-    CrimeViewModel.CrimeType.SHOPLIFTING,
-    CrimeViewModel.CrimeType.VANDALISM,
-    CrimeViewModel.CrimeType.PETTY_SCAM -> Color(0xFF2ECC71)
+    CrimeType.PICKPOCKETING,
+    CrimeType.SHOPLIFTING,
+    CrimeType.VANDALISM,
+    CrimeType.PETTY_SCAM -> Color(0xFF2ECC71)
     // Medium
-    CrimeViewModel.CrimeType.MUGGING,
-    CrimeViewModel.CrimeType.BREAKING_AND_ENTERING,
-    CrimeViewModel.CrimeType.DRUG_DEALING,
-    CrimeViewModel.CrimeType.COUNTERFEIT_GOODS -> Color(0xFFFFC107)
+    CrimeType.MUGGING,
+    CrimeType.BREAKING_AND_ENTERING,
+    CrimeType.DRUG_DEALING,
+    CrimeType.COUNTERFEIT_GOODS -> Color(0xFFFFC107)
     // High
-    CrimeViewModel.CrimeType.BURGLARY,
-    CrimeViewModel.CrimeType.FRAUD,
-    CrimeViewModel.CrimeType.ARMS_SMUGGLING,
-    CrimeViewModel.CrimeType.DRUG_TRAFFICKING -> Color(0xFFFF7043)
+    CrimeType.BURGLARY,
+    CrimeType.FRAUD,
+    CrimeType.ARMS_SMUGGLING,
+    CrimeType.DRUG_TRAFFICKING -> Color(0xFFFF7043)
     // Extreme / Mastermind
     else -> Color(0xFFE53935)
 }
 
-private fun rankForNotoriety(n: Int): String = when {
-    n < 5 -> "New Face"
-    n < 15 -> "Petty Thief"
-    n < 30 -> "Street Hustler"
-    n < 45 -> "Enforcer"
-    n < 60 -> "Fixer"
-    n < 75 -> "Shot Caller"
-    n < 90 -> "Capo"
-    else -> "Kingpin"
+/* --------- Record derivations (category + notoriety estimate) ---------- */
+
+private fun parseCrimeType(typeKey: String): CrimeType? =
+    runCatching { CrimeType.valueOf(typeKey) }.getOrNull()
+
+private fun categoryLabelFor(type: CrimeType): String = when (type) {
+    CrimeType.PICKPOCKETING, CrimeType.SHOPLIFTING, CrimeType.VANDALISM, CrimeType.PETTY_SCAM -> "Street Crimes"
+    CrimeType.MUGGING, CrimeType.BREAKING_AND_ENTERING, CrimeType.DRUG_DEALING, CrimeType.COUNTERFEIT_GOODS -> "Robbery"
+    CrimeType.BURGLARY, CrimeType.FRAUD, CrimeType.ARMS_SMUGGLING, CrimeType.DRUG_TRAFFICKING -> "Heists & Smuggling"
+    else -> "Mastermind Tier"
+}
+
+/**
+ * UI-only notoriety estimate (used for record display only).
+ * Mirrors VM baselines so players can see the *intended* notoriety change here.
+ */
+private fun estimateNotorietyDelta(
+    type: CrimeType,
+    success: Boolean,
+    caught: Boolean
+): Pair<Int /*sign*/, Int /*abs*/>? {
+    val (gain, loss) = when (type) {
+        // LOW
+        CrimeType.PICKPOCKETING, CrimeType.SHOPLIFTING, CrimeType.VANDALISM, CrimeType.PETTY_SCAM -> 1 to 1
+        // MED
+        CrimeType.MUGGING, CrimeType.BREAKING_AND_ENTERING, CrimeType.DRUG_DEALING, CrimeType.COUNTERFEIT_GOODS -> 2 to 2
+        // HIGH
+        CrimeType.BURGLARY, CrimeType.FRAUD, CrimeType.ARMS_SMUGGLING -> 4 to 2
+        CrimeType.DRUG_TRAFFICKING -> 5 to 2
+        // EXTREME
+        CrimeType.ARMED_ROBBERY, CrimeType.EXTORTION, CrimeType.KIDNAPPING_FOR_RANSOM,
+        CrimeType.PONZI_SCHEME, CrimeType.CONTRACT_KILLING, CrimeType.ART_THEFT, CrimeType.DIAMOND_HEIST -> 10 to 3
+        CrimeType.DARK_WEB_SALES -> 8 to 3
+    }
+    val abs = if (success && !caught) gain else loss
+    val sign = if (success && !caught) +1 else -1
+    return sign to abs
 }
 
 /* ============================== Police light brush ============================== */

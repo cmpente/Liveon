@@ -31,11 +31,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setContent {
-            LiveonApp()
-        }
-
+        setContent { LiveonApp() }
         enableFullScreen()
     }
 
@@ -65,10 +61,7 @@ fun LiveonApp() {
     val settingsViewModel: SettingsViewModel = hiltViewModel()
     val sharedGameViewModel: GameViewModel = hiltViewModel()
 
-    // Observe the selected theme index from settings
     val selectedThemeIndex by settingsViewModel.selectedThemeIndex.collectAsStateWithLifecycle()
-
-    // Get the theme from AllGameThemes using the index, with bounds checking
     val selectedTheme = AllGameThemes.getOrElse(selectedThemeIndex) {
         AllGameThemes.firstOrNull() ?: AllGameThemes[0]
     }
@@ -92,14 +85,7 @@ fun LiveonApp() {
                 )
             }
 
-            composable("crime") {
-                val crimeViewModel: CrimeViewModel = hiltViewModel()
-                CrimeScreen(
-                    viewModel = crimeViewModel,
-                    onDismiss = { navController.popBackStack() }
-                )
-            }
-
+            // SINGLE crime destination (removed duplicate)
             composable("crime") {
                 val crimeViewModel: CrimeViewModel = hiltViewModel()
                 CrimeScreen(
@@ -109,7 +95,7 @@ fun LiveonApp() {
                 )
             }
 
-            // Education POPUP destination -> show the new sheet
+            // Education popup sheet
             composable("education_popup") {
                 val eduVm: EducationViewModel = hiltViewModel()
                 EducationSheet(
