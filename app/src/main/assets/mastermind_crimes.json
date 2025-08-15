@@ -1,0 +1,51 @@
+{
+  "category": "MASTERMIND",
+  "riskTier": "EXTREME_RISK",
+  "crimes": [
+    {
+      "type": "ARMED_ROBBERY",
+      "paths": [
+        {"setup":["Bank lobby","Masks on","Shotgun in hand"],"execution":["Shout orders","Jump counter","Bag cash fast"],"climax":{"success":"Vault emptied","fail":"Bag tears open","caught":"Silent alarm trips SWAT"},"outcomes":[{"type":"success","weight":40},{"type":"fail","weight":45},{"type":"caught","weight":15}]},
+        {"setup":["Casino floor","Security distracted","Crew ready"],"execution":["Draw pistols","Sweep chips","Rush exit"],"climax":{"success":"Haul in van","fail":"Security blocks path","caught":"Cameras catch faces"},"outcomes":[{"type":"success","weight":41},{"type":"fail","weight":44},{"type":"caught","weight":15}]},
+        {"setup":["Armored truck","Intersection stop","Driver unaware"],"execution":["Block truck","Yank door","Grab bags"],"climax":{"success":"Truck looted","fail":"Bag chain snag","caught":"Driver fights back"},"outcomes":[{"type":"success","weight":39},{"type":"fail","weight":46},{"type":"caught","weight":15}]},
+        {"setup":["Jewelry store","Crowd outside","Inside guard alone"],"execution":["Shatter case","Fill bag","Cover exit"],"climax":{"success":"Diamonds secured","fail":"Glass cuts hand","caught":"Police arrive early"},"outcomes":[{"type":"success","weight":40},{"type":"fail","weight":45},{"type":"caught","weight":15}]},
+        {"setup":["Gold vault","Fake maintenance call","Team in uniforms"],"execution":["Enter vault","Overpower guard","Load cart"],"climax":{"success":"Gold wheeled out","fail":"Cart tips","caught":"Alarm shuts vault"},"outcomes":[{"type":"success","weight":39},{"type":"fail","weight":46},{"type":"caught","weight":15}]},
+        {"setup":["Luxury boutique","Owner present","Crowd distracted"],"execution":["Lock door","Sweep racks","Force back door"],"climax":{"success":"Designer goods stolen","fail":"Back door jammed","caught":"Passerby films"},"outcomes":[{"type":"success","weight":40},{"type":"fail","weight":45},{"type":"caught","weight":15}]},
+        {"setup":["Bank truck vault","Team split","Crowd noise high"],"execution":["Cut lock","Load bags","Retreat fast"],"climax":{"success":"Vault emptied","fail":"Drill bit breaks","caught":"Security returns"},"outcomes":[{"type":"success","weight":41},{"type":"fail","weight":44},{"type":"caught","weight":15}]},
+        {"setup":["VIP gala","Security thin","Auction ongoing"],"execution":["Grab art","Push through crowd","Reach getaway"],"climax":{"success":"Art in van","fail":"Trip on stairs","caught":"Guard wrestles you"},"outcomes":[{"type":"success","weight":40},{"type":"fail","weight":45},{"type":"caught","weight":15}]},
+        {"setup":["Downtown bank","Rainstorm","Crew in ponchos"],"execution":["Blend in","Draw weapons","Force teller"],"climax":{"success":"Cash in duffels","fail":"Ink pack explodes","caught":"Rain cam shows faces"},"outcomes":[{"type":"success","weight":39},{"type":"fail","weight":46},{"type":"caught","weight":15}]},
+        {"setup":["Armored cash van","Parking garage","Backup ready"],"execution":["Block exit","Force driver out","Empty crates"],"climax":{"success":"Crates loaded","fail":"Lift gate stuck","caught":"Garage patrol spots"},"outcomes":[{"type":"success","weight":40},{"type":"fail","weight":45},{"type":"caught","weight":15}]}
+      ]
+    },
+    {
+      "type": "EXTORTION",
+      "paths": [
+        {"setup":["Night meeting","Briefcase in hand","Target arrives nervous"],"execution":["State demands","Show evidence","Set deadline"],"climax":{"success":"Target agrees","fail":"Target stalls","caught":"Undercover cop listening"},"outcomes":[{"type":"success","weight":45},{"type":"fail","weight":40},{"type":"caught","weight":15}]},
+        {"setup":["Crowded café","Sit near target","File folder on table"],"execution":["Slide folder","Whisper threats","Collect payment"],"climax":{"success":"Money in pocket","fail":"Folder drops","caught":"Patron calls police"},"outcomes":[{"type":"success","weight":46},{"type":"fail","weight":39},{"type":"caught","weight":15}]},
+        {"setup":["Back alley","Rain falling","Target late"],"execution":["Lean on wall","Flash weapon","State terms"],"climax":{"success":"Payment handed","fail":"Target bolts","caught":"Patrol car arrives"},"outcomes":[{"type":"success","weight":44},{"type":"fail","weight":41},{"type":"caught","weight":15}]},
+        {"setup":["Corporate office","Fake badge","Meeting booked"],"execution":["Close blinds","Issue threat","Name price"],"climax":{"success":"Check signed","fail":"Exec laughs","caught":"Security barges in"},"outcomes":[{"type":"success","weight":45},{"type":"fail","weight":40},{"type":"caught","weight":15}]},
+        {"setup":["Target's home","Dim porch light","Envelope ready"],"execution":["Knock door","State demand","Leave with cash"],"climax":{"success":"Cash secured","fail":"Dog chases","caught":"Neighbor calls police"},"outcomes":[{"type":"success","weight":46},{"type":"fail","weight":39},{"type":"caught","weight":15}]},
+        {"setup":["Underground bar","Target at counter","Music loud"],"execution":["Sit beside","Slip photo","Threaten softly"],"climax":{"success":"Money handed","fail":"Drink spills","caught":"Bouncer intervenes"},"outcomes":[{"type":"success","weight":44},{"type":"fail","weight":41},{"type":"caught","weight":15}]},
+        {"setup":["Docks","Freight cranes moving","Crate as seat"],"execution":["Call target","Show shipment manifest","Name cut"],"climax":{"success":"Payment wired","fail":"Manifest fake","caught":"Harbor patrol listens"},"outcomes":[{"type":"success","weight":45},{"type":"fail","weight":40},{"type":"caught","weight":15}]},
+        {"setup":["Warehouse","Dim lights","Metal table between"],"execution":["Slide photos","Make offer","Shake hands"],"climax":{"success":"Deal closed","fail":"Target backs off","caught":"Hidden camera live"},"outcomes":[{"type":"success","weight":46},{"type":"fail","weight":39},{"type":"caught","weight":15}]},
+        {"setup":["Luxury suite","Curtains drawn","Target pacing"],"execution":["Sit calm","State info held","Price up"],"climax":{"success":"Funds wired","fail":"Target refuses","caught":"Room service is SWAT"},"outcomes":[{"type":"success","weight":44},{"type":"fail","weight":41},{"type":"caught","weight":15}]},
+        {"setup":["Gym locker room","Target lifting","Towel in hand"],"execution":["Corner target","Lay terms","Walk away"],"climax":{"success":"Money later delivered","fail":"Target laughs","caught":"Security called"},"outcomes":[{"type":"success","weight":45},{"type":"fail","weight":40},{"type":"caught","weight":15}]}
+      ]
+    },
+    {
+      "type": "KIDNAPPING_FOR_RANSOM",
+      "paths": [
+        {"setup":["Night street","Target walking","Van idling nearby"],"execution":["Grab target","Cover mouth","Push inside"],"climax":{"success":"Target secured","fail":"Target screams","caught":"Bystander intervenes"},"outcomes":[{"type":"success","weight":38},{"type":"fail","weight":47},{"type":"caught","weight":15}]},
+        {"setup":["Busy mall","Child wanders","Parent distracted"],"execution":["Approach fast","Lead away","Exit to lot"],"climax":{"success":"Child in van","fail":"Parent spots","caught":"Security radios police"},"outcomes":[{"type":"success","weight":39},{"type":"fail","weight":46},{"type":"caught","weight":15}]},
+        {"setup":["Suburban driveway","Garage open","Target loading car"],"execution":["Rush forward","Force inside","Drive off"],"climax":{"success":"Gone in seconds","fail":"Door slams","caught":"Neighbor records plate"},"outcomes":[{"type":"success","weight":38},{"type":"fail","weight":47},{"type":"caught","weight":15}]},
+        {"setup":["Hotel lobby","Target at desk","Bellhop distracted"],"execution":["Grab bag","Drag to stairwell","Exit rear"],"climax":{"success":"Target restrained","fail":"Elevator opens","caught":"Desk clerk screams"},"outcomes":[{"type":"success","weight":39},{"type":"fail","weight":46},{"type":"caught","weight":15}]},
+        {"setup":["Park bench","Target reading","Path empty"],"execution":["Cover face","Lift target","Walk quickly"],"climax":{"success":"Into van","fail":"Book drops loudly","caught":"Jogger blocks path"},"outcomes":[{"type":"success","weight":38},{"type":"fail","weight":47},{"type":"caught","weight":15}]},
+        {"setup":["Alley exit","Shadow cover","Lookout ready"],"execution":["Signal crew","Grab target","Drive fast"],"climax":{"success":"Clear escape","fail":"Target fights","caught":"Marked patrol pulls in"},"outcomes":[{"type":"success","weight":39},{"type":"fail","weight":46},{"type":"caught","weight":15}]},
+        {"setup":["Private dock","Yacht moored","Owner on deck"],"execution":["Climb aboard","Subdue quickly","Sail away"],"climax":{"success":"Boat out of harbor","fail":"Rope slips","caught":"Harbor patrol speeds up"},"outcomes":[{"type":"success","weight":38},{"type":"fail","weight":47},{"type":"caught","weight":15}]},
+        {"setup":["School gate","Crowd dispersing","Target alone"],"execution":["Approach casually","Guide to car","Close door"],"climax":{"success":"Drive away","fail":"Teacher yells","caught":"Parent blocks exit"},"outcomes":[{"type":"success","weight":39},{"type":"fail","weight":46},{"type":"caught","weight":15}]},
+        {"setup":["Grocery lot","Target loading trunk","Lot empty"],"execution":["Rush forward","Push inside","Peel out"],"climax":{"success":"Gone quick","fail":"Drop keys","caught":"Security camera pans"},"outcomes":[{"type":"success","weight":38},{"type":"fail","weight":47},{"type":"caught","weight":15}]},
+        {"setup":["Concert crowd","Target VIP","Backstage pass faked"],"execution":["Escort away","Into car","Lock doors"],"climax":{"success":"Clear escape","fail":"Pass questioned","caught":"Guard stops car"},"outcomes":[{"type":"success","weight":39},{"type":"fail","weight":46},{"type":"caught","weight":15}]}
+      ]
+    }
+  ]
+}

@@ -96,7 +96,14 @@ fun LiveonApp() {
                 val crimeViewModel: CrimeViewModel = hiltViewModel()
                 CrimeScreen(
                     viewModel = crimeViewModel,
-                    settingsViewModel = settingsViewModel,
+                    onDismiss = { navController.popBackStack() }
+                )
+            }
+
+            composable("crime") {
+                val crimeViewModel: CrimeViewModel = hiltViewModel()
+                CrimeScreen(
+                    viewModel = crimeViewModel,
                     onCrimeCommitted = { sharedGameViewModel.refreshPlayerStats() },
                     onDismiss = { navController.popBackStack() }
                 )
