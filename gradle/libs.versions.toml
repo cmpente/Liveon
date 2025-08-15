@@ -81,6 +81,12 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 # Compose Icons
 material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" } # Add this line
 
+# Compose Animations
+foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "compose-ui" }
+animation = { group = "androidx.compose.animation", name = "animation", version.ref = "compose-ui" }
+
+runtime-saveable = { group = "androidx.compose.runtime", name = "runtime-saveable", version.ref = "compose-ui" }
+
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }

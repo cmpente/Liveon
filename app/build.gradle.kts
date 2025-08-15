@@ -56,38 +56,60 @@ android {
 }
 
 dependencies {
+    // Project Modules
     implementation(project(":domain"))
     implementation(project(":data"))
 
+    // Core AndroidX
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
-    implementation(libs.activity.compose)
+
+    // Compose
     implementation(platform("androidx.compose:compose-bom:2024.06.00"))
+    implementation(libs.activity.compose)
     implementation(libs.ui)
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
-    implementation(libs.material3)
+    implementation(libs.ui.tooling)
+    implementation(libs.foundation)
+    implementation(libs.animation)
     implementation(libs.material)
+    implementation(libs.material3)
+    implementation(libs.material.icons.extended)
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.navigation.compose)
+
+    // Dependency Injection
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
-    implementation(libs.gson)
 
-    // Add Room dependencies
+    // Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 
-    implementation(libs.material.icons.extended)
+    // Coroutines
+    implementation(libs.coroutines.core)
+    implementation(libs.coroutines.android)
 
+    // JSON
+    implementation(libs.gson)
+    implementation(libs.kotlinx.serialization.json)
+
+    // Networking
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+    implementation(libs.okhttp.logging)
+
+    implementation(libs.runtime.saveable)
+
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(platform("androidx.compose:compose-bom:2024.06.00"))
     androidTestImplementation(libs.ui.test.junit4)
-    debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
 }

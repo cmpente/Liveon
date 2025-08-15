@@ -14,17 +14,21 @@
       "paths": [
         {
           "setup": [
-            "You stalk a quiet side street where neon can’t reach.",
-            "Footfalls sync with your target; distance becomes a decision."
+            "You stalk a side street where neon can’t reach.",
+            "Footfalls sync with your target; distance turns into a decision."
           ],
           "execution": [
-            "You close the gap; your voice is low, steady.",
+            "You close the gap; your voice is low, even.",
             "They freeze at the tone more than the words.",
-            "Hands rise slow—compliance or calculation?"
+            "Hands rise slow—compliance or a stall?"
           ],
           "climax": [
-            "They fumble for a wallet; a window lights up across the way.",
-            "You scan for witnesses and worse."
+            "They fumble for a wallet; a window lights across the way.",
+            "You scan for witnesses, and worse."
+          ],
+          "ambient": [
+            "Rain ticks from a loose gutter chain.",
+            "A taxi idles, turn signal tapping time."
           ],
           "outcomes": [
             { "type": "success", "weight": 62 },
@@ -34,16 +38,20 @@
         },
         {
           "setup": [
-            "Rain slicks the sidewalk; everyone walks faster but you.",
+            "Pavement shines; everyone walks faster but you.",
             "A silhouette hesitates; you don’t."
           ],
           "execution": [
             "Words land like a door closing.",
-            "They nod too quickly; fear can be a shortcut or a trap."
+            "They nod too quickly—fear can be a shortcut or a trap."
           ],
           "climax": [
             "A siren mutters a block away.",
             "You count to three that feel like thirty."
+          ],
+          "ambient": [
+            "Steam lifts from a grate and disappears.",
+            "A biker ghosts through a red light."
           ],
           "outcomes": [
             { "type": "success", "weight": 58 },
@@ -64,13 +72,17 @@
             "Neighborhood dogs have nothing to say tonight."
           ],
           "execution": [
-            "You move room to room like a rumor.",
+            "Room to room like a rumor.",
             "Air smells like lavender and risk.",
-            "You take only what you can’t be weighed down by."
+            "You take only what won’t weigh down your exit."
           ],
           "climax": [
             "A floorboard confesses—too loud.",
             "Shadows shift that aren’t yours."
+          ],
+          "ambient": [
+            "Fridge motor kicks on and off like a heartbeat.",
+            "A clock ticks in a room you don’t enter."
           ],
           "outcomes": [
             { "type": "success", "weight": 58 },
@@ -84,12 +96,16 @@
             "A TV whispers from somewhere deeper."
           ],
           "execution": [
-            "You time your steps with the laugh track.",
-            "An empty picture frame stares back at you."
+            "You pace your steps with the laugh track.",
+            "An empty frame stares back."
           ],
           "climax": [
             "Headlights wash the windows.",
             "You stop breathing just to see what moves."
+          ],
+          "ambient": [
+            "A neighbor coughs through a wall.",
+            "Heater pipes pop and settle."
           ],
           "outcomes": [
             { "type": "success", "weight": 56 },
@@ -107,16 +123,20 @@
         {
           "setup": [
             "You pick a corner with exits and excuses.",
-            "Phone buzz patterns mean hello in your line of work."
+            "Phone buzz patterns mean hello where you work."
           ],
           "execution": [
             "Buyers drift in ones and twos.",
-            "You keep exchanges short; pockets shorter.",
-            "Eyes always hold the map to the farthest door."
+            "Exchanges stay short; pockets shorter.",
+            "Eyes keep a map to the farthest door."
           ],
           "climax": [
             "A car slows—friend or heat?",
-            "Your pulse spikes, hands stay calm."
+            "Pulse spikes; hands stay calm."
+          ],
+          "ambient": [
+            "Tires hiss through puddles, over and over.",
+            "A streetlight flickers like it owes someone money."
           ],
           "outcomes": [
             { "type": "success", "weight": 64 },
@@ -134,8 +154,12 @@
             "Someone lingers two beats too long."
           ],
           "climax": [
-            "A siren coughs awake somewhere close.",
-            "You break the scene down to angles and exits."
+            "A siren coughs awake nearby.",
+            "You collapse the scene into angles and exits."
+          ],
+          "ambient": [
+            "A bus announces stops to no one.",
+            "Metal shutters rattle half a block away."
           ],
           "outcomes": [
             { "type": "success", "weight": 60 },
@@ -164,6 +188,10 @@
             "You fold the stall fast.",
             "Cash or cuffs—moment of truth."
           ],
+          "ambient": [
+            "Music from the next vendor smooths the edges.",
+            "Bills snap and whisper between fingers."
+          ],
           "outcomes": [
             { "type": "success", "weight": 61 },
             { "type": "fail", "weight": 24 },
@@ -173,15 +201,19 @@
         {
           "setup": [
             "You swap logos like masks.",
-            "Music from a nearby vendor makes everything feel less sharp."
+            "Heat plays at the back of your neck."
           ],
           "execution": [
             "A buyer wants stories; you sell those too.",
-            "Heat prickles your neck—either weather or attention."
+            "Footsteps match yours a little too well."
           ],
           "climax": [
-            "Footsteps you didn’t order start matching yours.",
-            "Time to be somewhere else."
+            "Time to be somewhere else.",
+            "Or talk your way through the next minute."
+          ],
+          "ambient": [
+            "Someone haggles for sport.",
+            "A drone of generators fills the stalls."
           ],
           "outcomes": [
             { "type": "success", "weight": 58 },

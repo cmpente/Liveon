@@ -2,22 +2,19 @@ package com.liveongames.data.assets.crime
 
 import android.content.Context
 import com.google.gson.Gson
-import com.google.gson.JsonArray
 import com.google.gson.JsonElement
-import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
 import java.io.InputStreamReader
-import kotlin.math.floor
 import kotlin.math.max
 import kotlin.random.Random
 
 /**
  * Crime asset loader (decoupled from ViewModel).
  *
- * Supports both JSON styles you have:
- * 1) climax: [ "line1", "line2" ]                 (array form)
- * 2) climax: { "success": "...", "fail": "...", "caught": "..." }  (object form)
+ * Supports:
+ * - climax as array (neutral) or object { success/fail/caught }
+ * - optional "ambient" lines per path (lightweight environment flavor)
  *
  * Outcome supports: SUCCESS, PARTIAL, FAIL, CAUGHT.
  */
@@ -31,6 +28,7 @@ class CrimeAssetLoader(private val context: Context) {
         val setup: List<String> = emptyList(),
         val execution: List<String> = emptyList(),
         val climax: JsonElement? = null,                 // array or object
+        val ambient: List<String> = emptyList(),         // NEW: optional ambient
         val outcomes: List<OutcomeWeight> = emptyList()
     )
     data class CrimeDef(
@@ -52,6 +50,7 @@ class CrimeAssetLoader(private val context: Context) {
         val climaxSuccess: String?,            // object-form fields (optional)
         val climaxFail: String?,
         val climaxCaught: String?,
+        val ambient: List<String>,             // NEW: optional ambient lines
         val outcomes: List<Pair<OutcomeType, Int>>
     ) {
         fun totalLines(): Int = setup.size + execution.size
@@ -98,6 +97,7 @@ class CrimeAssetLoader(private val context: Context) {
                                     climaxSuccess = cSucc,
                                     climaxFail = cFail,
                                     climaxCaught = cCaught,
+                                    ambient = p.ambient,
                                     outcomes = outs
                                 )
                                 if (np.totalLines() == 0) null else np
@@ -133,24 +133,6 @@ class CrimeAssetLoader(private val context: Context) {
             e < execEnd  -> Phase.EXECUTION
             else         -> Phase.CLIMAX
         }
-    }
-
-    /** Rotating status line for current phase; climax text is kept for the final reveal. */
-    fun messageFor(
-        elapsedSec: Int,
-        durationSec: Int,
-        path: NarrativePath,
-        messageIntervalSec: Int = 3
-    ): String {
-        val phase = phaseFor(elapsedSec, durationSec)
-        val list = when (phase) {
-            Phase.SETUP     -> path.setup
-            Phase.EXECUTION -> path.execution
-            Phase.CLIMAX    -> if (path.execution.isNotEmpty()) path.execution else path.setup
-        }
-        if (list.isEmpty()) return ""
-        val idx = floor(elapsedSec / messageIntervalSec.toFloat()).toInt().mod(list.size)
-        return list[idx]
     }
 
     /** Weighted outcome at completion. */

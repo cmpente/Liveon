@@ -14,18 +14,19 @@
       "paths": [
         {
           "setup": [
-            "You count cameras and exits until numbers turn to music.",
-            "Inside voices run the script again and again."
+            "You count cameras and exits until the layout feels like muscle memory.",
+            "Your gloves tug at the skin; the air smells like floor cleaner and nerves."
           ],
           "execution": [
-            "Masks on; the room snaps to silence.",
-            "Bags open; seconds bleed away like they’re expensive.",
-            "You keep your team inside the plan and the plan inside your head."
+            "Masks up. The room goes very still.",
+            "Bags out. Your voice is level; time is not.",
+            "A guard blinks and rethinks his options."
           ],
-          "climax": [
-            "Siren wails drift closer through concrete.",
-            "You signal the getaway and hope the city cooperates."
-          ],
+          "climax": {
+            "success": "Doors burst open to night air. Tires bark once and the city falls behind you.",
+            "fail": "Bills spill, a strap snaps, and your window closes with a hard click.",
+            "caught": "Blue washes the storefront. A voice orders you down and the floor answers."
+          },
           "outcomes": [
             { "type": "success", "weight": 40 },
             { "type": "partial", "weight": 18 },
@@ -35,17 +36,18 @@
         },
         {
           "setup": [
-            "You trade nods with a guard who knows nothing and suspects everything.",
-            "A timer in your head clacks like old machinery."
+            "You trade a nod with the bored guard who should have gone home an hour ago.",
+            "The timing in your head ticks like old machinery."
           ],
           "execution": [
-            "Someone shouts; it isn’t you.",
-            "Money moves like water; time doesn’t move at all."
+            "Someone shouts—it's not you.",
+            "Cash moves like water. Minutes don’t move at all."
           ],
-          "climax": [
-            "Doors feel heavier on the way out.",
-            "You don’t look back. Everyone does anyway."
-          ],
+          "climax": {
+            "success": "You hit the alley clean. The van door slams and the city can't keep up.",
+            "fail": "A dye pack coughs red. The plan trips over its own shoes.",
+            "caught": "Steel cuffs bite. You look at the ceiling tiles and count squares."
+          },
           "outcomes": [
             { "type": "success", "weight": 36 },
             { "type": "partial", "weight": 20 },
@@ -62,18 +64,19 @@
       "paths": [
         {
           "setup": [
-            "You collect leverage and names.",
-            "Threats polished to a business shine."
+            "You gather leverage with clean hands and a dirty mind.",
+            "Threats polished until they pass for business."
           ],
           "execution": [
-            "Ultimatums go out with deadlines.",
-            "Phones light like a storm front.",
-            "You hold the line when they push back."
+            "Ultimatums go out on quiet lines.",
+            "Replies come back clipped, then careful.",
+            "You hold your tone steady when they don’t."
           ],
-          "climax": [
-            "They blink first—or do you?",
-            "Someone has to fold."
-          ],
+          "climax": {
+            "success": "They wire the number you named and ask for ‘understanding.’ You grant it—at a premium.",
+            "fail": "Their attorney copies three agencies you hoped wouldn’t meet you yet.",
+            "caught": "A knock, then badges. You practice silence and let the room fill it."
+          },
           "outcomes": [
             { "type": "success", "weight": 44 },
             { "type": "partial", "weight": 18 },
@@ -83,17 +86,18 @@
         },
         {
           "setup": [
-            "You rehearse empathy as a weapon.",
-            "Documents wait in neat little stacks of ruin."
+            "You rehearse empathy as a blunt instrument.",
+            "Documents wait in neat stacks that ruin reputations."
           ],
           "execution": [
-            "A lawyer calls your bluff; you don’t blink.",
-            "Pressure sings in the copper lines."
+            "A lawyer prods. You don’t blink.",
+            "Pressure sings in copper wires and second thoughts."
           ],
-          "climax": [
-            "A single email drafts itself toward history.",
-            "You decide who owns the next morning."
-          ],
+          "climax": {
+            "success": "A single sentence buys their future back—at your price.",
+            "fail": "They call your bluff and then your number stops working.",
+            "caught": "The line clicks. A voice you don’t recognize knows your real name."
+          },
           "outcomes": [
             { "type": "success", "weight": 41 },
             { "type": "partial", "weight": 20 },
@@ -110,18 +114,19 @@
       "paths": [
         {
           "setup": [
-            "You trace schedules to the minute.",
-            "Safehouse keys bite your palm."
+            "You map the routine to the minute.",
+            "The safehouse key bites your palm just to be sure you feel it."
           ],
           "execution": [
-            "Van doors slide; time compresses.",
-            "Negotiations creep over crackling lines.",
-            "Every word can tilt the scale."
+            "Van doors whisper shut. Time compresses.",
+            "Negotiations crawl across brittle static.",
+            "Every word gets weighed for cost."
           ],
-          "climax": [
-            "Drop site set. Nerves razor-thin.",
-            "It all balances on this trade."
-          ],
+          "climax": {
+            "success": "The trade clears. Heartbeats slow. The city looks ordinary again.",
+            "fail": "Money stalls and so does your nerve. The plan frays one strand at a time.",
+            "caught": "Helicopter rotors write your mistake across the sky."
+          },
           "outcomes": [
             { "type": "success", "weight": 33 },
             { "type": "partial", "weight": 19 },
@@ -131,17 +136,18 @@
         },
         {
           "setup": [
-            "You plan the pickup with a metronome and a prayer.",
+            "You choreograph the pickup with a metronome and a prayer.",
             "Blindfolds, burner phones, routes with no history."
           ],
           "execution": [
-            "A convoy of ordinary cars makes an extraordinary mess.",
-            "The negotiator’s voice trembles; yours can’t."
+            "A convoy of very normal cars makes an extraordinary problem.",
+            "The negotiator’s voice trembles. Yours can’t."
           ],
-          "climax": [
-            "Sirens bloom too close to ignore.",
-            "A helicopter writes doubt in the sky."
-          ],
+          "climax": {
+            "success": "Headlights flash the code. You’re moving before fear remembers your name.",
+            "fail": "A decoy bag. By the time you feel the weight, it’s too light.",
+            "caught": "Sirens flower on both ends of the block. Nowhere is the wrong answer."
+          },
           "outcomes": [
             { "type": "success", "weight": 30 },
             { "type": "partial", "weight": 20 },
@@ -158,18 +164,19 @@
       "paths": [
         {
           "setup": [
-            "You court whales with polished decks.",
+            "You court whales with slides that promise gravity can wait.",
             "Returns look unreal by design."
           ],
           "execution": [
             "New money props the old.",
-            "You juggle payouts like knives.",
-            "Auditors sniff at the edges."
+            "You juggle payouts like knives and smile like it’s easy.",
+            "Auditors sniff at the seams."
           ],
-          "climax": [
-            "A redemption request lands hard.",
-            "Cards tremble in the tower."
-          ],
+          "climax": {
+            "success": "Redemptions slow. The music keeps playing. You bow like a maestro.",
+            "fail": "A single withdrawal punches through your patchwork and everything leaks.",
+            "caught": "Subpoenas land like hail. Your inbox becomes evidence."
+          },
           "outcomes": [
             { "type": "success", "weight": 36 },
             { "type": "partial", "weight": 22 },
@@ -179,17 +186,18 @@
         },
         {
           "setup": [
-            "You rehearse charm until it sounds like truth.",
-            "Charts climb like they forgot gravity."
+            "Charm rehearsed until it sounds like truth.",
+            "Charts climb like they forgot how to fall."
           ],
           "execution": [
-            "Referrals loop into referrals; the web pretends to be a ladder.",
-            "A journalist asks better questions than usual."
+            "Referrals loop into referrals; the web pretends it’s a ladder.",
+            "A journalist starts asking smarter questions."
           ],
-          "climax": [
-            "An investor wants out—now.",
-            "You buy time with time you don’t have."
-          ],
+          "climax": {
+            "success": "You buy time with time you don’t have—and somehow it clears.",
+            "fail": "An anchor investor wants out. The elevator only goes down.",
+            "caught": "Compliance doesn’t call. They arrive."
+          },
           "outcomes": [
             { "type": "success", "weight": 34 },
             { "type": "partial", "weight": 23 },
@@ -206,18 +214,19 @@
       "paths": [
         {
           "setup": [
-            "You learn routes and habits.",
-            "Weather app matters more than luck."
+            "You learn routes and habits until a stranger’s life fits in your pocket.",
+            "The weather app matters more than luck."
           ],
           "execution": [
-            "Windows of opportunity slide by.",
-            "You keep your distance and your nerve.",
+            "Windows of opportunity slide past.",
+            "You keep your distance and your hands steady.",
             "No second shots tonight."
           ],
-          "climax": [
-            "A single moment stretches thin.",
-            "Decision made. No undo."
-          ],
+          "climax": {
+            "success": "One breath, one sound, and the street swallows the echo.",
+            "fail": "The angle goes wrong; the shot does not travel.",
+            "caught": "A door opens behind you and the world says stop."
+          },
           "outcomes": [
             { "type": "success", "weight": 30 },
             { "type": "partial", "weight": 18 },
@@ -228,16 +237,17 @@
         {
           "setup": [
             "You tune out the city until only one address exists.",
-            "Tools sit in a case that smells like gun oil and consequence."
+            "Tools sit in a case that smells like oil and consequence."
           ],
           "execution": [
-            "Doors open where you predicted; luck is just math with better branding.",
+            "Doors open where you predicted. Luck is just math told nicely.",
             "A neighbor ruins your timing with a friendly wave."
           ],
-          "climax": [
-            "Your shot window is a breath long.",
-            "You take it—or you don’t—and both feel permanent."
-          ],
+          "climax": {
+            "success": "The window opens and closes. No alarms. No names.",
+            "fail": "A shadow moves where none should. You holster a mistake.",
+            "caught": "Security glass reflects your face and a badge behind it."
+          },
           "outcomes": [
             { "type": "success", "weight": 27 },
             { "type": "partial", "weight": 20 },
@@ -254,18 +264,19 @@
       "paths": [
         {
           "setup": [
-            "You spin up boxes and routes.",
-            "PGP dances with burner opsec."
+            "You spin up boxes and routes. Everything has a name that means nothing.",
+            "PGP waltzes with burner opsec."
           ],
           "execution": [
             "Orders blink in hidden queues.",
-            "Escrow ticks like a metronome.",
+            "Escrow ticks like a metronome you can’t quite mute.",
             "You ship without leaving footprints."
           ],
-          "climax": [
-            "A moderator flags your thread.",
-            "Reputation on the line."
-          ],
+          "climax": {
+            "success": "A mod pins your thread. Reputation climbs faster than prices.",
+            "fail": "A batch goes missing between two ghosts. Support shrugs in three languages.",
+            "caught": "The buyer was a badge with good grammar."
+          },
           "outcomes": [
             { "type": "success", "weight": 42 },
             { "type": "partial", "weight": 22 },
@@ -280,12 +291,13 @@
           ],
           "execution": [
             "A buyer wants proofs nobody should have.",
-            "You feed them breadcrumbs that taste like certainty."
+            "You feed breadcrumbs that taste like certainty."
           ],
-          "climax": [
-            "An LE honeypot smells sweeter than usual.",
-            "You cut the connection like a fuse."
-          ],
+          "climax": {
+            "success": "Funds clear. Feedback lands five stars and a wink.",
+            "fail": "The wallet ID drifts. So does your margin.",
+            "caught": "A honeypot smells sweeter than usual. You pulled the plug one page too late."
+          },
           "outcomes": [
             { "type": "success", "weight": 40 },
             { "type": "partial", "weight": 23 },
@@ -302,18 +314,19 @@
       "paths": [
         {
           "setup": [
-            "You blueprint the museum’s belly.",
-            "Frame weights and sensors noted."
+            "You blueprint the museum’s belly until you can walk it with your eyes closed.",
+            "Frame weights and sensors get little notes."
           ],
           "execution": [
             "Cameras blink at odd intervals.",
-            "You float the canvas free.",
-            "Copy swaps into the light."
+            "You float the canvas free; the copy steps into the light.",
+            "Every hinge argues in whispers."
           ],
-          "climax": [
-            "Courier route feels exposed.",
-            "Nothing rattles like empty hands."
-          ],
+          "climax": {
+            "success": "The courier’s engine hums like a promise. The city never knew you were there.",
+            "fail": "A sensor hiccups into a siren. Your calm learns to sprint.",
+            "caught": "A docent’s radio says your description out loud."
+          },
           "outcomes": [
             { "type": "success", "weight": 28 },
             { "type": "partial", "weight": 22 },
@@ -323,17 +336,18 @@
         },
         {
           "setup": [
-            "You tour like a donor, memorize like a thief.",
-            "Guards rotate on a schedule that begs to be tested."
+            "You tour like a donor and memorize like a thief.",
+            "The guard rotation begs to be tested."
           ],
           "execution": [
-            "A laser grid hiccups on the hour; you breathe with it.",
+            "A laser grid hiccups on the hour. You breathe with it.",
             "The frame whispers loose—the loudest quiet you’ve heard."
           ],
-          "climax": [
-            "A docent rounds the corner humming.",
-            "You become one more shadow among many."
-          ],
+          "climax": {
+            "success": "Back alley. Trunk down. Your pulse remembers how to be ordinary.",
+            "fail": "A footfall that isn’t yours. A question you can’t answer quickly.",
+            "caught": "White gloves close on your wrist before you can pocket your hands."
+          },
           "outcomes": [
             { "type": "success", "weight": 26 },
             { "type": "partial", "weight": 24 },
@@ -351,22 +365,22 @@
         {
           "setup": [
             "Blueprints sprawl across a table that smells like coffee and stress.",
-            "Your inside contact texts one word: \"Clear.\"",
-            "The gala’s string quartet tunes up—music is the best alibi.",
+            "Your inside contact sends one word: \"Clear.\"",
+            "The gala tunes up; music is the best alibi.",
             "You rehearse the exit until it feels like a memory."
           ],
           "execution": [
-            "You ghost the service corridor, tuxedo playing bodyguard.",
-            "Laser grids blink like tired eyes; you time your breathing to the gaps.",
-            "Glass lifts without a gasp; the velvet tray doesn’t argue.",
-            "In your ear, the driver counts down streets you can’t see.",
-            "Every step back to the crowd feels like wading upstream."
+            "You ghost the service corridor, tuxedo pretending to be authority.",
+            "Laser grids blink like tired eyes; you time your breath to the gaps.",
+            "Glass lifts without a gasp. Velvet doesn’t argue.",
+            "In your ear, the driver counts streets you can’t see.",
+            "Every step back to the crowd feels like walking upstream."
           ],
-          "climax": [
-            "A guard pivots, eyes skating over you and then snapping back.",
-            "Applause erupts in the ballroom—cover or curtain call?",
-            "Your hand closes on a door handle that decides your fate."
-          ],
+          "climax": {
+            "success": "Applause erupts. You join it, smiling at nothing in particular. The door handle is cool and merciful.",
+            "fail": "A bead rolls off the tray like a gunshot in your head.",
+            "caught": "A guard’s hand lands on your shoulder. The quartet keeps playing."
+          },
           "outcomes": [
             { "type": "success", "weight": 34 },
             { "type": "partial", "weight": 16 },
@@ -376,21 +390,21 @@
         },
         {
           "setup": [
-            "Financial district after hours—glass and steel holding its breath.",
-            "A janitor waves; you wave back, both of you lying politely.",
-            "The vault lobby hums with electricity and expensive bad choices."
+            "Financial district after hours—glass and steel holding their breath.",
+            "A janitor waves. You wave back—two polite liars.",
+            "The vault lobby hums with electricity and expensive mistakes."
           ],
           "execution": [
             "Your crew moves like a sentence with no commas.",
-            "Cameras glide; you give them angles that mean nothing.",
+            "Cameras glide; you feed them angles that mean nothing.",
             "You trade a minute for a miracle and hope the math forgives you.",
             "The case opens on a galaxy of stones and problems."
           ],
-          "climax": [
-            "Somewhere above, an elevator dings like a judge’s gavel.",
-            "The bag suddenly weighs as much as your future.",
-            "Your reflection asks if this was worth it."
-          ],
+          "climax": {
+            "success": "The bag is heavier than your future and twice as bright. The elevator dings for you alone.",
+            "fail": "A relay chatters once and the room remembers its job.",
+            "caught": "Doors lock in a choreography you didn’t attend rehearsal for."
+          },
           "outcomes": [
             { "type": "success", "weight": 28 },
             { "type": "partial", "weight": 20 },

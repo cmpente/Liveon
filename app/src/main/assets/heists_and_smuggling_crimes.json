@@ -15,16 +15,20 @@
         {
           "setup": [
             "You map patrol routes on a napkin that’s seen worse plans.",
-            "Windows breathe fog; alarms pretend to be confident."
+            "Windows fog; alarms pretend confidence."
           ],
           "execution": [
-            "You glide where cameras blink slow.",
+            "You move where cameras blink slow.",
             "Hands take only what risk can carry.",
             "Every zipper sounds like thunder."
           ],
           "climax": [
             "A sensor blips red—lie or prophecy?",
             "You choose a route and pretend it was always the plan."
+          ],
+          "ambient": [
+            "Sprinklers tick somewhere above the ceiling tiles.",
+            "Fluorescents hum, steady and indifferent."
           ],
           "outcomes": [
             { "type": "success", "weight": 52 },
@@ -35,7 +39,7 @@
         {
           "setup": [
             "You count steps; doorways count you back.",
-            "Security glass looks at you like a dare."
+            "Security glass looks like a dare."
           ],
           "execution": [
             "Time thins until only your breathing remains.",
@@ -44,6 +48,10 @@
           "climax": [
             "A distant radio crackles names—not yours, yet.",
             "The exit feels smaller than you remember."
+          ],
+          "ambient": [
+            "An elevator sighs and forgets this floor.",
+            "HVAC exhales dust through metal ribs."
           ],
           "outcomes": [
             { "type": "success", "weight": 50 },
@@ -68,8 +76,12 @@
             "You nudge numbers where they squeal the least."
           ],
           "climax": [
-            "A manual review opens your file.",
+            "Manual review opens your file.",
             "Everything balances on one bored glance."
+          ],
+          "ambient": [
+            "Printers cough, then clear their throats again.",
+            "Coffee burns in a pot no one owns."
           ],
           "outcomes": [
             { "type": "success", "weight": 55 },
@@ -84,11 +96,15 @@
           ],
           "execution": [
             "Money moves politely along fake paths.",
-            "A single decimal could be the whole trial."
+            "A single decimal might be the whole trial."
           ],
           "climax": [
             "Compliance pings; the room gets smaller.",
             "You hold your breath and your story."
+          ],
+          "ambient": [
+            "Keyboards chatter like rain.",
+            "A wall clock tries to outrun itself."
           ],
           "outcomes": [
             { "type": "success", "weight": 52 },
@@ -106,7 +122,7 @@
         {
           "setup": [
             "You swap vans at a dead lot.",
-            "Paperwork looks legit at a glance—which is all anyone gets."
+            "Paperwork passes a glance—which is all anyone gets."
           ],
           "execution": [
             "Border chatter crackles on the radio.",
@@ -115,7 +131,11 @@
           ],
           "climax": [
             "Dogs circle the van.",
-            "A guard taps the side twice, like a metronome for doom."
+            "A guard taps the side twice—metronome for doom."
+          ],
+          "ambient": [
+            "Diesel breath hangs under sodium lights.",
+            "Moths panic around a lamp that won’t die."
           ],
           "outcomes": [
             { "type": "success", "weight": 47 },
@@ -133,8 +153,12 @@
             "You explain nothing with confidence."
           ],
           "climax": [
-            "A tailgate clanks open.",
+            "Tailgate clanks open.",
             "Silence fights the urge to be a siren."
+          ],
+          "ambient": [
+            "A radio hisses, then chooses a station.",
+            "Someone laughs like they don’t work here."
           ],
           "outcomes": [
             { "type": "success", "weight": 44 },
@@ -156,12 +180,16 @@
           ],
           "execution": [
             "Couriers rotate like clockwork.",
-            "You watch for tails in the mirrors.",
+            "Mirrors watch for tails.",
             "A drone buzzes somewhere above."
           ],
           "climax": [
-            "A last-minute detour could save it all.",
+            "A detour could save it all.",
             "Or ruin everything."
+          ],
+          "ambient": [
+            "Shipping pallets thump, then settle.",
+            "Forklifts beep like birds."
           ],
           "outcomes": [
             { "type": "success", "weight": 50 },
@@ -181,6 +209,10 @@
           "climax": [
             "You reroute three lives with a sentence.",
             "The city holds its breath with you."
+          ],
+          "ambient": [
+            "Harbor air tastes like rust.",
+            "Night trucks talk in downshifts."
           ],
           "outcomes": [
             { "type": "success", "weight": 48 },

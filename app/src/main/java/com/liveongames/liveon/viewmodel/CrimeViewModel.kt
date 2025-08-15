@@ -36,10 +36,10 @@ class CrimeViewModel @Inject constructor(
         private const val HIGH_MS = 180_000L
         private const val EXTREME_MS = 300_000L
 
-        // UI update cadence (VM internal tick; UI animates smoothly itself)
+        // VM tick; UI renders smoothly on its own
         private const val TICK_MS = 100L
 
-        // Lockout after fail/caught
+        // Post-fail/caught soft lock
         private const val FAILURE_LOCKOUT_MS = 6_000L
     }
 
@@ -61,12 +61,13 @@ class CrimeViewModel @Inject constructor(
         val type: CrimeType,
         val startedAtMs: Long,
         val durationMs: Long,
-        val progress: Float,          // 0f..1f whole-crime progress
+        val progress: Float,          // 0f..1f across the whole run
         val phase: Phase,
-        val phaseStartMs: Long,       // timing window for phase (for UI pacing)
+        val phaseStartMs: Long,
         val phaseEndMs: Long,
-        val phaseLines: List<String>, // lines to reveal during this phase
-        val currentMessage: String    // first line as a convenience/preview
+        val phaseLines: List<String>, // primary lines for the current phase
+        val ambientLines: List<String>, // optional mood/ambient lines
+        val currentMessage: String
     )
 
     data class OutcomeEvent(
@@ -94,11 +95,11 @@ class CrimeViewModel @Inject constructor(
 
     private var runJob: Job? = null
 
-    // Load-once cache
+    // Load-once cache of the merged bank
     private val bank by lazy { crimeAssets.loadBank() }
 
     init {
-        // Seed notoriety (best-effort)
+        // Best-effort read of notoriety from Player repo
         viewModelScope.launch {
             runCatching { playerRepository.getCharacter(CHARACTER_ID).first() }
                 .getOrNull()
@@ -126,9 +127,9 @@ class CrimeViewModel @Inject constructor(
 
         val start = System.currentTimeMillis()
         val end = start + durationMs
-        _cooldownUntil.value = end // lock during run
+        _cooldownUntil.value = end // lock during the run
 
-        // Stable UI phase boundaries to avoid flicker
+        // 25/55/20 default split (kept stable for UI); can be extended to use per-pack defaults if desired
         val setupUntil = start + (durationMs * 0.25f).toLong()
         val execUntil  = start + (durationMs * 0.80f).toLong()
 
@@ -137,6 +138,7 @@ class CrimeViewModel @Inject constructor(
             Phase.EXECUTION -> path.execution
             Phase.CLIMAX    -> if (path.execution.isNotEmpty()) path.execution else path.setup
         }
+        fun ambientFor(@Suppress("UNUSED_PARAMETER") phase: Phase): List<String> = path.ambient
 
         var lastPhase: Phase? = null
 
@@ -163,6 +165,7 @@ class CrimeViewModel @Inject constructor(
                     Phase.CLIMAX    -> end
                 }
                 val lines = linesFor(uiPhase)
+                val amb = ambientFor(uiPhase)
 
                 if (lastPhase != uiPhase || _runState.value == null ||
                     _runState.value?.progress != frac ||
@@ -177,6 +180,7 @@ class CrimeViewModel @Inject constructor(
                         phaseStartMs = pStart,
                         phaseEndMs = pEnd,
                         phaseLines = lines,
+                        ambientLines = amb,
                         currentMessage = lines.firstOrNull()
                             ?: path.execution.firstOrNull()
                             ?: path.setup.firstOrNull()
@@ -289,6 +293,7 @@ class CrimeViewModel @Inject constructor(
                         phaseStartMs = pStart,
                         phaseEndMs = pEnd,
                         phaseLines = lines,
+                        ambientLines = emptyList(),
                         currentMessage = lines.first()
                     )
                     lastPhase = uiPhase
@@ -367,7 +372,7 @@ class CrimeViewModel @Inject constructor(
         }
     }
 
-    // ---- Fallback preview lines ----
+    // ---- Short preview lines for list rows ----
     fun previewScenario(type: CrimeType): String = when (type) {
         CrimeType.PICKPOCKETING -> listOf(
             "You brush past a tourist, fingers light as air.",
