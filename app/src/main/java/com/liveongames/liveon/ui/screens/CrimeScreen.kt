@@ -1,4 +1,3 @@
-// app/src/main/java/com/liveongames/liveon/ui/screens/CrimeScreen.kt
 package com.liveongames.liveon.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
@@ -17,7 +16,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -26,7 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -44,18 +41,9 @@ import com.liveongames.liveon.viewmodel.CrimeViewModel
 import kotlinx.coroutines.delay
 
 /* =========================================================================================
- * Crime screen — inline action flow (no popup dialog), styled to match Education
+ * Crime screen — inline action flow (no popup dialog)
+ * Fixes: stable phases, inline outcome reveal.
  * ========================================================================================= */
-
-// Sheet + grid constants (match Education)
-private val SheetRadius = 24.dp
-private val SheetShadow = 22.dp
-private val SheetHPad = 14.dp
-
-// Row layout
-private val IconSize = 25.dp           // icons ~25% larger
-private val GapAfterIcon = 12.dp
-private val ExpandedIndent = SheetHPad + IconSize + GapAfterIcon // aligns expanded content under title column
 
 @Composable
 fun CrimeScreen(
@@ -67,18 +55,21 @@ fun CrimeScreen(
     val notoriety by viewModel.playerNotoriety.collectAsState()
     val cooldownUntil by viewModel.cooldownUntil.collectAsState()
     val runState by viewModel.runState.collectAsState()
-    val lastOutcome by viewModel.lastOutcome.collectAsState()
+    val lastOutcomeVm by viewModel.lastOutcome.collectAsState()
 
+    // We capture the outcome locally so UI can show it after VM consumes it
+    var revealedOutcome by remember { mutableStateOf<CrimeViewModel.OutcomeEvent?>(null) }
     var policeFlash by remember { mutableStateOf(false) }
 
-    // Police flash on failure; consume one-shot
-    LaunchedEffect(lastOutcome) {
-        lastOutcome?.let { out ->
+    // Police flash + capture outcome; then consume VM event
+    LaunchedEffect(lastOutcomeVm) {
+        lastOutcomeVm?.let { out ->
             if (!out.success) {
                 policeFlash = true
                 delay(1400)
                 policeFlash = false
             }
+            revealedOutcome = out
             onCrimeCommitted()
             viewModel.consumeOutcome()
         }
@@ -88,92 +79,93 @@ fun CrimeScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black.copy(alpha = 0.55f))
-            .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) { onDismiss() }
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) { onDismiss() }
     ) {
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
                 .fillMaxHeight(0.92f)
-                .shadow(SheetShadow, RoundedCornerShape(topStart = SheetRadius, topEnd = SheetRadius))
-                .clip(RoundedCornerShape(topStart = SheetRadius, topEnd = SheetRadius))
+                .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
                 .background(t.surface)
-                .padding(horizontal = SheetHPad, vertical = 10.dp)
+                .navigationBarsPadding()
+                .padding(horizontal = 16.dp, vertical = 12.dp)
                 .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) { },
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // Header
-            Text("Crimes", color = t.text, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
-
-            // Designation card + cooldown badge (right)
-            Surface(
-                color = t.surfaceElevated,
-                shape = RoundedCornerShape(18.dp),
-                modifier = Modifier.fillMaxWidth()
+            Text("Crimes", color = t.text, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(t.surfaceVariant.copy(alpha = 0.6f))
+                    .padding(12.dp)
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = SheetHPad, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(Modifier.weight(1f)) {
-                        Text("Designation", color = t.text.copy(alpha = 0.8f), fontSize = 12.sp)
-                        val info = nextRankInfo(notoriety)
-                        val line = if (info != null) {
-                            val (rankName, toNext) = info
-                            "${rankForNotoriety(notoriety)} • ${if (toNext > 0) "$toNext to $rankName" else "Peak standing"}"
-                        } else {
-                            "${rankForNotoriety(notoriety)} • Peak standing"
-                        }
-                        Text(line, color = t.text, fontSize = 14.sp)
-                    }
-                    CooldownBadge(cooldownUntil)
+                Column(Modifier.weight(1f)) {
+                    Text("Designation", color = t.text.copy(alpha = 0.8f), fontSize = 12.sp)
+                    val (rankName, toNext) = nextRankInfo(notoriety) ?: ("Max Rank" to 0)
+                    Text(
+                        "${rankForNotoriety(notoriety)} • ${if (toNext > 0) "$toNext to $rankName" else "Peak standing"}",
+                        color = t.text,
+                        fontSize = 14.sp
+                    )
+                }
+                if (cooldownUntil?.let { it > System.currentTimeMillis() } == true) {
+                    val secs = (((cooldownUntil!! - System.currentTimeMillis()) / 1000).toInt()).coerceAtLeast(0)
+                    Text("Locked $secs s", color = t.text.copy(alpha = 0.7f), fontSize = 14.sp)
                 }
             }
 
-            // Catalog
-            val cats = remember { buildCrimeCatalog() }
+            // Accordion catalog
             LazyColumn(
                 modifier = Modifier.weight(1f),
-                contentPadding = PaddingValues(bottom = 20.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                contentPadding = PaddingValues(bottom = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                items(cats, key = { it.title }) { cat ->
-                    Accordion(
-                        title = cat.title,
-                        subTitle = cat.subtitle,
-                        containerColor = t.surfaceElevated,
-                        textColor = t.text
-                    ) {
-                        for ((sIdx, sub) in cat.subs.withIndex()) {
-                            SubCategoryHeader(sub.title, t.text)
-                            for ((iIdx, item) in sub.items.withIndex()) {
-                                val tier = getCrimeRiskTier(item.type)
-                                val disabled = cooldownUntil?.let { it > System.currentTimeMillis() } == true
-                                CrimeListItem(
-                                    type = item.type,
-                                    enabled = !disabled,
-                                    textColor = t.text,
-                                    accent = when (tier) {
-                                        RiskTier.LOW_RISK -> Color(0xFF2ECC71)
-                                        RiskTier.MEDIUM_RISK -> Color(0xFFFFC107)
-                                        RiskTier.HIGH_RISK -> Color(0xFFFF7043)
-                                        RiskTier.EXTREME_RISK -> Color(0xFFE53935)
-                                    },
-                                    tier = tier,
-                                    runState = if (runState?.type == item.type) runState else null,
-                                    onContinue = { viewModel.beginCrime(item.type) },
-                                    onCancel = { viewModel.cancelCrime() }
-                                )
-                                if (iIdx != sub.items.lastIndex) {
-                                    HorizontalDivider(
-                                        modifier = Modifier.padding(start = ExpandedIndent, end = SheetHPad),
-                                        color = t.surfaceVariant
+                buildCrimeCatalog().forEach { cat ->
+                    item {
+                        Accordion(
+                            title = cat.title,
+                            subTitle = cat.subtitle,
+                            containerColor = t.surfaceVariant.copy(alpha = 0.35f),
+                            textColor = t.text,
+                            accent = t.accent
+                        ) {
+                            cat.subs.forEachIndexed { sIdx, sub ->
+                                SubCategoryHeader(sub.title, t.text)
+                                sub.items.forEachIndexed { iIdx, item ->
+                                    val tier = getCrimeRiskTier(item.type)
+                                    val disabled = cooldownUntil?.let { it > System.currentTimeMillis() } == true
+                                    CrimeListItem(
+                                        type = item.type,
+                                        enabled = !disabled,
+                                        textColor = t.text,
+                                        accent = when (tier) {
+                                            RiskTier.LOW_RISK -> Color(0xFF2ECC71)
+                                            RiskTier.MEDIUM_RISK -> Color(0xFFFFC107)
+                                            RiskTier.HIGH_RISK -> Color(0xFFFF7043)
+                                            RiskTier.EXTREME_RISK -> Color(0xFFE53935)
+                                        },
+                                        tier = tier,
+                                        runState = if (runState?.type == item.type) runState else null,
+                                        outcome = revealedOutcome?.takeIf { it.type == item.type },
+                                        onContinue = { viewModel.beginCrime(item.type) },
+                                        onCancel = viewModel::cancelCrime,
+                                        onDismissOutcome = { revealedOutcome = null }
                                     )
+                                    if (iIdx != sub.items.lastIndex) {
+                                        HorizontalDivider(
+                                            modifier = Modifier.padding(horizontal = 12.dp),
+                                            color = t.surfaceVariant.copy(alpha = 0.7f)
+                                        )
+                                    }
                                 }
+                                if (sIdx != cat.subs.lastIndex) Spacer(Modifier.height(10.dp))
                             }
-                            if (sIdx != cat.subs.lastIndex) Spacer(Modifier.height(10.dp))
                         }
                     }
                 }
@@ -201,23 +193,29 @@ private fun Accordion(
     initiallyExpanded: Boolean = false,
     containerColor: Color,
     textColor: Color,
+    accent: Color,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val shape = RoundedCornerShape(18.dp)
     var expanded by rememberSaveable(title) { mutableStateOf(initiallyExpanded) }
-    Surface(color = containerColor, shape = shape, modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(14.dp)) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = containerColor),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(22.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { expanded = !expanded },
+                    .clickable { expanded = !expanded }
+                    .padding(horizontal = 16.dp, vertical = 14.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(Modifier.weight(1f)) {
-                    Text(title, color = textColor, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.titleMedium)
+                    Text(title, color = textColor, fontWeight = FontWeight.Bold, fontSize = 18.sp)
                     if (subTitle != null) {
                         Spacer(Modifier.height(2.dp))
-                        Text(subTitle, color = textColor.copy(alpha = 0.70f), style = MaterialTheme.typography.bodyMedium)
+                        Text(subTitle, color = textColor.copy(alpha = 0.70f), fontSize = 13.sp)
                     }
                 }
                 Icon(
@@ -231,7 +229,7 @@ private fun Accordion(
                 enter = fadeIn() + expandVertically(animationSpec = tween(220, easing = FastOutSlowInEasing)),
                 exit = fadeOut() + shrinkVertically(animationSpec = tween(180, easing = FastOutSlowInEasing))
             ) {
-                Column(Modifier.padding(vertical = 8.dp), content = content)
+                Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp), content = content)
             }
         }
     }
@@ -271,17 +269,18 @@ private fun CrimeRow(
         modifier = Modifier
             .fillMaxWidth()
             .height(64.dp)
+            .clip(RoundedCornerShape(16.dp))
             .clickable(enabled = enabled) { onClick() }
-            .padding(horizontal = SheetHPad),
+            .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             painter = painterResource(id = iconRes),
             contentDescription = null,
             tint = accent,
-            modifier = Modifier.size(IconSize)
+            modifier = Modifier.size(25.dp) // +25%
         )
-        Spacer(Modifier.width(GapAfterIcon))
+        Spacer(Modifier.width(12.dp))
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -294,7 +293,7 @@ private fun CrimeRow(
     }
 }
 
-/* Row with inline “continue/back out” -> in-progress UI */
+/* Row with inline “continue/back out” -> in-progress OR outcome reveal */
 @Composable
 private fun CrimeListItem(
     type: CrimeViewModel.CrimeType,
@@ -303,81 +302,135 @@ private fun CrimeListItem(
     accent: Color,
     tier: RiskTier,
     runState: CrimeViewModel.CrimeRunState?,
+    outcome: CrimeViewModel.OutcomeEvent?,
     onContinue: () -> Unit,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
+    onDismissOutcome: () -> Unit
 ) {
     val title = getCrimeName(type)
-    val subtitle = getCrimeDescShort(getCrimeDesc(type)) // amounts removed
+    val subtitle = getCrimeDescShort(getCrimeDesc(type)) // monetary amounts removed
 
     var expanded by rememberSaveable(type) { mutableStateOf(false) }
+
+    // Auto-open while running or when outcome shows for this type
+    LaunchedEffect(runState?.type) { if (runState?.type == type) expanded = true }
+    LaunchedEffect(outcome?.type) { if (outcome?.type == type) expanded = true }
 
     Column {
         CrimeRow(
             iconRes = getCrimeIconRes(type),
             title = title,
             subtitle = subtitle,
-            enabled = enabled,
+            enabled = enabled || runState != null || outcome != null,
             textColor = textColor,
             accent = accent
         ) {
-            if (enabled || runState != null) expanded = !expanded
+            if (enabled || runState != null || outcome != null) expanded = !expanded
         }
 
         AnimatedVisibility(visible = expanded, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = ExpandedIndent, end = SheetHPad, top = 8.dp, bottom = 8.dp)
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
             ) {
-                if (runState == null) {
-                    // Not started yet — Continue / Back out
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Button(onClick = onContinue, enabled = enabled) { Text("Continue") }
-                        Spacer(Modifier.width(12.dp))
-                        TextButton(onClick = { expanded = false }, enabled = enabled) { Text("Back out") }
-                    }
-                } else {
-                    // In progress — centered narration + progress bar + Cancel
-                    Text(
-                        text = runState.currentMessage,
-                        color = textColor,
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(end = 4.dp),
-                        textAlign = TextAlign.Center,
-                        softWrap = true,
-                        maxLines = 3,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    LinearProgressIndicator(
-                        progress = runState.progress,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(8.dp),
-                        trackColor = textColor.copy(alpha = 0.15f),
-                        color = accent
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            when (runState.phase) {
-                                CrimeViewModel.Phase.SETUP -> "Setting up…"
-                                CrimeViewModel.Phase.EXECUTION -> "In motion…"
-                                CrimeViewModel.Phase.CLIMAX -> "Climax…"
-                            },
-                            color = textColor.copy(alpha = 0.8f),
-                            fontSize = 12.sp
+                when {
+                    runState != null -> {
+                        // In progress — centered live narration + progress bar + Cancel
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                runState.currentMessage,
+                                color = textColor,
+                                style = MaterialTheme.typography.bodyMedium,
+                                textAlign = TextAlign.Center,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .padding(horizontal = 8.dp)
+                            )
+                        }
+                        Spacer(Modifier.height(6.dp))
+                        LinearProgressIndicator(
+                            progress = runState.progress,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(8.dp),
+                            trackColor = textColor.copy(alpha = 0.15f),
+                            color = accent
                         )
-                        Spacer(Modifier.weight(1f))
-                        TextButton(onClick = onCancel) { Text("Cancel") }
+                        Spacer(Modifier.height(8.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                when (runState.phase) {
+                                    CrimeViewModel.Phase.SETUP -> "Setting up…"
+                                    CrimeViewModel.Phase.EXECUTION -> "In motion…"
+                                    CrimeViewModel.Phase.CLIMAX -> "Climax…"
+                                },
+                                color = textColor.copy(alpha = 0.8f),
+                                fontSize = 12.sp
+                            )
+                            Spacer(Modifier.weight(1f))
+                            TextButton(onClick = onCancel) { Text("Cancel") }
+                        }
+                    }
+                    outcome != null -> {
+                        // Outcome reveal block (climax line + rewards/penalties)
+                        Text(
+                            outcome.climaxLine.ifBlank { "It’s done." },
+                            color = textColor,
+                            style = MaterialTheme.typography.bodyMedium,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(Modifier.height(6.dp))
+                        ElevatedCard(
+                            colors = CardDefaults.elevatedCardColors(containerColor = textColor.copy(alpha = 0.06f))
+                        ) {
+                            Column(Modifier.padding(12.dp)) {
+                                val resultLabel = when {
+                                    outcome.wasCaught -> "Caught"
+                                    outcome.success && outcome.moneyGained > 0 -> "Success"
+                                    outcome.success -> "Partial Success"
+                                    else -> "Failed"
+                                }
+                                Text(resultLabel, fontWeight = FontWeight.SemiBold, color = textColor)
+                                Spacer(Modifier.height(6.dp))
+                                if (outcome.moneyGained > 0) {
+                                    Text("Payout: \$${outcome.moneyGained}", color = textColor.copy(alpha = 0.9f))
+                                }
+                                if (outcome.jailDays > 0) {
+                                    Text("Jail time: ${outcome.jailDays} day(s)", color = textColor.copy(alpha = 0.9f))
+                                }
+                                if (outcome.notorietyDelta != 0) {
+                                    val sign = if (outcome.notorietyDelta > 0) "+" else ""
+                                    Text("Notoriety: $sign${outcome.notorietyDelta}", color = textColor.copy(alpha = 0.9f))
+                                }
+                            }
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            TextButton(onClick = onDismissOutcome) { Text("Close") }
+                            Spacer(Modifier.weight(1f))
+                            Button(onClick = onContinue) { Text("Try again") }
+                        }
+                    }
+                    else -> {
+                        // Not started yet — show Continue / Back out
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Button(onClick = onContinue, enabled = enabled) { Text("Continue") }
+                            Spacer(Modifier.width(12.dp))
+                            TextButton(onClick = { expanded = false }, enabled = enabled) { Text("Back out") }
+                        }
                     }
                 }
             }
@@ -385,80 +438,80 @@ private fun CrimeListItem(
     }
 }
 
-/* ============================== Catalog (renamed categories) ============================== */
+/* ============================== Catalog / labels / icons ============================== */
 
 private data class CrimeUiItem(val type: CrimeViewModel.CrimeType)
 private data class CrimeSubcat(val title: String, val items: List<CrimeUiItem>)
 private data class CrimeCat(val title: String, val subtitle: String, val subs: List<CrimeSubcat>)
 
-private fun buildCrimeCatalog(): List<CrimeCat> = listOf(
-    CrimeCat(
-        title = "Street Crimes",
-        subtitle = "Safe but modest gains",
-        subs = listOf(
-            CrimeSubcat(
-                title = "",
-                items = listOf(
-                    CrimeUiItem(CrimeViewModel.CrimeType.PICKPOCKETING),
-                    CrimeUiItem(CrimeViewModel.CrimeType.SHOPLIFTING),
-                    CrimeUiItem(CrimeViewModel.CrimeType.VANDALISM),
-                    CrimeUiItem(CrimeViewModel.CrimeType.PETTY_SCAM)
+private fun buildCrimeCatalog(): List<CrimeCat> {
+    return listOf(
+        CrimeCat(
+            title = "Street Crimes",
+            subtitle = "Safe but modest gains",
+            subs = listOf(
+                CrimeSubcat(
+                    title = "",
+                    items = listOf(
+                        CrimeUiItem(CrimeViewModel.CrimeType.PICKPOCKETING),
+                        CrimeUiItem(CrimeViewModel.CrimeType.SHOPLIFTING),
+                        CrimeUiItem(CrimeViewModel.CrimeType.VANDALISM),
+                        CrimeUiItem(CrimeViewModel.CrimeType.PETTY_SCAM)
+                    )
                 )
             )
-        )
-    ),
-    CrimeCat(
-        title = "Robbery",
-        subtitle = "Bigger rewards, higher danger",
-        subs = listOf(
-            CrimeSubcat(
-                title = "",
-                items = listOf(
-                    CrimeUiItem(CrimeViewModel.CrimeType.MUGGING),
-                    CrimeUiItem(CrimeViewModel.CrimeType.BREAKING_AND_ENTERING),
-                    CrimeUiItem(CrimeViewModel.CrimeType.DRUG_DEALING),
-                    CrimeUiItem(CrimeViewModel.CrimeType.COUNTERFEIT_GOODS)
+        ),
+        CrimeCat(
+            title = "Robbery",
+            subtitle = "Bigger rewards, higher danger",
+            subs = listOf(
+                CrimeSubcat(
+                    title = "",
+                    items = listOf(
+                        CrimeUiItem(CrimeViewModel.CrimeType.MUGGING),
+                        CrimeUiItem(CrimeViewModel.CrimeType.BREAKING_AND_ENTERING),
+                        CrimeUiItem(CrimeViewModel.CrimeType.DRUG_DEALING),
+                        CrimeUiItem(CrimeViewModel.CrimeType.COUNTERFEIT_GOODS)
+                    )
                 )
             )
-        )
-    ),
-    CrimeCat(
-        title = "Heists & Smuggling",
-        subtitle = "High stakes, serious time",
-        subs = listOf(
-            CrimeSubcat(
-                title = "",
-                items = listOf(
-                    CrimeUiItem(CrimeViewModel.CrimeType.BURGLARY),
-                    CrimeUiItem(CrimeViewModel.CrimeType.FRAUD),
-                    CrimeUiItem(CrimeViewModel.CrimeType.ARMS_SMUGGLING),
-                    CrimeUiItem(CrimeViewModel.CrimeType.DRUG_TRAFFICKING)
+        ),
+        CrimeCat(
+            title = "Heists & Smuggling",
+            subtitle = "High stakes, serious time",
+            subs = listOf(
+                CrimeSubcat(
+                    title = "",
+                    items = listOf(
+                        CrimeUiItem(CrimeViewModel.CrimeType.BURGLARY),
+                        CrimeUiItem(CrimeViewModel.CrimeType.FRAUD),
+                        CrimeUiItem(CrimeViewModel.CrimeType.ARMS_SMUGGLING),
+                        CrimeUiItem(CrimeViewModel.CrimeType.DRUG_TRAFFICKING)
+                    )
                 )
             )
-        )
-    ),
-    CrimeCat(
-        title = "Mastermind Tier",
-        subtitle = "Elite jobs, massive risk",
-        subs = listOf(
-            CrimeSubcat(
-                title = "",
-                items = listOf(
-                    CrimeUiItem(CrimeViewModel.CrimeType.ARMED_ROBBERY),
-                    CrimeUiItem(CrimeViewModel.CrimeType.EXTORTION),
-                    CrimeUiItem(CrimeViewModel.CrimeType.KIDNAPPING_FOR_RANSOM),
-                    CrimeUiItem(CrimeViewModel.CrimeType.PONZI_SCHEME),
-                    CrimeUiItem(CrimeViewModel.CrimeType.CONTRACT_KILLING),
-                    CrimeUiItem(CrimeViewModel.CrimeType.DARK_WEB_SALES),
-                    CrimeUiItem(CrimeViewModel.CrimeType.ART_THEFT),
-                    CrimeUiItem(CrimeViewModel.CrimeType.DIAMOND_HEIST)
+        ),
+        CrimeCat(
+            title = "Mastermind Tier",
+            subtitle = "Elite jobs, massive risk",
+            subs = listOf(
+                CrimeSubcat(
+                    title = "",
+                    items = listOf(
+                        CrimeUiItem(CrimeViewModel.CrimeType.ARMED_ROBBERY),
+                        CrimeUiItem(CrimeViewModel.CrimeType.EXTORTION),
+                        CrimeUiItem(CrimeViewModel.CrimeType.KIDNAPPING_FOR_RANSOM),
+                        CrimeUiItem(CrimeViewModel.CrimeType.PONZI_SCHEME),
+                        CrimeUiItem(CrimeViewModel.CrimeType.CONTRACT_KILLING),
+                        CrimeUiItem(CrimeViewModel.CrimeType.DARK_WEB_SALES),
+                        CrimeUiItem(CrimeViewModel.CrimeType.ART_THEFT),
+                        CrimeUiItem(CrimeViewModel.CrimeType.DIAMOND_HEIST)
+                    )
                 )
             )
         )
     )
-)
-
-/* ============================== Labels / Numbers / Icons ============================== */
+}
 
 private fun getCrimeName(type: CrimeViewModel.CrimeType) = when (type) {
     CrimeViewModel.CrimeType.PICKPOCKETING -> "Pickpocketing"
@@ -506,29 +559,21 @@ private fun getCrimeDesc(type: CrimeViewModel.CrimeType) = when (type) {
     CrimeViewModel.CrimeType.DIAMOND_HEIST -> "Rob the vault."
 }
 
-private fun getCrimeDescShort(full: String): String =
-    if (full.length <= 36) full else full.take(33) + "…"
+private fun getCrimeDescShort(full: String): String = if (full.length <= 36) full else full.take(33) + "…"
 
 private fun getCrimeRiskTier(type: CrimeViewModel.CrimeType): RiskTier = when (type) {
-    // LOW
     CrimeViewModel.CrimeType.PICKPOCKETING,
     CrimeViewModel.CrimeType.SHOPLIFTING,
     CrimeViewModel.CrimeType.VANDALISM,
     CrimeViewModel.CrimeType.PETTY_SCAM -> RiskTier.LOW_RISK
-
-    // MED
     CrimeViewModel.CrimeType.MUGGING,
     CrimeViewModel.CrimeType.BREAKING_AND_ENTERING,
     CrimeViewModel.CrimeType.DRUG_DEALING,
     CrimeViewModel.CrimeType.COUNTERFEIT_GOODS -> RiskTier.MEDIUM_RISK
-
-    // HIGH
     CrimeViewModel.CrimeType.BURGLARY,
     CrimeViewModel.CrimeType.FRAUD,
     CrimeViewModel.CrimeType.ARMS_SMUGGLING,
     CrimeViewModel.CrimeType.DRUG_TRAFFICKING -> RiskTier.HIGH_RISK
-
-    // EXTREME
     else -> RiskTier.EXTREME_RISK
 }
 
@@ -584,41 +629,7 @@ private fun getCrimeIconRes(type: CrimeViewModel.CrimeType): Int = when (type) {
     CrimeViewModel.CrimeType.DIAMOND_HEIST -> R.drawable.ic_diamond_heist
 }
 
-/* ============================== Badges & effects ============================== */
-
-@Composable
-private fun CooldownBadge(cooldownUntil: Long?) {
-    val t = LocalLiveonTheme.current
-    val active = cooldownUntil != null && cooldownUntil > System.currentTimeMillis()
-    if (!active) return
-
-    val secs = (((cooldownUntil!! - System.currentTimeMillis()) / 1000).toInt()).coerceAtLeast(0)
-
-    Surface(
-        shape = RoundedCornerShape(999.dp),
-        color = t.primary.copy(alpha = 0.15f),
-        tonalElevation = 0.dp
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_hourglass),
-                contentDescription = null,
-                tint = t.primary,
-                modifier = Modifier.size(16.dp)
-            )
-            Spacer(Modifier.width(6.dp))
-            Text(
-                "Locked ${secs}s",
-                color = t.primary,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Medium
-            )
-        }
-    }
-}
+/* ============================== Police light brush ============================== */
 
 @Composable
 private fun rememberSirenBrush(enabled: Boolean): Brush {

@@ -1,4 +1,3 @@
-// app/src/main/java/com/liveongames/liveon/util/JsonAssetLoader.kt
 package com.liveongames.liveon.util
 
 import android.content.Context
@@ -217,31 +216,22 @@ class JsonAssetLoader(
     /**
      * Helper function to map JSON tier strings to integer IDs.
      * This is necessary because your data class expects `tier: Int`.
-     * You should define a consistent mapping based on your game's tier system.
-     * Adjust the IDs as needed for your application.
-     * Tier IDs match `EduTier` enum ordinal values for clarity.
-     * ELEMENTARY(0), MIDDLE(1), HIGH(2), CERT(3), ASSOC(4), BACH(5), MAST(6), PHD(7)
+     * Adjust as needed.
      */
     private fun mapStringTierToInt(tierStr: String): Int {
-        // Use a `when` expression for clear mapping
         return when (tierStr.uppercase()) {
-            "ELEMENTARY" -> 0 // EduTier.ELEMENTARY.ordinal
-            "MIDDLE" -> 1     // EduTier.MIDDLE.ordinal
-            "HIGH" -> 2       // EduTier.HIGH.ordinal
-            "CERT" -> 3       // EduTier.CERT.ordinal
-            "ASSOC" -> 4      // EduTier.ASSOC.ordinal
-            "BACH" -> 5       // EduTier.BACH.ordinal
-            "MAST" -> 6       // EduTier.MAST.ordinal
-            "PHD" -> 7        // EduTier.PHD.ordinal
-            else -> {
-                // Log a warning for unknown tiers and default to a base tier (e.g., ELEMENTARY)
-                println("Warning: Unknown tier string '$tierStr' encountered. Defaulting to ELEMENTARY (0).")
-                0 // Default to ELEMENTARY
-            }
+            "ELEMENTARY" -> 0
+            "MIDDLE" -> 1
+            "HIGH" -> 2
+            "CERT" -> 3
+            "ASSOC" -> 4
+            "BACH" -> 5
+            "MAST" -> 6
+            "PHD" -> 7
+            else -> 0
         }
     }
 
-    // Existing actions loader (assumed to be working or for future implementation)
     /** education_actions.json */
     fun loadEducationActions(): List<EducationActionDef> = try {
         context.assets.open("education_actions.json").use { input ->
@@ -256,17 +246,13 @@ class JsonAssetLoader(
     }
 }
 
-/** Small DTOs to keep this loader self-contained and non-breaking. */
+/** DTOs to keep this loader self-contained. */
 data class ScenarioAsset(
     val id: String,
     val title: String? = null,
     val description: String? = null,
     val tags: List<String>? = null
 )
-
-// =====================
-// Local Implementation
-// =====================
 
 /**
  * Data class implementing the EducationProgram interface.
@@ -281,4 +267,3 @@ data class EducationProgramImpl(
     override val tuition: Int,
     override val requirements: Set<String>
 ) : EducationProgram
-
