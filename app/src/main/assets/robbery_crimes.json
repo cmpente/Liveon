@@ -2,60 +2,40 @@
   "version": 3,
   "category": "ROBBERY",
   "defaults": {
-    "messageIntervalSec": 4,
-    "phaseSplit": { "setup": 0.25, "execution": 0.55, "climax": 0.20 },
-    "cooldowns": { "onFailSec": 40, "onArrestSec": 75 }
+    "messageIntervalSec": 5,
+    "phaseSplit": { "setup": 0.25, "execution": 0.50, "climax": 0.25 },
+    "cooldowns": { "onFailSec": 60, "onArrestSec": 90 }
   },
   "crimes": [
     {
       "type": "MUGGING",
       "name": "Mugging",
-      "durationSeconds": 40,
+      "durationSeconds": 75,
       "paths": [
         {
           "setup": [
-            "You trail a lone pedestrian turning onto a quiet side street.",
-            "You spot someone counting cash outside a corner store."
+            "The side street is dim and narrow, a shortcut most avoid after dark. A lone figure rounds the corner, their steps unhurried, bag hanging loose from one shoulder. You trail them, your shadow merging with theirs."
           ],
           "execution": [
-            "You close in, voice low enough for only them to hear.",
-            "You step into their path, forcing them to stop.",
-            "You demand their wallet without raising your voice."
+            "You close in, voice low enough for only them to hear. Stepping into their path, you block the way forward, eyes steady as you demand their money. Your tone is calm, but the street feels smaller with each word."
           ],
-          "climax": [
-            "They hand over their money while glancing for help.",
-            "A light comes on in a nearby window as you grab the cash."
-          ],
+          "climax": {
+            "success": "They hand over their wallet without a fight, eyes darting for help that never comes. You vanish into the night before courage can return.",
+            "partial": "They drop a few bills into your hand and back away fast. It’s not everything, but enough to keep you moving.",
+            "fail": "They scream, startling you both. The noise draws light from a window above. You retreat empty-handed before it escalates.",
+            "caught": "They resist, holding tight to their bag until a passerby shouts from across the street. Footsteps close in fast—you’re not walking away this time."
+          },
           "ambient": [
             "Rain drips steadily from a loose gutter chain.",
-            "A taxi idles nearby, turn signal clicking."
+            "A taxi idles nearby, its turn signal ticking like a heartbeat.",
+            "The smell of damp asphalt lingers in the cool air.",
+            "A window creaks open somewhere above.",
+            "Your own footsteps echo too loud for comfort."
           ],
           "outcomes": [
-            { "type": "success", "weight": 62 },
-            { "type": "fail", "weight": 26 },
-            { "type": "caught", "weight": 12 }
-          ]
-        },
-        {
-          "setup": [
-            "You watch someone hesitate at a crosswalk, clearly lost.",
-            "You follow a man walking alone with his bag slung behind him."
-          ],
-          "execution": [
-            "You cut them off with a firm step forward.",
-            "You keep your tone calm but your stance blocking their way."
-          ],
-          "climax": [
-            "A siren sounds faintly in the distance.",
-            "They look at you, then down at your hand, and comply."
-          ],
-          "ambient": [
-            "Steam rises from a street grate.",
-            "A cyclist weaves through the intersection without stopping."
-          ],
-          "outcomes": [
-            { "type": "success", "weight": 58 },
-            { "type": "fail", "weight": 30 },
+            { "type": "success", "weight": 42 },
+            { "type": "partial", "weight": 24 },
+            { "type": "fail", "weight": 22 },
             { "type": "caught", "weight": 12 }
           ]
         }
@@ -64,52 +44,32 @@
     {
       "type": "BREAKING_AND_ENTERING",
       "name": "Breaking & entering",
-      "durationSeconds": 55,
+      "durationSeconds": 95,
       "paths": [
         {
           "setup": [
-            "You find a house with no cars in the driveway and lights off.",
-            "You pass a quiet home where the curtains are only half-closed."
+            "A quiet house waits at the end of the block. No cars in the drive, no lights behind the curtains. You check once more before slipping through the side gate."
           ],
           "execution": [
-            "You slip through the unlocked back door.",
-            "You move room to room, taking only what you can carry.",
-            "You avoid turning on any lights."
+            "The door handle turns easily, and you slip inside. The air smells stale, as if no one has been here for days. You pad through the rooms in silence, bag swallowing whatever fits."
           ],
-          "climax": [
-            "A floorboard creaks loudly under your weight.",
-            "Shadows move across the wall in the next room."
-          ],
+          "climax": {
+            "success": "You fill your bag with valuables and exit the way you came, not a single sound drawing attention. The night swallows you whole.",
+            "partial": "You grab a few small items but cut it short when a neighbor’s dog barks outside. It’s not much, but enough to risk carrying.",
+            "fail": "A floorboard creaks loudly beneath you. The panic rising in your throat pushes you to leave empty-handed.",
+            "caught": "Headlights sweep across the living room window. The lock clicks at the front door. You’re still inside when voices call out."
+          },
           "ambient": [
-            "A refrigerator hums steadily in the kitchen.",
-            "A wall clock ticks in the distance."
+            "A refrigerator hums quietly from the kitchen.",
+            "A wall clock ticks with maddening precision.",
+            "The house smells faintly of dust and wood polish.",
+            "Pipes knock softly as the heater kicks in.",
+            "A dog barks somewhere down the street."
           ],
           "outcomes": [
-            { "type": "success", "weight": 58 },
-            { "type": "fail", "weight": 30 },
-            { "type": "caught", "weight": 12 }
-          ]
-        },
-        {
-          "setup": [
-            "You notice a back gate left open in a dimly lit yard.",
-            "You approach a side door with peeling paint and no security camera."
-          ],
-          "execution": [
-            "You turn the handle slowly until it clicks open.",
-            "You walk through the hall, avoiding rugs that might hide squeaky boards."
-          ],
-          "climax": [
-            "Headlights flash through the front windows.",
-            "You freeze in place, listening for footsteps."
-          ],
-          "ambient": [
-            "A neighbor coughs from across the fence.",
-            "Pipes knock softly as the heater kicks on."
-          ],
-          "outcomes": [
-            { "type": "success", "weight": 56 },
-            { "type": "fail", "weight": 32 },
+            { "type": "success", "weight": 40 },
+            { "type": "partial", "weight": 25 },
+            { "type": "fail", "weight": 23 },
             { "type": "caught", "weight": 12 }
           ]
         }
@@ -118,53 +78,33 @@
     {
       "type": "DRUG_DEALING",
       "name": "Drug dealing",
-      "durationSeconds": 48,
+      "durationSeconds": 85,
       "paths": [
         {
           "setup": [
-            "You take up a spot on a street corner with a clear line of sight to both ends.",
-            "You wait in a quiet alley where customers know to find you."
+            "The street corner has a clear line of sight in both directions. You lean against the wall, hands buried in your pockets, scanning without seeming to. The night feels tense, waiting."
           ],
           "execution": [
-            "You hand off small packets in quick exchanges.",
-            "You keep transactions short and eyes scanning the street.",
-            "You nod to buyers and send them on their way."
+            "One by one, buyers drift past. A nod, a quick word, and a packet trades hands in the space of a breath. You keep the exchanges short, never lingering long enough to tempt suspicion."
           ],
-          "climax": [
-            "A car slows down, watching you too closely.",
-            "Your heart rate spikes, but your hands stay calm."
-          ],
+          "climax": {
+            "success": "Every buyer leaves satisfied, your stash lighter and your pockets heavier. The night ends without a ripple of trouble.",
+            "partial": "A nervous buyer fumbles the exchange, drawing a glance from a passerby. You pull it off, but not without unease.",
+            "fail": "Someone hangs back too long, pretending to talk on the phone. You pull away early, dumping the last packets to avoid heat.",
+            "caught": "An unmarked car slows at the curb. By the time you notice, the doors are already opening."
+          },
           "ambient": [
-            "Tires hiss through shallow puddles.",
-            "A flickering streetlight blinks overhead."
+            "A flickering streetlight buzzes overhead.",
+            "The faint hiss of tires passes through shallow puddles.",
+            "A bus rolls by, announcing stops to an empty street.",
+            "Music thumps from a passing car’s speakers.",
+            "The smell of fried food wafts from a late-night cart."
           ],
           "outcomes": [
-            { "type": "success", "weight": 64 },
-            { "type": "fail", "weight": 22 },
-            { "type": "caught", "weight": 14 }
-          ]
-        },
-        {
-          "setup": [
-            "You stand under a broken streetlight to avoid being seen clearly.",
-            "You carry your stash where a quick pat-down wouldn’t find it."
-          ],
-          "execution": [
-            "You keep moving so no one stands near you too long.",
-            "You spot someone hanging back, pretending to be on the phone."
-          ],
-          "climax": [
-            "A siren sounds from a few streets over.",
-            "You fold into the nearest crowd and walk away."
-          ],
-          "ambient": [
-            "A bus rolls by, announcing stops to no one.",
-            "Metal shutters rattle two shops down."
-          ],
-          "outcomes": [
-            { "type": "success", "weight": 60 },
-            { "type": "fail", "weight": 26 },
-            { "type": "caught", "weight": 14 }
+            { "type": "success", "weight": 41 },
+            { "type": "partial", "weight": 26 },
+            { "type": "fail", "weight": 21 },
+            { "type": "caught", "weight": 12 }
           ]
         }
       ]
@@ -172,53 +112,33 @@
     {
       "type": "COUNTERFEIT_GOODS",
       "name": "Counterfeit goods",
-      "durationSeconds": 52,
+      "durationSeconds": 110,
       "paths": [
         {
           "setup": [
-            "You set up a stall with convincing knockoffs neatly arranged.",
-            "You position yourself in a busy market where foot traffic is heavy."
+            "The market buzzes with voices, neon signs flickering above cramped stalls. Your knockoffs line the table neatly, waiting for the right eyes to notice. Bargain hunters drift close, curiosity caught by your prices."
           ],
           "execution": [
-            "You talk up the quality before buyers can ask questions.",
-            "You make small talk to distract from the too-good price.",
-            "You watch for anyone lingering too long without buying."
+            "You greet each buyer with a warm smile, spinning a quick story about quality and deals too good to pass up. Bills change hands fast, and soon the stall hums with business. Still, you keep an eye on anyone lingering too long without buying."
           ],
-          "climax": [
-            "You start packing the stall quickly just in case.",
-            "A man in plain clothes starts walking straight toward you."
-          ],
+          "climax": {
+            "success": "The night ends in profit. You pack up what’s left and slip away, your stall forgotten as the crowd swallows the space.",
+            "partial": "Sales come steady, but one customer haggles loud enough to draw attention. You make some money, but nerves shorten your stay.",
+            "fail": "A shopper questions your stock too sharply, and the tension is enough to drive you to close early with little gained.",
+            "caught": "A man in plain clothes approaches with steady eyes and no smile. The badge comes out before you can move."
+          },
           "ambient": [
-            "Music from a nearby vendor blends with the crowd noise.",
-            "Cash changes hands in a steady rhythm."
+            "Music blares from a vendor’s radio, clashing with the crowd’s noise.",
+            "The hum of generators fills the gaps between voices.",
+            "Cash machines clink and shuffle nearby.",
+            "The air smells of grilled meat and spices.",
+            "Someone argues loudly two stalls over."
           ],
           "outcomes": [
-            { "type": "success", "weight": 61 },
-            { "type": "fail", "weight": 24 },
-            { "type": "caught", "weight": 15 }
-          ]
-        },
-        {
-          "setup": [
-            "You unpack bags of fake merchandise, swapping brand labels.",
-            "You work in a spot where customers come looking for bargains."
-          ],
-          "execution": [
-            "You spin a backstory for each item to make it seem authentic.",
-            "You notice someone’s eyes scanning your stall instead of your products."
-          ],
-          "climax": [
-            "You step away before they start asking questions.",
-            "You offer one last deal to the nearest buyer and prepare to leave."
-          ],
-          "ambient": [
-            "A customer loudly haggles at the next stall.",
-            "The steady hum of generators fills the market."
-          ],
-          "outcomes": [
-            { "type": "success", "weight": 58 },
-            { "type": "fail", "weight": 27 },
-            { "type": "caught", "weight": 15 }
+            { "type": "success", "weight": 38 },
+            { "type": "partial", "weight": 25 },
+            { "type": "fail", "weight": 25 },
+            { "type": "caught", "weight": 12 }
           ]
         }
       ]

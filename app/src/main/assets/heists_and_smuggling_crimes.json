@@ -2,61 +2,43 @@
   "version": 3,
   "category": "HEISTS_AND_SMUGGLING",
   "defaults": {
-    "messageIntervalSec": 5,
-    "phaseSplit": { "setup": 0.30, "execution": 0.50, "climax": 0.20 },
-    "cooldowns": { "onFailSec": 70, "onArrestSec": 120 }
+    "messageIntervalSec": 6,
+    "phaseSplit": { "setup": 0.25, "execution": 0.50, "climax": 0.25 },
+    "cooldowns": { "onFailSec": 90, "onArrestSec": 150 }
   },
   "crimes": [
     {
       "type": "BURGLARY",
       "name": "Burglary",
-      "durationSeconds": 90,
+      "durationSeconds": 130,
       "paths": [
         {
           "setup": [
-            "You map patrol routes on a napkin that’s seen worse plans.",
-            "Windows fog; alarms pretend confidence."
+            "The office building sits quiet under dim security lights. Windows reflect the empty street, the silence daring you to try. You check your watch, then slip through the side entrance left unlocked by someone careless."
           ],
           "execution": [
-            "You move where cameras blink slow.",
-            "Hands take only what risk can carry.",
-            "Every zipper sounds like thunder."
+            "The halls are long and sterile, cameras blinking in slow intervals. You move where the blind spots overlap, footsteps hushed against the carpet. Doors yield one by one, drawers rifled for valuables. Every zipper feels too loud in the silence."
           ],
-          "climax": [
-            "A sensor blips red—lie or prophecy?",
-            "You choose a route and pretend it was always the plan."
-          ],
+          "climax": {
+            "success": "You exit the way you came, a bag heavy with electronics and cash. No alarms, no eyes. The night swallows your trail clean.",
+            "partial": "You snag a handful of valuables, but a distant elevator dings. You cut it short, slipping out with less than you came for.",
+            "fail": "A sensor light flickers red, freezing you mid-step. Seconds drag until you retreat empty-handed, heart pounding in your ears.",
+            "caught": "A flashlight beam slices across the hall. ‘Hey!’ a voice calls. Before you can run, the radio chatter seals your fate."
+          },
           "ambient": [
-            "Sprinklers tick somewhere above the ceiling tiles.",
-            "Fluorescents hum, steady and indifferent."
+            "Sprinklers tick faintly above the ceiling tiles.",
+            "The building hums with the low drone of HVAC.",
+            "A vending machine buzzes down the hall.",
+            "The smell of carpet cleaner lingers in the air.",
+            "Your breathing sounds far too loud.",
+            "A distant elevator dings and shuts again.",
+            "Keys rattle faintly from somewhere unseen."
           ],
           "outcomes": [
-            { "type": "success", "weight": 52 },
-            { "type": "fail", "weight": 30 },
-            { "type": "caught", "weight": 18 }
-          ]
-        },
-        {
-          "setup": [
-            "You count steps; doorways count you back.",
-            "Security glass looks like a dare."
-          ],
-          "execution": [
-            "Time thins until only your breathing remains.",
-            "Value drops into a bag that suddenly weighs too much."
-          ],
-          "climax": [
-            "A distant radio crackles names—not yours, yet.",
-            "The exit feels smaller than you remember."
-          ],
-          "ambient": [
-            "An elevator sighs and forgets this floor.",
-            "HVAC exhales dust through metal ribs."
-          ],
-          "outcomes": [
-            { "type": "success", "weight": 50 },
-            { "type": "fail", "weight": 32 },
-            { "type": "caught", "weight": 18 }
+            { "type": "success", "weight": 35 },
+            { "type": "partial", "weight": 25 },
+            { "type": "fail", "weight": 27 },
+            { "type": "caught", "weight": 13 }
           ]
         }
       ]
@@ -64,52 +46,35 @@
     {
       "type": "FRAUD",
       "name": "Fraud",
-      "durationSeconds": 100,
+      "durationSeconds": 150,
       "paths": [
         {
           "setup": [
-            "You seed accounts and alibis.",
-            "Paper trails fold into each other like origami with teeth."
+            "Stacks of forged documents sit ready, the ink barely dry. You’ve rehearsed the answers a dozen times, the story polished smooth. The trick isn’t fooling the system—it’s fooling the people behind it."
           ],
           "execution": [
-            "Applications churn; approvals ding like distant bells.",
-            "You nudge numbers where they squeal the least."
+            "Applications are filed under fake names, funds routed through shell accounts. A paper trail grows with deliberate neatness, designed to survive only a casual glance. You adjust a decimal, reroute a transfer, and hold your breath as approvals roll in."
           ],
-          "climax": [
-            "Manual review opens your file.",
-            "Everything balances on one bored glance."
-          ],
+          "climax": {
+            "success": "The final stamp goes through, money flowing into accounts no one can trace. You sit back, letting the illusion breathe on its own.",
+            "partial": "Most of it works, but one account flags for review. You cash out quickly before the net closes, pocketing a fraction of what you planned.",
+            "fail": "The system hiccups, freezing mid-process. A rejection code blinks back, and you shred the evidence before anyone connects it.",
+            "caught": "Your phone buzzes, not with approval but with a voice that knows your real name. Compliance has already arrived."
+          },
           "ambient": [
-            "Printers cough, then clear their throats again.",
-            "Coffee burns in a pot no one owns."
+            "Printers stutter, coughing out half-finished pages.",
+            "Keyboards chatter like constant rain.",
+            "Phones ring, unanswered, in cubicles nearby.",
+            "Coffee burns stale in a forgotten pot.",
+            "A wall clock ticks louder than it should.",
+            "Paper shuffles in distant stacks.",
+            "An elevator dings, echoing down the hall."
           ],
           "outcomes": [
-            { "type": "success", "weight": 55 },
-            { "type": "fail", "weight": 29 },
-            { "type": "caught", "weight": 16 }
-          ]
-        },
-        {
-          "setup": [
-            "Shell companies line up like cardboard soldiers.",
-            "You memorize answers to questions no one should ask."
-          ],
-          "execution": [
-            "Money moves politely along fake paths.",
-            "A single decimal might be the whole trial."
-          ],
-          "climax": [
-            "Compliance pings; the room gets smaller.",
-            "You hold your breath and your story."
-          ],
-          "ambient": [
-            "Keyboards chatter like rain.",
-            "A wall clock tries to outrun itself."
-          ],
-          "outcomes": [
-            { "type": "success", "weight": 52 },
-            { "type": "fail", "weight": 30 },
-            { "type": "caught", "weight": 18 }
+            { "type": "success", "weight": 33 },
+            { "type": "partial", "weight": 25 },
+            { "type": "fail", "weight": 28 },
+            { "type": "caught", "weight": 14 }
           ]
         }
       ]
@@ -117,53 +82,35 @@
     {
       "type": "ARMS_SMUGGLING",
       "name": "Arms smuggling",
-      "durationSeconds": 120,
+      "durationSeconds": 160,
       "paths": [
         {
           "setup": [
-            "You swap vans at a dead lot.",
-            "Paperwork passes a glance—which is all anyone gets."
+            "The van waits under the jaundiced glow of a sodium light. Paperwork sits on the dash, forged but convincing. The border is close, and the night feels heavy with expectation."
           ],
           "execution": [
-            "Border chatter crackles on the radio.",
-            "You keep your speed saintly; nerves, less so.",
-            "A checkpoint blooms ahead."
+            "You drive steady, every mile measured. The checkpoint looms, guards pacing slow, their eyes sharper than their words. You grip the wheel lightly, answering questions with a calm voice that doesn’t match your pulse."
           ],
-          "climax": [
-            "Dogs circle the van.",
-            "A guard taps the side twice—metronome for doom."
-          ],
+          "climax": {
+            "success": "The guard waves you through, the van carrying more than it should. In the mirror, the checkpoint shrinks to nothing.",
+            "partial": "They search the back, but miss the hidden compartment. You lose some cover cargo, but the real load stays untouched.",
+            "fail": "A dog circles the van, barking once before losing interest. The tension leaves you with nothing gained and too much risk.",
+            "caught": "A guard raps the panel, then pulls it open. Steel and suspicion gleam together. The order to step out is not optional."
+          },
           "ambient": [
-            "Diesel breath hangs under sodium lights.",
-            "Moths panic around a lamp that won’t die."
+            "Engines idle in a slow line ahead.",
+            "A radio crackles with clipped commands.",
+            "Dogs bark from nearby kennels.",
+            "Boots crunch on gravel in rhythmic patrols.",
+            "The smell of diesel thickens the air.",
+            "Metal gates screech as they slide open and shut.",
+            "A cigarette ember glows in the dark."
           ],
           "outcomes": [
-            { "type": "success", "weight": 47 },
-            { "type": "fail", "weight": 31 },
-            { "type": "caught", "weight": 22 }
-          ]
-        },
-        {
-          "setup": [
-            "You memorize the inspector’s cigarette breaks.",
-            "The manifest reads like a bedtime story."
-          ],
-          "execution": [
-            "A clipboard appears where you least want it.",
-            "You explain nothing with confidence."
-          ],
-          "climax": [
-            "Tailgate clanks open.",
-            "Silence fights the urge to be a siren."
-          ],
-          "ambient": [
-            "A radio hisses, then chooses a station.",
-            "Someone laughs like they don’t work here."
-          ],
-          "outcomes": [
-            { "type": "success", "weight": 44 },
-            { "type": "fail", "weight": 33 },
-            { "type": "caught", "weight": 23 }
+            { "type": "success", "weight": 30 },
+            { "type": "partial", "weight": 26 },
+            { "type": "fail", "weight": 29 },
+            { "type": "caught", "weight": 15 }
           ]
         }
       ]
@@ -171,52 +118,34 @@
     {
       "type": "DRUG_TRAFFICKING",
       "name": "Drug trafficking",
-      "durationSeconds": 110,
+      "durationSeconds": 175,
       "paths": [
         {
           "setup": [
-            "Routes zigzag across the city.",
-            "Drop points go live one by one."
+            "The shipment is split into smaller loads, spread across couriers. Routes zigzag through the city, each one designed to blur the trail. You watch from a distance, phone in hand, waiting for the check-ins to roll through."
           ],
           "execution": [
-            "Couriers rotate like clockwork.",
-            "Mirrors watch for tails.",
-            "A drone buzzes somewhere above."
+            "Couriers move in rotation, one vanishing into a crowd as another takes its place. Mirrors catch glances of tails, radios buzz with code words. Every handoff feels too loud, every second stretched thin."
           ],
-          "climax": [
-            "A detour could save it all.",
-            "Or ruin everything."
-          ],
+          "climax": {
+            "success": "Every courier checks in, and the drop completes without a hitch. The city exhales, none the wiser.",
+            "partial": "One courier panics at a checkpoint and dumps the load. Most of it arrives, but the loss stings.",
+            "fail": "Police stop a car mid-route. You pull the rest out early, walking away with little more than scraps.",
+            "caught": "Two vans stall at once, sirens closing in from opposite ends. There’s no outrunning this net."
+          },
           "ambient": [
-            "Shipping pallets thump, then settle.",
-            "Forklifts beep like birds."
+            "Truck brakes hiss from nearby streets.",
+            "Forklifts beep as they shuffle pallets.",
+            "The harbor air smells of rust and salt.",
+            "Container doors slam in the distance.",
+            "Radios murmur clipped exchanges.",
+            "A drone buzzes faintly overhead.",
+            "Engines rev and idle in a staggered rhythm."
           ],
           "outcomes": [
-            { "type": "success", "weight": 50 },
-            { "type": "fail", "weight": 32 },
-            { "type": "caught", "weight": 18 }
-          ]
-        },
-        {
-          "setup": [
-            "You split the shipment like secrets.",
-            "The radio whispers aliases you almost answer to."
-          ],
-          "execution": [
-            "One courier ghosts a checkpoint with a yawn.",
-            "Another slows—bad luck wearing a uniform."
-          ],
-          "climax": [
-            "You reroute three lives with a sentence.",
-            "The city holds its breath with you."
-          ],
-          "ambient": [
-            "Harbor air tastes like rust.",
-            "Night trucks talk in downshifts."
-          ],
-          "outcomes": [
-            { "type": "success", "weight": 48 },
-            { "type": "fail", "weight": 34 },
+            { "type": "success", "weight": 28 },
+            { "type": "partial", "weight": 26 },
+            { "type": "fail", "weight": 28 },
             { "type": "caught", "weight": 18 }
           ]
         }

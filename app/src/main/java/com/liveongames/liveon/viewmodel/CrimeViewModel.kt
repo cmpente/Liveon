@@ -5,11 +5,14 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.liveongames.data.assets.crime.CrimeAssetLoader
+import com.liveongames.data.assets.crime.CrimeAssetLoader.CrimeAsset
+import com.liveongames.data.assets.crime.CrimeAssetLoader.NarrativePath
 import com.liveongames.data.assets.crime.CrimeAssetLoader.OutcomeType
 import com.liveongames.domain.model.CrimeRecordEntry
 import com.liveongames.domain.model.RiskTier
 import com.liveongames.domain.repository.CrimeRepository
 import com.liveongames.domain.repository.PlayerRepository
+import com.liveongames.liveon.util.getCrimeName
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -17,9 +20,13 @@ import kotlin.math.max
 import kotlin.random.Random
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import com.liveongames.liveon.util.getCrimeName
 
 @HiltViewModel
 class CrimeViewModel @Inject constructor(
@@ -40,19 +47,30 @@ class CrimeViewModel @Inject constructor(
         private const val MAX_NOTORIETY_PER_YEAR = 15
     }
 
-    enum class CrimeType { PICKPOCKETING, SHOPLIFTING, VANDALISM, PETTY_SCAM, MUGGING, BREAKING_AND_ENTERING, DRUG_DEALING, COUNTERFEIT_GOODS, BURGLARY, FRAUD, ARMS_SMUGGLING, DRUG_TRAFFICKING, ARMED_ROBBERY, EXTORTION, KIDNAPPING_FOR_RANSOM, PONZI_SCHEME, CONTRACT_KILLING, DARK_WEB_SALES, ART_THEFT, DIAMOND_HEIST }
+    enum class CrimeType {
+        PICKPOCKETING, SHOPLIFTING, VANDALISM, PETTY_SCAM,
+        MUGGING, BREAKING_AND_ENTERING, DRUG_DEALING, COUNTERFEIT_GOODS,
+        BURGLARY, FRAUD, ARMS_SMUGGLING, DRUG_TRAFFICKING,
+        ARMED_ROBBERY, EXTORTION, KIDNAPPING_FOR_RANSOM, PONZI_SCHEME, CONTRACT_KILLING, DARK_WEB_SALES,
+        ART_THEFT, DIAMOND_HEIST,
+        BANK_HEIST, POLITICAL_ASSASSINATION, CRIME_SYNDICATE
+    }
+
     enum class Phase { SETUP, EXECUTION, CLIMAX }
 
     data class CrimeRunState(
         val type: CrimeType,
         val startedAtMs: Long,
         val durationMs: Long,
-        val progress: Float,
+        val progress: Float,            // 0..1 overall
         val phase: Phase,
         val phaseStartMs: Long,
         val phaseEndMs: Long,
+        val setupUntilMs: Long,
+        val execUntilMs: Long,
         val phaseLines: List<String>,
         val ambientLines: List<String>,
+        val scriptAll: String,          // frozen paragraph (setup+execution)
         val currentMessage: String
     )
 
@@ -82,7 +100,6 @@ class CrimeViewModel @Inject constructor(
     private val _earnedThisYear = MutableStateFlow(0)
     val earnedThisYear: StateFlow<Int> = _earnedThisYear.asStateFlow()
 
-    /** Public stream for the Criminal Record list */
     val criminalRecords: StateFlow<List<CrimeRecordEntry>> =
         crimeRepo.observeStats()
             .map { it.records }
@@ -92,7 +109,6 @@ class CrimeViewModel @Inject constructor(
     private val bank by lazy { crimeAssets.loadBank() }
 
     init {
-        // Load persisted tracker
         viewModelScope.launch {
             crimeRepo.observeStats().collect { stats ->
                 _earnedThisYear.value = stats.earnedThisYear
@@ -109,14 +125,30 @@ class CrimeViewModel @Inject constructor(
 
         val asset = bank.byKey[type.name] ?: return beginFallbackRun(type)
         val path = crimeAssets.pickPath(asset, Random.Default)
-        val durationMs = (asset.durationSeconds ?: (durationForTier(riskFor(type)) / 1000L).toInt()) * 1000L
+        val durationMs = ((asset.durationSeconds ?: (durationForTier(riskFor(type)) / 1000L).toInt()) * 1000L)
+            .coerceAtLeast(2_000L) // minimum 2s so UI has time to breathe
 
         val start = System.currentTimeMillis()
         val end = start + durationMs
         _cooldownUntil.value = end
 
-        val setupUntil = start + (durationMs * 0.25f).toLong()
-        val execUntil  = start + (durationMs * 0.80f).toLong()
+        // Use pack-level phase split if present; fallback to 25/55/20.
+        val sPct = asset.phaseSplit?.setup ?: 0.25f
+        val ePct = asset.phaseSplit?.execution ?: 0.55f
+        val setupUntil = start + (durationMs * sPct).toLong()
+        val execUntil  = start + (durationMs * (sPct + ePct)).toLong()
+
+        // Freeze paragraph (setup + execution). Climax is handled by outcome card.
+        val scriptAll: String = (path.setup + path.execution)
+            .filter { it.isNotBlank() }
+            .joinToString(" ")
+            .ifBlank {
+                listOf(
+                    path.execution.firstOrNull(),
+                    path.setup.firstOrNull(),
+                    previewScenario(type)
+                ).firstOrNull { !it.isNullOrBlank() }.orEmpty()
+            }
 
         fun linesFor(phase: Phase) = when (phase) {
             Phase.SETUP     -> path.setup
@@ -124,10 +156,10 @@ class CrimeViewModel @Inject constructor(
             Phase.CLIMAX    -> if (path.execution.isNotEmpty()) path.execution else path.setup
         }
 
-        val ambientPool = buildAmbientPool(path.ambient, durationMs)
+        val ambientPool = buildAmbientPool(path.ambient, durationMs, asset.ambientCadenceMs)
 
         runJob = viewModelScope.launch {
-            var last: Phase? = null
+            var lastPhase: Phase? = null
             while (true) {
                 val now = System.currentTimeMillis()
                 val frac = ((now - start).coerceAtLeast(0).toFloat() / durationMs.toFloat()).coerceIn(0f, 1f)
@@ -142,21 +174,30 @@ class CrimeViewModel @Inject constructor(
                 val phaseLines = linesFor(uiPhase)
                 val msg = phaseLines.firstOrNull() ?: path.execution.firstOrNull() ?: path.setup.firstOrNull() ?: previewScenario(type)
 
-                if (last != uiPhase || _runState.value?.progress != frac || _runState.value?.currentMessage != msg) {
+                if (lastPhase != uiPhase || _runState.value?.progress != frac || _runState.value?.currentMessage != msg) {
                     _runState.value = CrimeRunState(
-                        type, start, durationMs, frac, uiPhase, pStart, pEnd,
+                        type = type,
+                        startedAtMs = start,
+                        durationMs = durationMs,
+                        progress = frac,
+                        phase = uiPhase,
+                        phaseStartMs = pStart,
+                        phaseEndMs = pEnd,
+                        setupUntilMs = setupUntil,
+                        execUntilMs = execUntil,
                         phaseLines = phaseLines,
                         ambientLines = ambientPool,
+                        scriptAll = scriptAll,
                         currentMessage = msg
                     )
-                    last = uiPhase
+                    lastPhase = uiPhase
                 }
 
                 if (now >= end) break
                 delay(TICK_MS)
             }
 
-            // Resolve
+            // Outcome resolution
             val outcomeType = crimeAssets.pickOutcome(path)
             val base = baselineFor(type)
             val success = outcomeType == OutcomeType.SUCCESS || outcomeType == OutcomeType.PARTIAL
@@ -176,7 +217,6 @@ class CrimeViewModel @Inject constructor(
             }
             val effectiveNotoriety = applyYearlyCapAndPersist(rawNotoriety)
 
-            // Apply side-effects
             runCatching {
                 if (money > 0) playerRepository.updateMoney(CHARACTER_ID, money)
                 if (effectiveNotoriety != 0) {
@@ -189,11 +229,16 @@ class CrimeViewModel @Inject constructor(
             val climax = crimeAssets.finalLine(path, outcomeType).orEmpty()
             _lastOutcome.value = OutcomeEvent(type, success, caught, money, jail, effectiveNotoriety, climax)
 
-            // Append to persisted record
             val year = currentInGameYear()
             appendRecord(type, success, caught, money, jail, year, climax)
 
-            _cooldownUntil.value = if (!success) System.currentTimeMillis() + FAILURE_LOCKOUT_MS else null
+            val cooldownMs = when {
+                caught -> asset.cooldownOnArrestMs
+                success -> null
+                else -> asset.cooldownOnFailMs
+            } ?: if (success) null else FAILURE_LOCKOUT_MS
+
+            _cooldownUntil.value = cooldownMs?.let { System.currentTimeMillis() + it }
             _runState.value = null
             runJob = null
         }
@@ -208,15 +253,15 @@ class CrimeViewModel @Inject constructor(
 
     // ---- helpers ----
 
-    private fun buildAmbientPool(base: List<String>, durationMs: Long): List<String> {
-        val src = if (base.isEmpty()) listOf("…") else base
-        val cadenceMs = 4_000L
-        val needed = ((durationMs / cadenceMs).coerceAtLeast(3)).toInt()
-        if (src.size >= needed) return src
+    private fun buildAmbientPool(base: List<String>, durationMs: Long, cadenceMs: Long? = null): List<String> {
+        val src = if (base.isEmpty()) listOf("…") else base.filter { it.isNotBlank() }
+        val cadence = (cadenceMs ?: 4_000L).coerceAtLeast(1_000L)
+        val needed = ((durationMs / cadence).coerceAtLeast(1)).toInt()
+        if (src.isEmpty()) return List(needed) { "…" }
+        if (src.size >= needed) return src.take(needed)
         return List(needed) { idx -> src[idx % src.size] }
     }
 
-    /** Applies the yearly cap and persists the new earned amount when delta > 0. */
     private fun applyYearlyCapAndPersist(delta: Int): Int {
         if (delta <= 0) return delta
         val remaining = MAX_NOTORIETY_PER_YEAR - _earnedThisYear.value
@@ -266,8 +311,7 @@ class CrimeViewModel @Inject constructor(
         return "$name: $res$tail"
     }
 
-    // Replace this with your in-game year (e.g., from PlayerRepository)
-    private fun currentInGameYear(): Int =  _playerNotoriety.value /* placeholder seed */.let { 2000 + (it % 60) }
+    private fun currentInGameYear(): Int = _playerNotoriety.value.let { 2000 + (it % 60) }
 
     private fun durationForTier(t: RiskTier) = when (t) {
         RiskTier.LOW_RISK     -> LOW_MS
@@ -283,7 +327,12 @@ class CrimeViewModel @Inject constructor(
         else -> RiskTier.EXTREME_RISK
     }
 
-    private data class CrimeBase(val riskTier: RiskTier, val payoutMin: Int, val payoutMax: Int, val jailMin: Int, val jailMax: Int, val notorietyGain: Int, val notorietyLoss: Int)
+    private data class CrimeBase(
+        val riskTier: RiskTier,
+        val payoutMin: Int, val payoutMax: Int,
+        val jailMin: Int, val jailMax: Int,
+        val notorietyGain: Int, val notorietyLoss: Int
+    )
 
     private fun baselineFor(type: CrimeType): CrimeBase {
         fun base(tier: RiskTier, a: Int, b: Int, jm: Int, jx: Int, ng: Int, nl: Int) = CrimeBase(tier, a, b, jm, jx, ng, nl)
@@ -312,6 +361,10 @@ class CrimeViewModel @Inject constructor(
             CrimeType.DARK_WEB_SALES -> base(RiskTier.EXTREME_RISK, 15000, 220000, 365, 1460, 8, -3)
             CrimeType.ART_THEFT -> base(RiskTier.EXTREME_RISK, 250000, 4_800_000, 2920, 7300, 10, -3)
             CrimeType.DIAMOND_HEIST -> base(RiskTier.EXTREME_RISK, 1_500_000, 9_500_000, 2920, 7300, 10, -3)
+            // NEW Mastermind examples — tune as desired
+            CrimeType.BANK_HEIST -> base(RiskTier.EXTREME_RISK, 500_000, 5_000_000, 2920, 7300, 10, -3)
+            CrimeType.POLITICAL_ASSASSINATION -> base(RiskTier.EXTREME_RISK, 0, 0, 3650, 10950, 12, -4)
+            CrimeType.CRIME_SYNDICATE -> base(RiskTier.EXTREME_RISK, 1_000_000, 10_000_000, 3650, 10950, 10, -3)
         }
     }
 
@@ -336,9 +389,12 @@ class CrimeViewModel @Inject constructor(
         CrimeType.DARK_WEB_SALES -> listOf("A wallet drains behind seven proxies.", "A new identity clears across oceans.").random()
         CrimeType.ART_THEFT -> listOf("A replica smiles at a laser grid.", "A curator’s keycard sings.").random()
         CrimeType.DIAMOND_HEIST -> listOf("A vault listens; you answer in beeps.", "A transport slows at just the wrong light.").random()
+        CrimeType.BANK_HEIST -> listOf("Masks, timers, a city that blinks too slow.", "A vault ticks louder than your pulse.").random()
+        CrimeType.POLITICAL_ASSASSINATION -> listOf("A crowd roars; your world narrows to glass and breath.", "History holds still for one impossible second.").random()
+        CrimeType.CRIME_SYNDICATE -> listOf("A warehouse of whispers signs a new order.", "Maps, favors, and futures get divided by your finger.").random()
     }
 
-    // Fallback
+    // -------- Fallback path if asset missing --------
     private fun beginFallbackRun(type: CrimeType) {
         val durationMs = durationForTier(riskFor(type))
         val start = System.currentTimeMillis()
@@ -350,6 +406,8 @@ class CrimeViewModel @Inject constructor(
 
         runJob = viewModelScope.launch {
             var last: Phase? = null
+            val lines = listOf(previewScenario(type))
+            val scriptAll = lines.joinToString(" ")
             while (true) {
                 val now = System.currentTimeMillis()
                 val frac = ((now - start).coerceAtLeast(0).toFloat() / durationMs.toFloat()).coerceIn(0f, 1f)
@@ -360,9 +418,23 @@ class CrimeViewModel @Inject constructor(
                 }
                 val pStart = when (phase) { Phase.SETUP -> start; Phase.EXECUTION -> setupUntil; Phase.CLIMAX -> execUntil }
                 val pEnd   = when (phase) { Phase.SETUP -> setupUntil; Phase.EXECUTION -> execUntil; Phase.CLIMAX -> end }
-                val lines = listOf(previewScenario(type))
+
                 if (last != phase || _runState.value?.progress != frac) {
-                    _runState.value = CrimeRunState(type, start, durationMs, frac, phase, pStart, pEnd, lines, listOf("…"), lines.first())
+                    _runState.value = CrimeRunState(
+                        type = type,
+                        startedAtMs = start,
+                        durationMs = durationMs,
+                        progress = frac,
+                        phase = phase,
+                        phaseStartMs = pStart,
+                        phaseEndMs = pEnd,
+                        setupUntilMs = setupUntil,
+                        execUntilMs = execUntil,
+                        phaseLines = lines,
+                        ambientLines = listOf("…"),
+                        scriptAll = scriptAll,
+                        currentMessage = lines.first()
+                    )
                     last = phase
                 }
                 if (now >= end) break

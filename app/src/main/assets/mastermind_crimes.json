@@ -2,414 +2,159 @@
   "version": 3,
   "category": "MASTERMIND",
   "defaults": {
-    "messageIntervalSec": 6,
-    "phaseSplit": { "setup": 0.30, "execution": 0.50, "climax": 0.20 },
-    "cooldowns": { "onFailSec": 120, "onArrestSec": 180 }
+    "messageIntervalSec": 8,
+    "phaseSplit": { "setup": 0.30, "execution": 0.45, "climax": 0.25 },
+    "cooldowns": { "onFailSec": 180, "onArrestSec": 300 }
   },
   "crimes": [
     {
-      "type": "ARMED_ROBBERY",
-      "name": "Armed robbery",
-      "durationSeconds": 140,
+      "type": "BANK_HEIST",
+      "name": "Bank Heist",
+      "durationSeconds": 240,
       "paths": [
         {
           "setup": [
-            "You count cameras and exits until the layout feels like muscle memory.",
-            "Your gloves tug at the skin; the air smells like floor cleaner and nerves."
+            "The plan has been rehearsed until every pause feels natural. Masks in duffel bags, getaway routes memorized. The city outside hums with ordinary life, unaware of the storm about to break."
           ],
           "execution": [
-            "Masks up. The room goes very still.",
-            "Bags out. Your voice is level; time is not.",
-            "A guard blinks and rethinks his options."
+            "Doors swing wide, shouts echo under fluorescent lights. One crew secures the lobby, another the vault. Seconds stretch thin as bags fill with cash. Radios crackle with updates, each voice betraying strain."
           ],
           "climax": {
-            "success": "Doors burst open to night air. Tires bark once and the city falls behind you.",
-            "fail": "Bills spill, a strap snaps, and your window closes with a hard click.",
-            "caught": "Blue washes the storefront. A voice orders you down and the floor answers."
+            "success": "The alarms are delayed just long enough. Tires screech as you vanish into traffic, the city swallowed behind you with millions in tow.",
+            "partial": "You make it out, but dye packs burst in the loot. Half ruined, half intact — a bitter win.",
+            "fail": "The vault lock resists longer than planned. Every second feels stolen until you abandon the haul and bolt empty-handed.",
+            "caught": "Sirens converge as spike strips bloom across asphalt. The van fishtails, your empire ending in handcuffs."
           },
+          "ambient": [
+            "The vault hums with mechanical life.",
+            "Crowds murmur outside the lobby glass.",
+            "Radios spit clipped words across channels.",
+            "A fluorescent light flickers overhead.",
+            "The metallic smell of gun oil lingers.",
+            "Boots squeak against polished floors.",
+            "A printer rattles somewhere in an office.",
+            "Distant sirens blur into city noise.",
+            "Your own pulse hammers louder than anything else."
+          ],
           "outcomes": [
-            { "type": "success", "weight": 40 },
-            { "type": "partial", "weight": 18 },
+            { "type": "success", "weight": 28 },
+            { "type": "partial", "weight": 25 },
             { "type": "fail", "weight": 27 },
-            { "type": "caught", "weight": 15 }
-          ]
-        },
-        {
-          "setup": [
-            "You trade a nod with the bored guard who should have gone home an hour ago.",
-            "The timing in your head ticks like old machinery."
-          ],
-          "execution": [
-            "Someone shouts—it's not you.",
-            "Cash moves like water. Minutes don’t move at all."
-          ],
-          "climax": {
-            "success": "You hit the alley clean. The van door slams and the city can't keep up.",
-            "fail": "A dye pack coughs red. The plan trips over its own shoes.",
-            "caught": "Steel cuffs bite. You look at the ceiling tiles and count squares."
-          },
-          "outcomes": [
-            { "type": "success", "weight": 36 },
-            { "type": "partial", "weight": 20 },
-            { "type": "fail", "weight": 29 },
-            { "type": "caught", "weight": 15 }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "EXTORTION",
-      "name": "Extortion",
-      "durationSeconds": 130,
-      "paths": [
-        {
-          "setup": [
-            "You gather leverage with clean hands and a dirty mind.",
-            "Threats polished until they pass for business."
-          ],
-          "execution": [
-            "Ultimatums go out on quiet lines.",
-            "Replies come back clipped, then careful.",
-            "You hold your tone steady when they don’t."
-          ],
-          "climax": {
-            "success": "They wire the number you named and ask for ‘understanding.’ You grant it—at a premium.",
-            "fail": "Their attorney copies three agencies you hoped wouldn’t meet you yet.",
-            "caught": "A knock, then badges. You practice silence and let the room fill it."
-          },
-          "outcomes": [
-            { "type": "success", "weight": 44 },
-            { "type": "partial", "weight": 18 },
-            { "type": "fail", "weight": 24 },
-            { "type": "caught", "weight": 14 }
-          ]
-        },
-        {
-          "setup": [
-            "You rehearse empathy as a blunt instrument.",
-            "Documents wait in neat stacks that ruin reputations."
-          ],
-          "execution": [
-            "A lawyer prods. You don’t blink.",
-            "Pressure sings in copper wires and second thoughts."
-          ],
-          "climax": {
-            "success": "A single sentence buys their future back—at your price.",
-            "fail": "They call your bluff and then your number stops working.",
-            "caught": "The line clicks. A voice you don’t recognize knows your real name."
-          },
-          "outcomes": [
-            { "type": "success", "weight": 41 },
-            { "type": "partial", "weight": 20 },
-            { "type": "fail", "weight": 25 },
-            { "type": "caught", "weight": 14 }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "KIDNAPPING_FOR_RANSOM",
-      "name": "Kidnapping for ransom",
-      "durationSeconds": 160,
-      "paths": [
-        {
-          "setup": [
-            "You map the routine to the minute.",
-            "The safehouse key bites your palm just to be sure you feel it."
-          ],
-          "execution": [
-            "Van doors whisper shut. Time compresses.",
-            "Negotiations crawl across brittle static.",
-            "Every word gets weighed for cost."
-          ],
-          "climax": {
-            "success": "The trade clears. Heartbeats slow. The city looks ordinary again.",
-            "fail": "Money stalls and so does your nerve. The plan frays one strand at a time.",
-            "caught": "Helicopter rotors write your mistake across the sky."
-          },
-          "outcomes": [
-            { "type": "success", "weight": 33 },
-            { "type": "partial", "weight": 19 },
-            { "type": "fail", "weight": 30 },
-            { "type": "caught", "weight": 18 }
-          ]
-        },
-        {
-          "setup": [
-            "You choreograph the pickup with a metronome and a prayer.",
-            "Blindfolds, burner phones, routes with no history."
-          ],
-          "execution": [
-            "A convoy of very normal cars makes an extraordinary problem.",
-            "The negotiator’s voice trembles. Yours can’t."
-          ],
-          "climax": {
-            "success": "Headlights flash the code. You’re moving before fear remembers your name.",
-            "fail": "A decoy bag. By the time you feel the weight, it’s too light.",
-            "caught": "Sirens flower on both ends of the block. Nowhere is the wrong answer."
-          },
-          "outcomes": [
-            { "type": "success", "weight": 30 },
-            { "type": "partial", "weight": 20 },
-            { "type": "fail", "weight": 32 },
-            { "type": "caught", "weight": 18 }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "PONZI_SCHEME",
-      "name": "Ponzi scheme",
-      "durationSeconds": 180,
-      "paths": [
-        {
-          "setup": [
-            "You court whales with slides that promise gravity can wait.",
-            "Returns look unreal by design."
-          ],
-          "execution": [
-            "New money props the old.",
-            "You juggle payouts like knives and smile like it’s easy.",
-            "Auditors sniff at the seams."
-          ],
-          "climax": {
-            "success": "Redemptions slow. The music keeps playing. You bow like a maestro.",
-            "fail": "A single withdrawal punches through your patchwork and everything leaks.",
-            "caught": "Subpoenas land like hail. Your inbox becomes evidence."
-          },
-          "outcomes": [
-            { "type": "success", "weight": 36 },
-            { "type": "partial", "weight": 22 },
-            { "type": "fail", "weight": 28 },
-            { "type": "caught", "weight": 14 }
-          ]
-        },
-        {
-          "setup": [
-            "Charm rehearsed until it sounds like truth.",
-            "Charts climb like they forgot how to fall."
-          ],
-          "execution": [
-            "Referrals loop into referrals; the web pretends it’s a ladder.",
-            "A journalist starts asking smarter questions."
-          ],
-          "climax": {
-            "success": "You buy time with time you don’t have—and somehow it clears.",
-            "fail": "An anchor investor wants out. The elevator only goes down.",
-            "caught": "Compliance doesn’t call. They arrive."
-          },
-          "outcomes": [
-            { "type": "success", "weight": 34 },
-            { "type": "partial", "weight": 23 },
-            { "type": "fail", "weight": 29 },
-            { "type": "caught", "weight": 14 }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "CONTRACT_KILLING",
-      "name": "Contract killing",
-      "durationSeconds": 200,
-      "paths": [
-        {
-          "setup": [
-            "You learn routes and habits until a stranger’s life fits in your pocket.",
-            "The weather app matters more than luck."
-          ],
-          "execution": [
-            "Windows of opportunity slide past.",
-            "You keep your distance and your hands steady.",
-            "No second shots tonight."
-          ],
-          "climax": {
-            "success": "One breath, one sound, and the street swallows the echo.",
-            "fail": "The angle goes wrong; the shot does not travel.",
-            "caught": "A door opens behind you and the world says stop."
-          },
-          "outcomes": [
-            { "type": "success", "weight": 30 },
-            { "type": "partial", "weight": 18 },
-            { "type": "fail", "weight": 34 },
-            { "type": "caught", "weight": 18 }
-          ]
-        },
-        {
-          "setup": [
-            "You tune out the city until only one address exists.",
-            "Tools sit in a case that smells like oil and consequence."
-          ],
-          "execution": [
-            "Doors open where you predicted. Luck is just math told nicely.",
-            "A neighbor ruins your timing with a friendly wave."
-          ],
-          "climax": {
-            "success": "The window opens and closes. No alarms. No names.",
-            "fail": "A shadow moves where none should. You holster a mistake.",
-            "caught": "Security glass reflects your face and a badge behind it."
-          },
-          "outcomes": [
-            { "type": "success", "weight": 27 },
-            { "type": "partial", "weight": 20 },
-            { "type": "fail", "weight": 35 },
-            { "type": "caught", "weight": 18 }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "DARK_WEB_SALES",
-      "name": "Dark web sales",
-      "durationSeconds": 150,
-      "paths": [
-        {
-          "setup": [
-            "You spin up boxes and routes. Everything has a name that means nothing.",
-            "PGP waltzes with burner opsec."
-          ],
-          "execution": [
-            "Orders blink in hidden queues.",
-            "Escrow ticks like a metronome you can’t quite mute.",
-            "You ship without leaving footprints."
-          ],
-          "climax": {
-            "success": "A mod pins your thread. Reputation climbs faster than prices.",
-            "fail": "A batch goes missing between two ghosts. Support shrugs in three languages.",
-            "caught": "The buyer was a badge with good grammar."
-          },
-          "outcomes": [
-            { "type": "success", "weight": 42 },
-            { "type": "partial", "weight": 22 },
-            { "type": "fail", "weight": 24 },
-            { "type": "caught", "weight": 12 }
-          ]
-        },
-        {
-          "setup": [
-            "You change handles the way other people change shirts.",
-            "Cold storage hums like a lullaby."
-          ],
-          "execution": [
-            "A buyer wants proofs nobody should have.",
-            "You feed breadcrumbs that taste like certainty."
-          ],
-          "climax": {
-            "success": "Funds clear. Feedback lands five stars and a wink.",
-            "fail": "The wallet ID drifts. So does your margin.",
-            "caught": "A honeypot smells sweeter than usual. You pulled the plug one page too late."
-          },
-          "outcomes": [
-            { "type": "success", "weight": 40 },
-            { "type": "partial", "weight": 23 },
-            { "type": "fail", "weight": 25 },
-            { "type": "caught", "weight": 12 }
+            { "type": "caught", "weight": 20 }
           ]
         }
       ]
     },
     {
       "type": "ART_THEFT",
-      "name": "Art theft",
-      "durationSeconds": 220,
+      "name": "Art Theft",
+      "durationSeconds": 300,
       "paths": [
         {
           "setup": [
-            "You blueprint the museum’s belly until you can walk it with your eyes closed.",
-            "Frame weights and sensors get little notes."
+            "The museum map is etched into memory, each patrol studied and timed. Cutting glass, evading sensors — it’s as much art as the canvas you’re here to steal."
           ],
           "execution": [
-            "Cameras blink at odd intervals.",
-            "You float the canvas free; the copy steps into the light.",
-            "Every hinge argues in whispers."
+            "Security lasers sweep in arcs, cameras tilt on slow pivots. You glide between shadows, gloves leaving no trace. The painting waits, timeless, as alarms slumber under rewired circuits."
           ],
           "climax": {
-            "success": "The courier’s engine hums like a promise. The city never knew you were there.",
-            "fail": "A sensor hiccups into a siren. Your calm learns to sprint.",
-            "caught": "A docent’s radio says your description out loud."
+            "success": "The frame slides into its case, wrapped before dawn. A masterpiece disappears into the underground, and the world won’t notice for days.",
+            "partial": "The canvas tears as you rush the extraction. Priceless, but damaged — value slashed with a careless move.",
+            "fail": "The rigged sensors trigger early. You freeze, then fade into the night with nothing gained.",
+            "caught": "Floodlights roar alive, and boots thunder toward you. The masterpiece remains on the wall as cuffs click shut."
           },
-          "outcomes": [
-            { "type": "success", "weight": 28 },
-            { "type": "partial", "weight": 22 },
-            { "type": "fail", "weight": 30 },
-            { "type": "caught", "weight": 20 }
-          ]
-        },
-        {
-          "setup": [
-            "You tour like a donor and memorize like a thief.",
-            "The guard rotation begs to be tested."
+          "ambient": [
+            "Air vents sigh through narrow ducts.",
+            "The marble floor echoes each step.",
+            "Distant chatter from night guards carries low.",
+            "Glass cases creak under shifting pressure.",
+            "Motion sensors tick faintly like clocks.",
+            "The faint scent of varnish lingers in the air.",
+            "Emergency lights glow dim red in corners.",
+            "A muffled cough betrays a guard’s boredom.",
+            "Your breath fogs faintly in the cold gallery air."
           ],
-          "execution": [
-            "A laser grid hiccups on the hour. You breathe with it.",
-            "The frame whispers loose—the loudest quiet you’ve heard."
-          ],
-          "climax": {
-            "success": "Back alley. Trunk down. Your pulse remembers how to be ordinary.",
-            "fail": "A footfall that isn’t yours. A question you can’t answer quickly.",
-            "caught": "White gloves close on your wrist before you can pocket your hands."
-          },
           "outcomes": [
-            { "type": "success", "weight": 26 },
+            { "type": "success", "weight": 27 },
             { "type": "partial", "weight": 24 },
-            { "type": "fail", "weight": 30 },
-            { "type": "caught", "weight": 20 }
+            { "type": "fail", "weight": 28 },
+            { "type": "caught", "weight": 21 }
           ]
         }
       ]
     },
     {
-      "type": "DIAMOND_HEIST",
-      "name": "Diamond heist",
-      "durationSeconds": 300,
+      "type": "POLITICAL_ASSASSINATION",
+      "name": "Political Assassination",
+      "durationSeconds": 250,
       "paths": [
         {
           "setup": [
-            "Blueprints sprawl across a table that smells like coffee and stress.",
-            "Your inside contact sends one word: \"Clear.\"",
-            "The gala tunes up; music is the best alibi.",
-            "You rehearse the exit until it feels like a memory."
+            "The speech is scheduled, the stage framed in banners. You’ve chosen the perch days in advance, every angle and exit planned. Tonight, history bends in silence and smoke."
           ],
           "execution": [
-            "You ghost the service corridor, tuxedo pretending to be authority.",
-            "Laser grids blink like tired eyes; you time your breath to the gaps.",
-            "Glass lifts without a gasp. Velvet doesn’t argue.",
-            "In your ear, the driver counts streets you can’t see.",
-            "Every step back to the crowd feels like walking upstream."
+            "Crowds roar and clap, cameras flash. Through the scope, the world narrows to crosshairs and breath. Guards shift uneasily, radios buzzing with coded chatter. Time itself waits for your finger."
           ],
           "climax": {
-            "success": "Applause erupts. You join it, smiling at nothing in particular. The door handle is cool and merciful.",
-            "fail": "A bead rolls off the tray like a gunshot in your head.",
-            "caught": "A guard’s hand lands on your shoulder. The quartet keeps playing."
+            "success": "The shot lands. Panic blooms, the crowd fractures. In the chaos, you vanish, your name never spoken but your mark undeniable.",
+            "partial": "The bullet strikes, but the target stumbles away wounded. Chaos erupts, but the mission falls short.",
+            "fail": "The shot misfires, silencer hissing uselessly. The moment is gone, your chance dissolved into noise.",
+            "caught": "A guard catches the glint too soon. Boots storm the stairwell, and the rifle clatters from your hands."
           },
+          "ambient": [
+            "The crowd chants in waves of sound.",
+            "Flags snap in the night air.",
+            "Cameras click like endless insects.",
+            "The podium mic squeals briefly.",
+            "Spotlights sweep across the stands.",
+            "A helicopter thrums in the distance.",
+            "Someone coughs nervously in the crowd.",
+            "Radios crackle with coded numbers.",
+            "Your scope fogs with your breath."
+          ],
           "outcomes": [
-            { "type": "success", "weight": 34 },
-            { "type": "partial", "weight": 16 },
-            { "type": "fail", "weight": 30 },
-            { "type": "caught", "weight": 20 }
+            { "type": "success", "weight": 25 },
+            { "type": "partial", "weight": 23 },
+            { "type": "fail", "weight": 28 },
+            { "type": "caught", "weight": 24 }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "type": "CRIME_SYNDICATE",
+      "name": "Form a Crime Syndicate",
+      "durationSeconds": 320,
+      "paths": [
         {
           "setup": [
-            "Financial district after hours—glass and steel holding their breath.",
-            "A janitor waves. You wave back—two polite liars.",
-            "The vault lobby hums with electricity and expensive mistakes."
+            "The warehouse echoes with voices, each seat filled by someone who owes you or fears you. Plans are spread across the table, maps and ledgers littered with possibility. Tonight isn’t a job — it’s the birth of an empire."
           ],
           "execution": [
-            "Your crew moves like a sentence with no commas.",
-            "Cameras glide; you feed them angles that mean nothing.",
-            "You trade a minute for a miracle and hope the math forgives you.",
-            "The case opens on a galaxy of stones and problems."
+            "Territories are divided, rules laid down. Money and blood flow in promises, alliances forged under the watch of sharpened eyes. Every nod is a contract, every silence a threat."
           ],
           "climax": {
-            "success": "The bag is heavier than your future and twice as bright. The elevator dings for you alone.",
-            "fail": "A relay chatters once and the room remembers its job.",
-            "caught": "Doors lock in a choreography you didn’t attend rehearsal for."
+            "success": "By the night’s end, the syndicate breathes like a single body. Streets bend to your will, business flows through your name.",
+            "partial": "Half the room pledges loyalty, the rest leave with doubts. The foundation holds, but cracks are already visible.",
+            "fail": "Arguments boil over into fists and knives. The plan dissolves, leaving you with nothing but enemies.",
+            "caught": "Undercover ears catch every word. The doors crash open mid-speech, and the dream ends in steel cuffs."
           },
+          "ambient": [
+            "Chairs scrape across the concrete floor.",
+            "A single bulb flickers overhead.",
+            "Cigarette smoke thickens the air.",
+            "Whispers ripple between tense men.",
+            "Glasses clink with cheap liquor.",
+            "A dog barks outside the loading dock.",
+            "The hum of a fridge rattles in the corner.",
+            "Rain patters against the warehouse roof.",
+            "Your hand taps the map, steady as stone."
+          ],
           "outcomes": [
-            { "type": "success", "weight": 28 },
-            { "type": "partial", "weight": 20 },
-            { "type": "fail", "weight": 32 },
-            { "type": "caught", "weight": 20 }
+            { "type": "success", "weight": 26 },
+            { "type": "partial", "weight": 25 },
+            { "type": "fail", "weight": 27 },
+            { "type": "caught", "weight": 22 }
           ]
         }
       ]

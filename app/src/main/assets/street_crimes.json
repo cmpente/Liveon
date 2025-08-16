@@ -2,63 +2,38 @@
   "version": 3,
   "category": "STREET_CRIMES",
   "defaults": {
-    "messageIntervalSec": 3,
-    "phaseSplit": { "setup": 0.25, "execution": 0.55, "climax": 0.20 },
-    "cooldowns": { "onFailSec": 20, "onArrestSec": 45 }
+    "messageIntervalSec": 4,
+    "phaseSplit": { "setup": 0.25, "execution": 0.50, "climax": 0.25 },
+    "cooldowns": { "onFailSec": 30, "onArrestSec": 60 }
   },
   "crimes": [
     {
       "type": "PICKPOCKETING",
       "name": "Pickpocketing",
-      "durationSeconds": 22,
+      "durationSeconds": 45,
       "paths": [
         {
           "setup": [
-            "You spot a commuter reading a text, purse strap hanging loose.",
-            "A tourist studies a map with both hands, leaving pockets unguarded."
+            "The subway platform heaves with people spilling from the train. Elbows bump, voices clash, and wallets dangle in careless pockets. One man leans against a column, phone in hand, jacket loose and bulging where his wallet rests."
           ],
           "execution": [
-            "You pretend to tie your shoe while edging close enough to reach.",
-            "Your fingers slide over the zipper as if brushing past by accident.",
-            "You lift the wallet with a practiced motion, never breaking stride.",
-            "You pull the zipper halfway open before the crowd swallows you again."
+            "You slide closer, weaving through the crush of strangers. A fake stumble takes you within reach. Your fingers brush the zipper, tug it open, and pinch leather between two fingers before the moment can vanish."
           ],
-          "climax": [
-            "They suddenly pat their pocket, scanning the people nearby.",
-            "A street performer shouts, masking your exit into the crowd."
-          ],
+          "climax": {
+            "success": "The wallet slips free and drops into your pocket like it was always yours. You melt into the flow of bodies without a second glance.",
+            "partial": "You snag the wallet but nearly drop it. A sharp motion from the target makes you flinch; you recover, but the escape is sloppy.",
+            "fail": "The man shifts his weight and the wallet slides deeper out of reach. You let the chance die and keep walking, blending into the crowd.",
+            "caught": "His hand clamps around your wrist before you pull away. The look on his face sharpens the air, and voices shout for the police."
+          },
           "ambient": [
-            "A train brakes hard, metal screech echoing off the platform.",
-            "An announcement blares through a distorted speaker.",
-            "Warm air from a vent smells faintly of oil and dust."
+            "A train screeches to a halt, brakes screaming in metal protest.",
+            "An announcement crackles overhead, distorted beyond recognition.",
+            "The air smells of oil, sweat, and electricity."
           ],
           "outcomes": [
-            { "type": "success", "weight": 65 },
-            { "type": "fail", "weight": 25 },
-            { "type": "caught", "weight": 10 }
-          ]
-        },
-        {
-          "setup": [
-            "You notice a shopper with a backpack half-unzipped in a crowded crosswalk.",
-            "A man walks with his jacket open, wallet bulging from the inside pocket."
-          ],
-          "execution": [
-            "You match his pace, reaching as if adjusting your own coat.",
-            "You hook two fingers into the open zipper and pull gently.",
-            "You ease the wallet out in one motion before veering away."
-          ],
-          "climax": [
-            "They turn around suddenly, forcing you to keep walking past.",
-            "You slip behind a delivery truck before anyone calls out."
-          ],
-          "ambient": [
-            "Shoes squeak on the tiled station floor.",
-            "A busker strums a guitar, notes bouncing through the underpass."
-          ],
-          "outcomes": [
-            { "type": "success", "weight": 60 },
-            { "type": "fail", "weight": 30 },
+            { "type": "success", "weight": 48 },
+            { "type": "partial", "weight": 24 },
+            { "type": "fail", "weight": 18 },
             { "type": "caught", "weight": 10 }
           ]
         }
@@ -67,54 +42,31 @@
     {
       "type": "SHOPLIFTING",
       "name": "Shoplifting",
-      "durationSeconds": 26,
+      "durationSeconds": 50,
       "paths": [
         {
           "setup": [
-            "You stroll into the store with an empty shopping bag ready.",
-            "You hang near the self-checkout lanes, watching for distracted staff."
+            "The store hums under fluorescent light, shelves stacked with tidy rows of goods. A clerk bends over at the far register, too absorbed in receipts to watch you. Your bag hangs open at your side, ready."
           ],
           "execution": [
-            "You slide a package into your bag while pretending to compare prices.",
-            "A small box disappears into your sleeve before you turn the corner.",
-            "You drop the item under a folded sweater in your cart."
+            "You stroll the aisle once, pretending to compare prices. A small box finds its way into your hand, and after a second’s pause, it slides under the sweater draped across your cart. You turn down another aisle, as if bored with what you saw."
           ],
-          "climax": [
-            "The security gate waits ahead, red light steady.",
-            "A clerk glances up from the register as you pass."
-          ],
+          "climax": {
+            "success": "The sensor gate stays silent. You push through the doors and breathe the outside air, pulse steady as if nothing ever happened.",
+            "partial": "The sensor chirps faintly, making you stiffen. The clerk doesn’t look up, and you keep walking, heart hammering.",
+            "fail": "The clerk glances up just as you slip the box away. Their stare lingers too long, forcing you to ditch the item and leave empty-handed.",
+            "caught": "The alarm shrieks as you cross the gate. A hand seizes your arm before you take two more steps."
+          },
           "ambient": [
-            "Barcode scanners beep steadily from the registers.",
-            "Fluorescent lights hum overhead.",
-            "A child whines for candy near the checkout."
+            "Barcode scanners beep in a steady chorus.",
+            "A shopping cart squeals down the next aisle.",
+            "Fluorescent lights hum without pause."
           ],
           "outcomes": [
-            { "type": "success", "weight": 62 },
-            { "type": "fail", "weight": 26 },
-            { "type": "caught", "weight": 12 }
-          ]
-        },
-        {
-          "setup": [
-            "You spot an endcap display with no cameras pointed toward it.",
-            "A store clerk steps into the back room, leaving an aisle empty."
-          ],
-          "execution": [
-            "You slip the product into your bag in one clean motion.",
-            "You palm the item and keep walking until it’s hidden away."
-          ],
-          "climax": [
-            "The exit feels a lot farther than it looked when you came in.",
-            "You step outside, glancing once over your shoulder."
-          ],
-          "ambient": [
-            "A cart wheel rattles with each push.",
-            "The air conditioner blows cold air down the aisles."
-          ],
-          "outcomes": [
-            { "type": "success", "weight": 58 },
-            { "type": "fail", "weight": 30 },
-            { "type": "caught", "weight": 12 }
+            { "type": "success", "weight": 47 },
+            { "type": "partial", "weight": 25 },
+            { "type": "fail", "weight": 18 },
+            { "type": "caught", "weight": 10 }
           ]
         }
       ]
@@ -122,52 +74,30 @@
     {
       "type": "VANDALISM",
       "name": "Vandalism",
-      "durationSeconds": 24,
+      "durationSeconds": 40,
       "paths": [
         {
           "setup": [
-            "You find a blank wall on a side street with no foot traffic.",
-            "You approach a boarded-up storefront just after dark."
+            "The alley lies still, blank concrete stretching under a weak streetlamp. A rival’s mark stains one wall, daring anyone to paint over it. Your hand closes around the cold can in your pocket."
           ],
           "execution": [
-            "You shake the spray can once and start your tag.",
-            "A fresh coat of paint covers an old, faded mural.",
-            "You add quick lines, working from muscle memory."
+            "You shake it once, the rattle sharp in the quiet. The first hiss of color splashes across the bricks, quick strokes carving your claim. You pause only to glance over your shoulder before tracing the next line."
           ],
-          "climax": [
-            "A light switches on in a nearby window.",
-            "You step back, admiring your work before moving on."
-          ],
+          "climax": {
+            "success": "The tag glows bold under dim light. You step back, admire your work, and vanish before the night can answer.",
+            "partial": "The paint runs on damp brick, blurring the edges. It isn’t clean, but it leaves your mark.",
+            "fail": "The nozzle sputters and clogs, spraying weak mist. You curse, toss the can, and leave the job half-finished.",
+            "caught": "Headlights turn into the alley, freezing you mid-stroke. A shout cuts through the dark—you’re not alone anymore."
+          },
           "ambient": [
-            "A distant bass beat thuds from a passing car.",
-            "Glass clinks in a trash bin down the block."
+            "Wind whistles through the chain-link fence.",
+            "A glass bottle rolls across the pavement.",
+            "A dog barks twice before falling silent."
           ],
           "outcomes": [
-            { "type": "success", "weight": 70 },
-            { "type": "fail", "weight": 20 },
-            { "type": "caught", "weight": 10 }
-          ]
-        },
-        {
-          "setup": [
-            "You wait behind a dumpster until the street is quiet.",
-            "You walk past a concrete wall tagged by someone else and decide to add your own."
-          ],
-          "execution": [
-            "Paint mist hangs in the cool night air as you work.",
-            "You keep glancing over your shoulder between each line."
-          ],
-          "climax": [
-            "A car turns onto the street, headlights sweeping over you.",
-            "The wall’s colors pop under the dim streetlamp."
-          ],
-          "ambient": [
-            "A stray cat trots across the sidewalk.",
-            "Wind hums through a chain-link fence."
-          ],
-          "outcomes": [
-            { "type": "success", "weight": 68 },
-            { "type": "fail", "weight": 22 },
+            { "type": "success", "weight": 50 },
+            { "type": "partial", "weight": 23 },
+            { "type": "fail", "weight": 17 },
             { "type": "caught", "weight": 10 }
           ]
         }
@@ -176,53 +106,31 @@
     {
       "type": "PETTY_SCAM",
       "name": "Petty scam",
-      "durationSeconds": 28,
+      "durationSeconds": 55,
       "paths": [
         {
           "setup": [
-            "You wave over a passerby who slowed when they saw your table.",
-            "You greet a tourist who’s glancing between your stand and a guidebook."
+            "Your folding table sits crooked against a storefront wall. Trinkets and knockoffs gleam under cheap light. A tourist slows, curiosity pulling them closer, guidebook still clutched in hand."
           ],
           "execution": [
-            "You pitch a deal that sounds too good to ignore.",
-            "You act friendly while steering them toward the choice you want.",
-            "You make the price seem like a special offer just for them."
+            "You greet them warmly, voice smooth and easy. With a quick joke and a smile, you pivot into your pitch, building the offer step by step until the deal sounds better than it is. Their hand drifts toward their wallet."
           ],
-          "climax": [
-            "They hesitate, eyes flicking between you and the item.",
-            "They reach for their wallet but don’t commit yet."
-          ],
+          "climax": {
+            "success": "They pay without hesitation, smiling like they won. You pocket the bills and thank them like an old friend.",
+            "partial": "They hesitate, eyes flicking between you and the item. They don’t buy, but they linger, interest hooked for another time.",
+            "fail": "They laugh off your offer and keep walking. You fold your smile and wait for the next fool to wander by.",
+            "caught": "A uniform pushes through the crowd, eyes fixed on you. The tourist steps back as the officer reaches for your stall."
+          },
           "ambient": [
-            "A bus wheezes to a stop nearby.",
-            "Pigeons scatter as someone walks past too quickly."
+            "A bus sighs to a stop nearby, brakes squealing.",
+            "Pigeons scatter at the clap of a door slamming shut.",
+            "Street musicians argue over the tempo of their song."
           ],
           "outcomes": [
-            { "type": "success", "weight": 60 },
-            { "type": "fail", "weight": 25 },
-            { "type": "caught", "weight": 15 }
-          ]
-        },
-        {
-          "setup": [
-            "You catch the attention of someone leaning against a storefront.",
-            "You open with a joke to break the ice with a stranger walking past."
-          ],
-          "execution": [
-            "You keep your hands still and let your story carry the pitch.",
-            "You answer their questions with quick, confident replies."
-          ],
-          "climax": [
-            "A phone buzz interrupts their focus.",
-            "They give you one last look before deciding."
-          ],
-          "ambient": [
-            "Someone claps once from across the street.",
-            "Two musicians argue about who’s off-beat."
-          ],
-          "outcomes": [
-            { "type": "success", "weight": 58 },
-            { "type": "fail", "weight": 27 },
-            { "type": "caught", "weight": 15 }
+            { "type": "success", "weight": 45 },
+            { "type": "partial", "weight": 27 },
+            { "type": "fail", "weight": 18 },
+            { "type": "caught", "weight": 10 }
           ]
         }
       ]
