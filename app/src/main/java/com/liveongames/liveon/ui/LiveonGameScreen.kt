@@ -84,6 +84,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import com.liveongames.liveon.ui.LocalChromeInsets
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.dp
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.IconButton
+import androidx.compose.ui.graphics.graphicsLayer
+import kotlinx.coroutines.isActive
 
 /* ────────────────────────────── Persistent Chrome API ────────────────────────────── */
 
@@ -461,16 +470,33 @@ fun LifebookSection(
 
 @Composable
 fun AgeUpButton(
-    isCooldown: Boolean,
-    hourglassRotation: Float,
-    glowAnimation: Float,
+    isCooldown: Boolean,               // true only during/just after Age Up
+    hourglassRotation: Float,          // kept for call-site compatibility (ignored)
+    glowAnimation: Float,              // kept for your glow pulse
     currentTheme: LiveonTheme,
     onAgeUp: () -> Unit
 ) {
+    // Spin only while cooldown is true
+    val rotation = remember { Animatable(0f) }
+
+    LaunchedEffect(isCooldown) {
+        if (isCooldown) {
+            while (isActive) {
+                rotation.animateTo(
+                    targetValue = rotation.value + 360f,
+                    animationSpec = tween(durationMillis = 1200, easing = LinearEasing)
+                )
+            }
+        } else {
+            rotation.snapTo(0f)
+        }
+    }
+
     Box(
         modifier = Modifier.size(70.dp),
         contentAlignment = Alignment.Center
     ) {
+        // soft glow from your theme, pulsing via glowAnimation
         Box(
             modifier = Modifier
                 .size(100.dp)
@@ -481,8 +507,8 @@ fun AgeUpButton(
                 .background(
                     brush = Brush.radialGradient(
                         listOf(
-                            currentTheme.primary.copy(alpha = 0.3f),
-                            currentTheme.primary.copy(alpha = 0.1f),
+                            currentTheme.primary.copy(alpha = 0.30f),
+                            currentTheme.primary.copy(alpha = 0.10f),
                             Color.Transparent
                         )
                     ),
@@ -508,7 +534,7 @@ fun AgeUpButton(
                 contentDescription = "Advance Time",
                 modifier = Modifier
                     .size(28.dp)
-                    .graphicsLayer { rotationZ = hourglassRotation },
+                    .graphicsLayer { rotationZ = rotation.value }, // ← conditional spin
                 tint = Color.Unspecified
             )
         }

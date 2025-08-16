@@ -91,12 +91,30 @@ fun LiveonApp() {
             gameViewModel = gameVm,
             settingsViewModel = settingsVm,
             onNavigateToCrime = {
-                // close the menu first (LiveonChromeHost already wraps these to close)
-                navController.navigate("crime")
+                navController.navigate("crime") {
+                    popUpTo("main") { inclusive = false }
+                    launchSingleTop = true
+                }
             },
-            onNavigateToEducation = { navController.navigate("education") },
-            onNavigateToPets = { /* optional route later */ },
-            onNavigateToSettings = { navController.navigate("settings") }
+            onNavigateToEducation = {
+                navController.navigate("education") {
+                    popUpTo("main") { inclusive = false }
+                    launchSingleTop = true
+                }
+            },
+            onNavigateToPets = { /* later */ },
+            onNavigateToSettings = {
+                navController.navigate("settings") {
+                    popUpTo("main") { inclusive = false }
+                    launchSingleTop = true
+                }
+            },
+            onNavigateToNewLife = {
+                navController.navigate("new_life") {
+                    popUpTo("main") { inclusive = false }
+                    launchSingleTop = true
+                }
+            }
         ) {
             // App navigation lives inside the chrome so it persists across screens
             NavHost(
