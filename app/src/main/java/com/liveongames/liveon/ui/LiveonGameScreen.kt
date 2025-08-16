@@ -1,39 +1,190 @@
-// app/src/main/java/com/liveongames/liveon/ui/LiveonGameScreen.kt
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+
 package com.liveongames.liveon.ui
 
 import android.content.Context
 import android.util.Log
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.*
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.liveongames.liveon.R
-import com.liveongames.liveon.viewmodel.GameViewModel
-import com.liveongames.liveon.viewmodel.SettingsViewModel
 import com.liveongames.domain.model.GameEvent
+import com.liveongames.liveon.R
 import com.liveongames.liveon.ui.theme.AllGameThemes
 import com.liveongames.liveon.ui.theme.LiveonTheme
+import com.liveongames.liveon.viewmodel.GameViewModel
+import com.liveongames.liveon.viewmodel.SettingsViewModel
 import kotlinx.coroutines.delay
 import org.json.JSONObject
 import kotlin.random.Random
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.HorizontalDivider
+// Animations
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.foundation.shape.RoundedCornerShape
+import com.liveongames.liveon.ui.LocalChromeInsets
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.unit.dp
+
+/* ────────────────────────────── Persistent Chrome API ────────────────────────────── */
+
+data class ChromeInsets(val bottom: Dp)
+val LocalChromeInsets = staticCompositionLocalOf { ChromeInsets(0.dp) }
+
+/**
+ * Wrap your NavHost or any screen inside this. The Stats panel and Life Management menu
+ * stay mounted across navigation, and the content can use LocalChromeInsets for bottom padding.
+ */
+@Composable
+fun LiveonChromeHost(
+    // Provide VMs here so the chrome shows current stats everywhere
+    gameViewModel: GameViewModel = hiltViewModel(),
+    settingsViewModel: SettingsViewModel = hiltViewModel(),
+    showHeader: Boolean = true,
+    onNavigateToCrime: () -> Unit = {},
+    onNavigateToPets: () -> Unit = {},
+    onNavigateToEducation: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {},
+    onNavigateToNewLife: () -> Unit = {},
+    content: @Composable () -> Unit
+) {
+    val uiState by gameViewModel.uiState.collectAsState()
+    val selectedThemeIndex by settingsViewModel.selectedThemeIndex.collectAsState()
+    val currentTheme = AllGameThemes.getOrElse(selectedThemeIndex) { AllGameThemes[0] }
+
+    // Shell state (persists while app is running)
+    var isMenuOpen by rememberSaveable { mutableStateOf(false) }
+
+    // Bottom chrome visible height (keep in sync with StatsPanel)
+    val bottomChrome = 75.dp
+
+    androidx.compose.runtime.CompositionLocalProvider(
+        LocalChromeInsets provides ChromeInsets(bottom = bottomChrome)
+    ) {
+        Box(Modifier.fillMaxSize().background(currentTheme.background)) {
+
+            // Header (only on Home / when requested)
+            if (showHeader) {
+                GameHeader(currentTheme = currentTheme)
+            }
+
+            // App content (your NavHost or Home content)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = if (showHeader) 96.dp else 0.dp, // no empty band on feature screens
+                        bottom = bottomChrome
+                    )
+            ) {
+                content()
+            }
+
+            // Persistent Stats panel
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+            ) {
+                StatsPanel(
+                    uiState = uiState,
+                    currentTheme = currentTheme,
+                    onMenuOpen = { isMenuOpen = true }
+                )
+            }
+
+            // Persistent Life Management menu overlay
+            if (isMenuOpen) {
+                PopupMenu(
+                    uiState = uiState,
+                    currentTheme = currentTheme,
+                    onDismiss = { isMenuOpen = false },
+                    onNavigateToCrime = {
+                        isMenuOpen = false
+                        onNavigateToCrime()
+                    },
+                    onNavigateToPets = {
+                        isMenuOpen = false
+                        onNavigateToPets()
+                    },
+                    onNavigateToEducation = {
+                        isMenuOpen = false
+                        onNavigateToEducation()
+                    },
+                    onNavigateToSettings = {
+                        isMenuOpen = false
+                        onNavigateToSettings()
+                    },
+                    onNavigateToNewLife = {
+                        isMenuOpen = false
+                        onNavigateToNewLife()
+                    }
+                )
+            }
+        }
+    }
+}
+
+/* ────────────────────────────── Home Screen (uses shell) ────────────────────────────── */
 
 @Composable
 fun LiveonGameScreen(
@@ -42,152 +193,112 @@ fun LiveonGameScreen(
     onNavigateToCrime: () -> Unit = {},
     onNavigateToPets: () -> Unit = {},
     onNavigateToEducation: () -> Unit = {},
-    onNavigateToSettings: () -> Unit = {}
+    onNavigateToSettings: () -> Unit = {},
+    onNavigateToNewLife: () -> Unit = {}
 ) {
     val context = LocalContext.current
-    val density = LocalDensity.current
     val uiState by gameViewModel.uiState.collectAsState()
     val selectedThemeIndex by settingsViewModel.selectedThemeIndex.collectAsState()
-    val currentTheme = AllGameThemes.getOrElse(selectedThemeIndex) { AllGameThemes[0] }
+    val currentTheme = AllGameThemes.getOrElse(selectedThemeIndex) { AllGameThemes.first() }
 
-    // Game state
-    var isMenuOpen by remember { mutableStateOf(false) }
-    var lifeHistoryEntries by rememberSaveable { mutableStateOf(listOf<String>()) }
-    val entryAlphas = remember(lifeHistoryEntries.size) { List(lifeHistoryEntries.size) { mutableStateOf(1f) } }
-    var isCooldown by remember { mutableStateOf(false) }
-    var cooldownProgress by remember { mutableStateOf(0f) }
+    // Lifebook state
     val lifebookScrollState = rememberScrollState()
-    val randomEvents = remember(context) { loadRandomEventsFromAssets(context) }
-    var lastAge by remember { mutableStateOf<Int?>(null) }
+    var lifeHistoryEntries by rememberSaveable { mutableStateOf(listOf<String>()) }
+    var lastAge by rememberSaveable { mutableStateOf<Int?>(null) }
 
-    val hourglassRotation by animateFloatAsState(
-        targetValue = if (isCooldown) 360f * 3 else 0f,
-        animationSpec = if (isCooldown) tween(durationMillis = 3000, easing = LinearEasing) else spring(),
-        label = "hourglassRotation"
+    // Animations used by Age Up
+    val hourglassRotation = rememberInfiniteTransition(label = "hourglass").animateFloat(
+        initialValue = 0f, targetValue = 360f,
+        animationSpec = infiniteRepeatable(animation = tween(2400, easing = LinearEasing)),
+        label = "hourglassSpin"
     )
-
-    val glowAnimation by animateFloatAsState(
-        targetValue = if (isCooldown) 1.2f else 1f,
+    val glowAnimation = rememberInfiniteTransition(label = "glow").animateFloat(
+        initialValue = 0.85f, targetValue = 1.15f,
         animationSpec = infiniteRepeatable(
-            animation = tween(2000, easing = FastOutSlowInEasing),
+            animation = tween(1800, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         ),
-        label = "glowAnimation"
+        label = "glowPulse"
     )
 
-    // Handle aging logic
+    // Cooldown after age up (prevents spam)
+    var isCooldown by rememberSaveable { mutableStateOf(false) }
+    var cooldownProgress by rememberSaveable { mutableStateOf(0f) } // kept for future use
+
+    // Demo life events
+    val raw = loadJsonFromAssets(context, "life_events.json")
+    val randomEvents = remember(raw) { parseRandomEvents(raw) }
+
     LaunchedEffect(uiState.playerStats?.age) {
         val currentAge = uiState.playerStats?.age ?: 0
         if (lastAge != null && currentAge > lastAge!!) {
             isCooldown = true
             cooldownProgress = 0f
 
-            val eventCount = Random.nextInt(1, 4)
+            val eventCount = kotlin.random.Random.nextInt(1, 4)
             val events = generateRandomLifeEvents(randomEvents, eventCount)
-
             for (i in events.indices) {
                 delay(1000L)
                 val entry = "Age $currentAge: ${events[i]}"
                 if (!lifeHistoryEntries.contains(entry)) {
                     lifeHistoryEntries = (lifeHistoryEntries + entry).distinct()
-                    val newIndex = lifeHistoryEntries.size - 1
-                    if (newIndex < entryAlphas.size) {
-                        entryAlphas[newIndex].value = 0f
-                        repeat(10) { step ->
-                            delay(50)
-                            entryAlphas[newIndex].value = (step + 1) / 10f
-                        }
-                    }
+                    delay(200L)
+                    lifebookScrollState.animateScrollTo(lifebookScrollState.maxValue)
                 }
-                cooldownProgress = (i + 1).toFloat() / eventCount
             }
 
-            delay(500L)
+            // simple cooldown timer
+            val cooldownMs = 2500L
+            val steps = 50
+            val stepMs = cooldownMs / steps
+            repeat(steps) {
+                delay(stepMs)
+                cooldownProgress = (it + 1) / steps.toFloat()
+            }
             isCooldown = false
         }
         lastAge = currentAge
     }
-
-    LaunchedEffect(lifeHistoryEntries.size) {
-        // Scroll to bottom of lifebook
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(currentTheme.background)
-    ) {
-        // Main game content
-        GameContent(
-            uiState = uiState,
-            currentTheme = currentTheme,
-            lifebookScrollState = lifebookScrollState,
-            lifeHistoryEntries = lifeHistoryEntries,
-            entryAlphas = entryAlphas,
-            isCooldown = isCooldown,
-            hourglassRotation = hourglassRotation,
-            glowAnimation = glowAnimation,
-            gameViewModel = gameViewModel
-        )
-
-        // Stats panel (always visible at bottom)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-        ) {
-            StatsPanel(
-                uiState = uiState,
-                currentTheme = currentTheme,
-                onMenuOpen = { isMenuOpen = true }
-            )
-        }
-
-        // Popup menu (appears when menu is open)
-        if (isMenuOpen) {
-            PopupMenu(
-                uiState = uiState,
-                currentTheme = currentTheme,
-                onDismiss = { isMenuOpen = false },
-                onNavigateToCrime = onNavigateToCrime,
-                onNavigateToPets = onNavigateToPets,
-                onNavigateToEducation = onNavigateToEducation,
-                onNavigateToSettings = onNavigateToSettings
-            )
-        }
-
-        // Event dialogs
-        EventDialogs(
-            uiState = uiState,
-            currentTheme = currentTheme,
-            gameViewModel = gameViewModel
-        )
-    }
+    val insets = LocalChromeInsets.current
+    // IMPORTANT: Do NOT render header or stats here; the host does it.
+    GameContent(
+        uiState = uiState,
+        currentTheme = currentTheme,
+        lifebookScrollState = lifebookScrollState,
+        lifeHistoryEntries = lifeHistoryEntries,
+        entryAlphas = rememberEntryAlphas(lifeHistoryEntries.size),
+        isCooldown = isCooldown,
+        hourglassRotation = hourglassRotation.value,
+        glowAnimation = glowAnimation.value,
+        gameViewModel = gameViewModel,
+        bottomInset = insets.bottom
+    )
 }
 
-// ==================== MAIN CONTENT ====================
+/* ────────────────────────────── Main Content (home) ────────────────────────────── */
+
 @Composable
 fun GameContent(
     uiState: com.liveongames.liveon.viewmodel.GameUiState,
     currentTheme: LiveonTheme,
-    lifebookScrollState: ScrollState,
+    lifebookScrollState: androidx.compose.foundation.ScrollState,
     lifeHistoryEntries: List<String>,
     entryAlphas: List<MutableState<Float>>,
     isCooldown: Boolean,
     hourglassRotation: Float,
     glowAnimation: Float,
-    gameViewModel: GameViewModel
+    gameViewModel: GameViewModel,
+    bottomInset: Dp
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 12.dp)
+            .padding(bottom = bottomInset), // host reserves top/bottom already
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Header
-        GameHeader(currentTheme = currentTheme)
+        // DO NOT render GameHeader here (host already renders it)
 
-        // Lifebook Section with Age Up Button
         LifebookSection(
             uiState = uiState,
             currentTheme = currentTheme,
@@ -200,29 +311,41 @@ fun GameContent(
             gameViewModel = gameViewModel
         )
 
-        Spacer(modifier = Modifier.height(160.dp)) // Space for stats panel
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
+/* ────────────────────────────── Header / Lifebook / AgeUp ────────────────────────────── */
+
 @Composable
-fun GameHeader(currentTheme: LiveonTheme) {
+fun GameHeader(
+    currentTheme: LiveonTheme,
+    showTagline: Boolean = false
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 8.dp, bottom = 8.dp),
+            .padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Liveon",
-            style = MaterialTheme.typography.displaySmall,
-            color = currentTheme.primary,
-            fontWeight = FontWeight.Bold
+        Image(
+            painter = painterResource(id = R.drawable.liveon_logo),
+            contentDescription = "Liveon logo",
+            modifier = Modifier
+                .height(96.dp)
+                .wrapContentWidth(),
+            contentScale = ContentScale.Fit
         )
-        Text(
-            text = "Life Without Limits",
-            style = MaterialTheme.typography.bodyMedium,
-            color = currentTheme.accent
-        )
+
+        if (showTagline) {
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = "Life Without Limits",
+                style = MaterialTheme.typography.bodyMedium,
+                color = currentTheme.accent,
+                fontWeight = FontWeight.Medium
+            )
+        }
     }
 }
 
@@ -230,7 +353,7 @@ fun GameHeader(currentTheme: LiveonTheme) {
 fun LifebookSection(
     uiState: com.liveongames.liveon.viewmodel.GameUiState,
     currentTheme: LiveonTheme,
-    lifebookScrollState: ScrollState,
+    lifebookScrollState: androidx.compose.foundation.ScrollState,
     lifeHistoryEntries: List<String>,
     entryAlphas: List<MutableState<Float>>,
     isCooldown: Boolean,
@@ -246,7 +369,7 @@ fun LifebookSection(
         Card(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 25.dp), // Reduced padding to allow overlap
+                .padding(bottom = 25.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(containerColor = currentTheme.surface)
@@ -317,7 +440,6 @@ fun LifebookSection(
             }
         }
 
-        // Age Up Button - positioned at bottom, overlapping lifebook
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -346,11 +468,9 @@ fun AgeUpButton(
     onAgeUp: () -> Unit
 ) {
     Box(
-        modifier = Modifier
-            .size(70.dp),
+        modifier = Modifier.size(70.dp),
         contentAlignment = Alignment.Center
     ) {
-        // Gradient Glow Background
         Box(
             modifier = Modifier
                 .size(100.dp)
@@ -359,7 +479,7 @@ fun AgeUpButton(
                     scaleY = glowAnimation
                 }
                 .background(
-                    brush = androidx.compose.ui.graphics.Brush.radialGradient(
+                    brush = Brush.radialGradient(
                         listOf(
                             currentTheme.primary.copy(alpha = 0.3f),
                             currentTheme.primary.copy(alpha = 0.1f),
@@ -370,7 +490,6 @@ fun AgeUpButton(
                 )
         )
 
-        // Actual Button
         IconButton(
             onClick = { if (!isCooldown) onAgeUp() },
             modifier = Modifier
@@ -389,14 +508,14 @@ fun AgeUpButton(
                 contentDescription = "Advance Time",
                 modifier = Modifier
                     .size(28.dp)
-                    .graphicsLayer {
-                        rotationZ = hourglassRotation
-                    },
+                    .graphicsLayer { rotationZ = hourglassRotation },
                 tint = Color.Unspecified
             )
         }
     }
 }
+
+/* ────────────────────────────── Stats Panel / Menu / Dialogs ────────────────────────────── */
 
 @Composable
 fun StatsPanel(
@@ -414,10 +533,8 @@ fun StatsPanel(
             .offset(y = (-panelRestPosition).dp)
             .background(currentTheme.surface)
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            // Life Management Header
+        Column(modifier = Modifier.fillMaxSize()) {
+            // Header
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -426,9 +543,7 @@ fun StatsPanel(
                     .clickable { onMenuOpen() },
                 contentAlignment = Alignment.Center
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_settings),
                         contentDescription = null,
@@ -445,7 +560,7 @@ fun StatsPanel(
                 }
             }
 
-            // Stats Content
+            // Stats body
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -504,7 +619,6 @@ fun StatsPanel(
     }
 }
 
-// ==================== POPUP MENU ====================
 @Composable
 fun PopupMenu(
     uiState: com.liveongames.liveon.viewmodel.GameUiState,
@@ -513,41 +627,72 @@ fun PopupMenu(
     onNavigateToCrime: () -> Unit,
     onNavigateToPets: () -> Unit,
     onNavigateToEducation: () -> Unit,
-    onNavigateToSettings: () -> Unit
+    onNavigateToSettings: () -> Unit,
+    onNavigateToNewLife: () -> Unit
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.5f))
-            .clickable { onDismiss() }
-    ) {
-        Column(
+    Box(modifier = Modifier.fillMaxSize()) {
+        // SCRIM — this captures outside taps only
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.7f)
-                .background(currentTheme.surface)
+                .matchParentSize()
+                .background(Color.Black.copy(alpha = 0.45f))
+                .clickable { onDismiss() }
+        )
+
+        // SHEET — no parent clickable; all row clicks propagate correctly
+        ElevatedCard(
+            modifier = Modifier
                 .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .fillMaxHeight(0.78f)           // bottom sheet height cap
+                .padding(vertical = 12.dp),
+            colors = CardDefaults.elevatedCardColors(containerColor = currentTheme.surface),
+            elevation = CardDefaults.elevatedCardElevation(defaultElevation = 10.dp),
+            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
         ) {
-            // Header with close button
-            PopupMenuHeader(
-                currentTheme = currentTheme,
-                onDismiss = onDismiss
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                PopupMenuHeader(currentTheme = currentTheme, onDismiss = onDismiss)
 
-            // Current stats display
-            CurrentStatsCard(
-                uiState = uiState,
-                currentTheme = currentTheme
-            )
+                CurrentStatsCard(uiState = uiState, currentTheme = currentTheme)
 
-            // Menu options
-            MenuOptionsSection(
-                currentTheme = currentTheme,
-                onNavigateToCrime = onNavigateToCrime,
-                onNavigateToPets = onNavigateToPets,
-                onNavigateToEducation = onNavigateToEducation,
-                onNavigateToSettings = onNavigateToSettings
-            )
+                // Scrollable menu list inside the sheet
+                val menuItems = listOf(
+                    MenuItemData(R.drawable.ic_business, "Career", "Manage your professional life", currentTheme) { },
+                    MenuItemData(R.drawable.ic_people, "Social", "Manage relationships", currentTheme) { },
+                    MenuItemData(R.drawable.ic_law, "Criminal Activities", "View criminal activities.", currentTheme) { onNavigateToCrime() },
+                    MenuItemData(R.drawable.ic_band, "Pet Management", "Adopt companions", currentTheme) { onNavigateToPets() },
+                    MenuItemData(R.drawable.ic_education, "Education", "Manage schooling", currentTheme) { onNavigateToEducation() },
+                    MenuItemData(R.drawable.ic_relationship, "Relationships", "View connections", currentTheme) { },
+                    MenuItemData(R.drawable.ic_health, "Healthcare", "View medical history and seek care", currentTheme) { },
+                    MenuItemData(R.drawable.ic_travel, "Travel Log", "View places visited", currentTheme) { },
+                    MenuItemData(R.drawable.ic_save, "Save Game", "Manage saves", currentTheme) { },
+                    // NEW LIFE
+                    MenuItemData(R.drawable.ic_continue, "New Life", "Start a new character", currentTheme) { onNavigateToNewLife() },
+                    MenuItemData(R.drawable.ic_settings, "Settings", "Game preferences including theme selection", currentTheme) { onNavigateToSettings() }
+                )
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(0.dp)
+                ) {
+                    items(menuItems) { item ->
+                        MenuItemRow(item = item)
+                        HorizontalDivider(
+                            modifier = Modifier.padding(vertical = 3.dp),
+                            thickness = 1.dp,
+                            color = currentTheme.surfaceVariant
+                        )
+                    }
+                    item { Spacer(Modifier.height(8.dp)) }
+                }
+            }
         }
     }
 }
@@ -557,25 +702,24 @@ fun PopupMenuHeader(
     currentTheme: LiveonTheme,
     onDismiss: () -> Unit
 ) {
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Text(
             text = "Life Management",
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.weight(1.0f)
+            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+            color = MaterialTheme.colorScheme.onSurface, // ← material color, not your custom theme
+            modifier = Modifier.align(Alignment.Center)
         )
         IconButton(
-            onClick = onDismiss
+            onClick = onDismiss,
+            modifier = Modifier.align(Alignment.CenterEnd)
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_collapse),
-                contentDescription = "Close",
-                tint = currentTheme.text
+                painter = painterResource(R.drawable.ic_close),
+                contentDescription = "Close"
             )
         }
     }
@@ -646,7 +790,8 @@ fun MenuOptionsSection(
     onNavigateToCrime: () -> Unit,
     onNavigateToPets: () -> Unit,
     onNavigateToEducation: () -> Unit,
-    onNavigateToSettings: () -> Unit
+    onNavigateToSettings: () -> Unit,
+    onNavigateToNewLife: () -> Unit              // ← NEW
 ) {
     Column(
         modifier = Modifier
@@ -675,14 +820,18 @@ fun MenuOptionsSection(
             MenuItemData(R.drawable.ic_health, "Healthcare", "View medical history and seek care", currentTheme) { },
             MenuItemData(R.drawable.ic_travel, "Travel Log", "View places visited", currentTheme) { },
             MenuItemData(R.drawable.ic_save, "Save Game", "Manage saves", currentTheme) { },
+
+            // ↓↓↓ NEW LIFE ENTRY (choose any icon you prefer)
+            MenuItemData(R.drawable.ic_continue, "New Life", "Start a new character", currentTheme) {
+                onNavigateToNewLife()
+            },
+
             MenuItemData(R.drawable.ic_settings, "Settings", "Game preferences including theme selection", currentTheme) {
                 onNavigateToSettings()
             }
         )
 
-        LazyColumn(
-            modifier = Modifier.weight(1.0f)
-        ) {
+        LazyColumn(modifier = Modifier.weight(1.0f)) {
             items(menuItems) { item ->
                 MenuItemRow(item = item)
                 HorizontalDivider(
@@ -695,7 +844,8 @@ fun MenuOptionsSection(
     }
 }
 
-// ==================== EVENT DIALOGS ====================
+/* ────────────────────────────── Event Dialogs (unchanged) ────────────────────────────── */
+
 @Composable
 fun EventDialogs(
     uiState: com.liveongames.liveon.viewmodel.GameUiState,
@@ -716,15 +866,14 @@ fun EventDialogs(
                 onChoiceSelected = { choiceId ->
                     gameViewModel.makeChoice(firstEvent.id, choiceId)
                 },
-                onDismiss = {
-                    gameViewModel.dismissEvent(firstEvent.id)
-                },
+                onDismiss = { gameViewModel.dismissEvent(firstEvent.id) },
                 theme = currentTheme
             )
         }
 }
 
-// ==================== UTILITY COMPONENTS ====================
+/* ────────────────────────────── Utility Composables ────────────────────────────── */
+
 @Composable
 fun LifebookEntryItem(
     entry: String,
@@ -878,15 +1027,12 @@ fun EventDialogComposable(
             )
         },
         text = {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(
                     text = event.description,
                     style = MaterialTheme.typography.bodyMedium,
                     color = theme.text
                 )
-
                 if (event.choices.isNotEmpty()) {
                     Text(
                         text = "What do you choose?",
@@ -894,21 +1040,15 @@ fun EventDialogComposable(
                         fontWeight = FontWeight.Medium,
                         color = theme.primary
                     )
-
                     event.choices.forEach { choice ->
-                        Button(
+                        androidx.compose.material3.Button(
                             onClick = { onChoiceSelected(choice.id) },
                             modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(
+                            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
                                 containerColor = theme.surfaceVariant,
                                 contentColor = theme.text
                             )
-                        ) {
-                            Text(
-                                text = choice.text,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
+                        ) { Text(choice.text, fontWeight = FontWeight.Medium) }
                         Spacer(modifier = Modifier.height(6.dp))
                     }
                 }
@@ -916,7 +1056,7 @@ fun EventDialogComposable(
         },
         confirmButton = {
             if (event.choices.isEmpty()) {
-                TextButton(onClick = onDismiss) {
+                androidx.compose.material3.TextButton(onClick = onDismiss) {
                     Text("Continue", color = theme.primary)
                 }
             }
@@ -925,7 +1065,8 @@ fun EventDialogComposable(
     )
 }
 
-// ==================== UTILITY FUNCTIONS ====================
+/* ────────────────────────────── Random Events Helpers (unchanged) ────────────────────────────── */
+
 fun loadRandomEventsFromAssets(context: Context): Map<String, List<String>> {
     return try {
         val jsonString = context.assets.open("random_events.json").bufferedReader().use { it.readText() }
@@ -962,16 +1103,66 @@ fun loadRandomEventsFromAssets(context: Context): Map<String, List<String>> {
 
 fun generateRandomLifeEvents(eventsMap: Map<String, List<String>>, eventCount: Int): List<String> {
     val events = mutableListOf<String>()
-
     repeat(eventCount) {
         val categories = eventsMap.keys.toList()
         val category = categories.random()
-
         val categoryEvents = eventsMap[category] ?: emptyList()
-        if (categoryEvents.isNotEmpty()) {
-            events.add(categoryEvents.random())
-        }
+        if (categoryEvents.isNotEmpty()) events.add(categoryEvents.random())
+    }
+    return events.distinct()
+
+
+}
+
+// ---------- tiny helpers restored ----------
+
+private fun loadJsonFromAssets(context: Context, fileName: String): String {
+    return try {
+        context.assets.open(fileName).bufferedReader().use { it.readText() }
+    } catch (_: Exception) {
+        // safe fallback stub
+        "{\"events\":[\"Made a new friend\",\"Learned to ride a bike\",\"Found $5 in a pocket\",\"Won a spelling bee\"]}"
+    }
+}
+
+private fun parseRandomEvents(jsonString: String): List<String> {
+    return try {
+        val json = JSONObject(jsonString)
+        val arr = json.optJSONArray("events") ?: return emptyList()
+        (0 until arr.length()).map { i -> arr.getString(i) }
+    } catch (_: Exception) {
+        emptyList()
+    }
+}
+
+private fun generateRandomLifeEvents(events: List<String>, count: Int): List<String> {
+    if (events.isEmpty()) return listOf("A quiet year passed.")
+    val n = minOf(count, events.size)
+    return events.shuffled().take(n)
+}
+
+@Composable
+fun rememberEntryAlphas(size: Int): List<MutableState<Float>> {
+    val transition = rememberInfiniteTransition(label = "entryFades")
+
+    // Compose animation states (internal)
+    val animatedStates = List(size) { idx ->
+        transition.animateFloat(
+            initialValue = 0.95f,
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis = 2400 + (idx * 40), easing = LinearEasing),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "alpha_$idx"
+        )
     }
 
-    return events.distinct()
+    // Public API your file expects: MutableState<Float>
+    val exposed = remember(size) { List(size) { mutableStateOf(1f) } }
+
+    // Bridge: push animated values into the mutable states each recomposition
+    animatedStates.forEachIndexed { i, s -> exposed[i].value = s.value }
+
+    return exposed
 }

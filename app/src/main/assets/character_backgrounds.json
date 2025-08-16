@@ -1,0 +1,32 @@
+{
+  "$schema": "liveon/backgrounds.v1",
+  "backgrounds": [
+    {
+      "id": "bg_suburban_middle",
+      "name": "Suburban Middle Class",
+      "desc": "Stable upbringing with decent schooling and structure.",
+      "statMods": { "health": 5, "happiness": 8, "intelligence": 4, "social": 3, "money": 500 },
+      "startAge": 0,
+      "startLocation": { "countryCode": "US", "cityId": "us_chicago" },
+      "tags": ["school_bonus", "safe_neighborhood"]
+    },
+    {
+      "id": "bg_inner_city",
+      "name": "Inner City Hustle",
+      "desc": "Grit and hustle from day one; tougher surroundings.",
+      "statMods": { "health": -2, "happiness": 0, "intelligence": 2, "social": 6, "money": 200 },
+      "startAge": 0,
+      "startLocation": { "countryCode": "US", "cityId": "us_houston" },
+      "tags": ["street_sense"]
+    },
+    {
+      "id": "bg_rural_roots",
+      "name": "Rural Roots",
+      "desc": "Open skies and tight-knit communities.",
+      "statMods": { "health": 3, "happiness": 4, "intelligence": 0, "social": 2, "money": 150 },
+      "startAge": 0,
+      "startLocation": { "countryCode": "US", "cityId": "us_boise" },
+      "tags": ["resilient"]
+    }
+  ]
+}

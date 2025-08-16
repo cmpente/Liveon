@@ -1,4 +1,5 @@
-// app/src/main/java/com/liveongames/liveon/ui/screens/education/EducationSheet.kt
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+
 package com.liveongames.liveon.ui.screens.education
 
 import androidx.compose.animation.AnimatedVisibility
@@ -16,7 +17,6 @@ import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
@@ -28,9 +28,9 @@ import com.liveongames.liveon.R
 import com.liveongames.liveon.ui.theme.LocalLiveonTheme
 import com.liveongames.liveon.viewmodel.EducationEvent
 import com.liveongames.liveon.viewmodel.EducationViewModel
-import com.liveongames.data.model.education.EducationActionDef // <-- correct package
-
+import com.liveongames.data.model.education.EducationActionDef
 import java.util.Locale
+import com.liveongames.liveon.ui.LocalChromeInsets
 
 @Composable
 fun EducationSheet(
@@ -39,7 +39,9 @@ fun EducationSheet(
 ) {
     val t = LocalLiveonTheme.current
     val state by viewModel.uiState.collectAsState()
+    val insets = LocalChromeInsets.current
 
+    // derived state (unchanged)
     val enrollment = state.enrollment
     val programTitle = remember(enrollment, state.programs) {
         val id = enrollment?.programId
@@ -58,280 +60,243 @@ fun EducationSheet(
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.55f))
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ) { onDismiss() }
-    ) {
-        Column(
+    // hoist snackbar to Scaffold
+    val snackbarHostState = remember { SnackbarHostState() }
+    state.message?.let { msg ->
+        LaunchedEffect(msg) {
+            snackbarHostState.showSnackbar(msg)
+            viewModel.handleEvent(EducationEvent.DismissMessage)
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text("Education", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                },
+                actions = {
+                    IconButton(onClick = onDismiss) {
+                        Icon(painter = painterResource(R.drawable.ic_close), contentDescription = "Close")
+                    }
+                }
+            )
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { inner ->
+        val insets = LocalChromeInsets.current
+
+        LazyColumn(
             modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .fillMaxHeight(0.92f)
-                .shadow(22.dp, RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
-                .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
-                .background(t.surface)
-                .padding(horizontal = 14.dp, vertical = 10.dp)
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) { /* absorb */ },
-            verticalArrangement = Arrangement.Top
+                .fillMaxSize()
+                .padding(inner)
+                .padding(horizontal = 14.dp, vertical = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(bottom = insets.bottom)   // ← only bottom from chrome
         ) {
-            // Header
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    "Education",
-                    color = t.text,
-                    style = MaterialTheme.typography.titleLarge, // was headlineLarge
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.weight(1f)
-                )
-                IconButton(onClick = onDismiss) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_collapse),
-                        tint = t.text.copy(alpha = 0.85f),
-                        contentDescription = "Close"
-                    )
+            // Student record card
+            item {
+                Surface(
+                    color = t.surfaceElevated,
+                    shape = RoundedCornerShape(18.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Column(Modifier.padding(14.dp)) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(44.dp)
+                                    .clip(CircleShape)
+                                    .background(t.primary.copy(alpha = 0.18f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_person),
+                                    contentDescription = null,
+                                    tint = t.primary
+                                )
+                            }
+                            Spacer(Modifier.width(10.dp))
+                            Column(Modifier.weight(1f)) {
+                                Text(
+                                    programTitle,
+                                    color = t.text,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                Text(
+                                    "Student Record",
+                                    color = t.text.copy(alpha = 0.6f),
+                                    style = MaterialTheme.typography.labelMedium
+                                )
+                            }
+                            IconButton(
+                                onClick = { viewModel.handleEvent(EducationEvent.ShowGpaInfo) }
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_info),
+                                    contentDescription = "GPA Info",
+                                    tint = t.accent
+                                )
+                            }
+                        }
+
+                        Spacer(Modifier.height(10.dp))
+
+                        Text(
+                            "Progress: $progressPct%",
+                            color = t.text.copy(alpha = 0.8f),
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                        LinearProgressIndicator(
+                            progress = { progressPct / 100f },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(6.dp)
+                                .clip(RoundedCornerShape(8.dp)),
+                            color = t.primary,
+                            trackColor = t.surfaceVariant
+                        )
+
+                        Spacer(Modifier.height(10.dp))
+
+                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            StatChip(
+                                label = "GPA",
+                                value = gpaText,
+                                tint = t.primary,
+                                container = t.surfaceVariant
+                            )
+                            StatChip(
+                                label = "Standing",
+                                value = standingText,
+                                tint = t.accent,
+                                container = t.surfaceVariant
+                            )
+                        }
+                    }
                 }
             }
 
-            Spacer(Modifier.height(6.dp))
+            // Activities — ACCORDION of categories
+            item {
+                ActivitiesAccordion(
+                    actions = state.actions,
+                    canPerform = enrollment != null,
+                    onPerform = { actionId ->
+                        viewModel.handleEvent(
+                            EducationEvent.DoAction(actionId, "default_choice")
+                        )
+                    }
+                )
+            }
 
-            // Content
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(bottom = 20.dp)
-            ) {
-                // Student record card
-                item {
-                    Surface(
-                        color = t.surfaceElevated,
-                        shape = RoundedCornerShape(18.dp),
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Column(Modifier.padding(14.dp)) {
+            // Catalog
+            item { SectionHeader("Course Catalog", t.text, t.accent) }
+            item {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    state.programs.forEach { program ->
+                        val enrolledHere = enrollment?.programId == program.id
+                        Surface(
+                            color = t.surfaceElevated,
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
                             Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(44.dp) // tighter
-                                        .clip(CircleShape)
-                                        .background(t.primary.copy(alpha = 0.18f)),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.ic_person),
-                                        contentDescription = null,
-                                        tint = t.primary
-                                    )
-                                }
-                                Spacer(Modifier.width(10.dp))
-                                Column(Modifier.weight(1f)) {
-                                    Text(
-                                        programTitle,
-                                        color = t.text,
-                                        style = MaterialTheme.typography.titleMedium, // was headlineSmall
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                    Text(
-                                        "Student Record",
-                                        color = t.text.copy(alpha = 0.6f),
-                                        style = MaterialTheme.typography.labelMedium // was labelLarge
-                                    )
-                                }
-                                IconButton(
-                                    onClick = { viewModel.handleEvent(EducationEvent.ShowGpaInfo) }
-                                ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.ic_info),
-                                        contentDescription = "GPA Info",
-                                        tint = t.accent
-                                    )
-                                }
-                            }
-
-                            Spacer(Modifier.height(10.dp))
-
-                            Text(
-                                "Progress: $progressPct%",
-                                color = t.text.copy(alpha = 0.8f),
-                                style = MaterialTheme.typography.labelMedium
-                            )
-                            LinearProgressIndicator(
-                                progress = { progressPct / 100f }, // lambda form
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(6.dp) // thinner
-                                    .clip(RoundedCornerShape(8.dp)),
-                                color = t.primary,
-                                trackColor = t.surfaceVariant
-                            )
-
-                            Spacer(Modifier.height(10.dp))
-
-                            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                                StatChip(
-                                    label = "GPA",
-                                    value = gpaText,
-                                    tint = t.primary,
-                                    container = t.surfaceVariant
-                                )
-                                StatChip(
-                                    label = "Standing",
-                                    value = standingText,
-                                    tint = t.accent,
-                                    container = t.surfaceVariant
-                                )
-                            }
-                        }
-                    }
-                }
-
-                // Activities — ACCORDION of categories
-                item {
-                    ActivitiesAccordion(
-                        actions = state.actions,
-                        canPerform = enrollment != null,
-                        onPerform = { actionId ->
-                            viewModel.handleEvent(
-                                EducationEvent.DoAction(actionId, "default_choice")
-                            )
-                        }
-                    )
-                }
-
-                // Catalog
-                item { SectionHeader("Course Catalog", t.text, t.accent) }
-                item {
-                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        state.programs.forEach { program ->
-                            val enrolledHere = enrollment?.programId == program.id
-                            Surface(
-                                color = t.surfaceElevated,
-                                shape = RoundedCornerShape(16.dp),
-                                modifier = Modifier.fillMaxWidth()
+                                    .padding(14.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(14.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Column(modifier = Modifier.weight(1f)) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        program.title,
+                                        color = t.text,
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.SemiBold,
+                                        maxLines = 2,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    Spacer(Modifier.height(4.dp))
+                                    Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                                         Text(
-                                            program.title,
-                                            color = t.text,
-                                            style = MaterialTheme.typography.titleMedium, // was titleLarge
-                                            fontWeight = FontWeight.SemiBold,
-                                            maxLines = 2,
-                                            overflow = TextOverflow.Ellipsis
+                                            "Req. GPA ${String.format(Locale.US, "%.2f", program.minGpa)}",
+                                            color = t.text.copy(alpha = 0.75f),
+                                            style = MaterialTheme.typography.bodyMedium
                                         )
-                                        Spacer(Modifier.height(4.dp))
-                                        Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                                            Text(
-                                                "Req. GPA ${String.format(Locale.US, "%.2f", program.minGpa)}",
-                                                color = t.text.copy(alpha = 0.75f),
-                                                style = MaterialTheme.typography.bodyMedium
-                                            )
-                                            Text(
-                                                "Tuition $${program.tuition}",
-                                                color = t.text.copy(alpha = 0.75f),
-                                                style = MaterialTheme.typography.bodyMedium
+                                        Text(
+                                            "Tuition $${program.tuition}",
+                                            color = t.text.copy(alpha = 0.75f),
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+                                    }
+                                }
+
+                                Button(
+                                    onClick = {
+                                        if (!enrolledHere) {
+                                            viewModel.handleEvent(
+                                                EducationEvent.Enroll(program.id)
                                             )
                                         }
-                                    }
-
-                                    Button(
-                                        onClick = {
-                                            if (!enrolledHere) {
-                                                viewModel.handleEvent(
-                                                    EducationEvent.Enroll(program.id)
-                                                )
-                                            }
-                                        },
-                                        enabled = !enrolledHere,
-                                        shape = RoundedCornerShape(10.dp),
-                                        colors = ButtonDefaults.buttonColors(
-                                            containerColor = if (enrolledHere) t.surfaceVariant else t.primary,
-                                            contentColor = if (enrolledHere) t.text.copy(alpha = 0.75f) else Color.White,
-                                            disabledContainerColor = t.surfaceVariant,
-                                            disabledContentColor = t.text.copy(alpha = 0.6f)
-                                        )
-                                    ) { Text(if (enrolledHere) "Enrolled" else "Enroll") }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Transcript
-                item { SectionHeader("Transcript & Honors", t.text, t.accent) }
-                item {
-                    Surface(
-                        color = t.surfaceElevated,
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column(Modifier.padding(14.dp)) {
-                            if (enrollment == null) {
-                                Text(
-                                    "Not enrolled.",
-                                    color = t.text.copy(alpha = 0.75f),
-                                    style = MaterialTheme.typography.bodyMedium // was bodyLarge
-                                )
-                            } else {
-                                Bullet("Enrolled in $programTitle", t)
-                                Bullet("Progress $progressPct%", t)
-                                Bullet("Standing $standingText", t)
+                                    },
+                                    enabled = !enrolledHere,
+                                    shape = RoundedCornerShape(10.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = if (enrolledHere) t.surfaceVariant else t.primary,
+                                        contentColor = if (enrolledHere) t.text.copy(alpha = 0.75f) else Color.White,
+                                        disabledContainerColor = t.surfaceVariant,
+                                        disabledContentColor = t.text.copy(alpha = 0.6f)
+                                    )
+                                ) { Text(if (enrolledHere) "Enrolled" else "Enroll") }
                             }
                         }
                     }
                 }
             }
 
-            // Dialogs
-            if (state.showGpaInfo) {
-                GpaInfoDialog(
-                    show = true,
-                    onDismiss = { viewModel.handleEvent(EducationEvent.HideGpaInfo) }
-                )
-            }
-            if (state.showFailOrRetake) {
-                FailOrRetakeDialog(
-                    onRetake = { viewModel.handleEvent(EducationEvent.ChooseFailOrRetake(true)) },
-                    onFail = { viewModel.handleEvent(EducationEvent.ChooseFailOrRetake(false)) },
-                    onDismiss = { viewModel.handleEvent(EducationEvent.ChooseFailOrRetake(false)) }
-                )
-            }
-
-            // Snackbar
-            val snackbarHostState = remember { SnackbarHostState() }
-            state.message?.let { msg ->
-                LaunchedEffect(msg) {
-                    snackbarHostState.showSnackbar(msg)
-                    viewModel.handleEvent(EducationEvent.DismissMessage)
+            // Transcript
+            item { SectionHeader("Transcript & Honors", t.text, t.accent) }
+            item {
+                Surface(
+                    color = t.surfaceElevated,
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(Modifier.padding(14.dp)) {
+                        if (enrollment == null) {
+                            Text(
+                                "Not enrolled.",
+                                color = t.text.copy(alpha = 0.75f),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        } else {
+                            Bullet("Enrolled in $programTitle", t)
+                            Bullet("Progress $progressPct%", t)
+                            Bullet("Standing $standingText", t)
+                        }
+                    }
                 }
             }
-            Box(Modifier.fillMaxWidth()) {
-                SnackbarHost(
-                    hostState = snackbarHostState,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 6.dp)
-                )
-            }
+        }
+
+        // Dialogs (unchanged visuals; still dim the background while open)
+        if (state.showGpaInfo) {
+            GpaInfoDialog(
+                show = true,
+                onDismiss = { viewModel.handleEvent(EducationEvent.HideGpaInfo) }
+            )
+        }
+        if (state.showFailOrRetake) {
+            FailOrRetakeDialog(
+                onRetake = { viewModel.handleEvent(EducationEvent.ChooseFailOrRetake(true)) },
+                onFail = { viewModel.handleEvent(EducationEvent.ChooseFailOrRetake(false)) },
+                onDismiss = { viewModel.handleEvent(EducationEvent.ChooseFailOrRetake(false)) }
+            )
         }
     }
 }
@@ -344,6 +309,7 @@ private fun ActivitiesAccordion(
     canPerform: Boolean,
     onPerform: (String) -> Unit
 ) {
+    val insets = LocalChromeInsets.current
     val t = LocalLiveonTheme.current
 
     Surface(
@@ -355,7 +321,7 @@ private fun ActivitiesAccordion(
             Text(
                 "Activities & Interests",
                 color = t.text,
-                style = MaterialTheme.typography.titleMedium, // was titleLarge
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
 
@@ -370,13 +336,11 @@ private fun ActivitiesAccordion(
                 return@Column
             }
 
-            // Group actions into friendly categories
             val grouped = remember(actions) {
                 actions.groupBy { actionCategory(it.id, it.title) }
                     .toSortedMap(String.CASE_INSENSITIVE_ORDER)
             }
 
-            // Expansion state per category (default open)
             val expansionKeys = remember(grouped) { grouped.keys.toList() }
             val expanded = rememberSaveable(
                 inputs = arrayOf(expansionKeys),
@@ -387,30 +351,24 @@ private fun ActivitiesAccordion(
                         val restoredTyped = restored as Map<String, Boolean>
                         mutableStateMapOf<String, Boolean>().apply {
                             putAll(restoredTyped)
-                            // NEW categories default to collapsed
                             expansionKeys.forEach { key -> if (key !in this) put(key, false) }
                         }
                     }
                 )
             ) {
                 mutableStateMapOf<String, Boolean>().apply {
-                    // collapsed by default on first creation
                     expansionKeys.forEach { put(it, false) }
                 }
             }
 
-
-            for ((category, itemList) in grouped) { // explicit destructure avoids K type ambiguity
+            for ((category, itemList) in grouped) {
                 Spacer(Modifier.height(4.dp))
 
-                // Category header row
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(12.dp))
-                        .clickable {
-                            expanded[category] = !(expanded[category] ?: true)
-                        }
+                        .clickable { expanded[category] = !(expanded[category] ?: true) }
                         .padding(horizontal = 10.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -428,7 +386,7 @@ private fun ActivitiesAccordion(
                     Text(
                         category,
                         color = t.text,
-                        style = MaterialTheme.typography.titleSmall, // a bit smaller
+                        style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.weight(1f)
                     )
@@ -449,7 +407,7 @@ private fun ActivitiesAccordion(
                         itemList.forEach { action ->
                             ActivityListItem(
                                 title = action.title,
-                                enabled = true, // ViewModel eligibility is enforced when performing
+                                enabled = true,
                                 onClick = { onPerform(action.id) },
                                 leadingIcon = R.drawable.ic_info
                             )
@@ -481,11 +439,12 @@ private fun actionCategory(actionId: String, title: String): String {
 
 @Composable
 private fun SectionHeader(title: String, text: Color, accent: Color) {
+    val insets = LocalChromeInsets.current
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
         Text(
             title,
             color = text,
-            style = MaterialTheme.typography.titleMedium, // smaller
+            style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.weight(1f)
         )
@@ -500,6 +459,8 @@ private fun SectionHeader(title: String, text: Color, accent: Color) {
 
 @Composable
 private fun StatChip(label: String, value: String, tint: Color, container: Color) {
+    val insets = LocalChromeInsets.current
+
     Column(
         modifier = Modifier
             .clip(RoundedCornerShape(12.dp))
@@ -562,6 +523,7 @@ private fun ActivityListItem(
 
 @Composable
 private fun HintPill(text: String) {
+    val insets = LocalChromeInsets.current
     val t = LocalLiveonTheme.current
     Box(
         modifier = Modifier
@@ -575,6 +537,8 @@ private fun HintPill(text: String) {
 
 @Composable
 private fun Bullet(text: String, t: com.liveongames.liveon.ui.theme.LiveonTheme) {
+    val insets = LocalChromeInsets.current
+
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(
             modifier = Modifier
@@ -587,11 +551,12 @@ private fun Bullet(text: String, t: com.liveongames.liveon.ui.theme.LiveonTheme)
     }
 }
 
-/* --- Inline dialogs --- */
+/* --- Inline dialogs (unchanged visuals; still dim background) --- */
 
 @Composable
 private fun GpaInfoDialog(show: Boolean, onDismiss: () -> Unit) {
     if (!show) return
+    val insets = LocalChromeInsets.current
     val t = LocalLiveonTheme.current
     Box(
         modifier = Modifier
@@ -630,6 +595,7 @@ private fun FailOrRetakeDialog(
     onFail: () -> Unit,
     onDismiss: () -> Unit
 ) {
+    val insets = LocalChromeInsets.current
     val t = LocalLiveonTheme.current
     Box(
         modifier = Modifier

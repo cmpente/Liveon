@@ -4,6 +4,7 @@ package com.liveongames.data.db.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.liveongames.domain.model.Crime
+import com.liveongames.domain.model.RiskTier
 
 @Entity(tableName = "crimes")
 data class CrimeEntity(
@@ -12,9 +13,9 @@ data class CrimeEntity(
     val characterId: String,
     val name: String,
     val description: String,
-    val riskTier: String,
+    val riskTier: String,           // stored as enum name
     val notorietyRequired: Int,
-    val baseSuccessChance: Double,
+    val baseSuccessChance: Double,  // stored as 0.0..100.0
     val payoutMin: Int,
     val payoutMax: Int,
     val jailMin: Int,
@@ -22,22 +23,24 @@ data class CrimeEntity(
     val notorietyGain: Int,
     val notorietyLoss: Int,
     val iconDescription: String,
-    val scenario: String,
-    val success: Boolean?,
+    val scenario: String,           // non-null in DB (empty = none)
+    val success: Boolean?,          // last outcome snapshot (optional)
     val caught: Boolean?,
     val moneyGained: Int?,
     val actualJailTime: Int?,
-    val timestamp: Long
+    val timestamp: Long             // last run timestamp (ms)
 )
 
+@Suppress("unused")
 fun CrimeEntity.toCrime(): Crime {
     return Crime(
         id = this.id,
         name = this.name,
         description = this.description,
-        riskTier = com.liveongames.domain.model.RiskTier.valueOf(this.riskTier),
+        riskTier = RiskTier.valueOf(this.riskTier),
         notorietyRequired = this.notorietyRequired,
-        baseSuccessChance = this.baseSuccessChance,
+        // entity Double -> domain Int
+        baseSuccessChance = this.baseSuccessChance.toInt(),
         payoutMin = this.payoutMin,
         payoutMax = this.payoutMax,
         jailMin = this.jailMin,
@@ -45,15 +48,18 @@ fun CrimeEntity.toCrime(): Crime {
         notorietyGain = this.notorietyGain,
         notorietyLoss = this.notorietyLoss,
         iconDescription = this.iconDescription,
+        // DB guarantees non-null; domain allows nullable
         scenario = this.scenario,
         success = this.success,
         caught = this.caught,
         moneyGained = this.moneyGained,
         actualJailTime = this.actualJailTime,
+        // DB non-null; domain allows nullable
         timestamp = this.timestamp
     )
 }
 
+@Suppress("unused")
 fun Crime.toEntity(characterId: String): CrimeEntity {
     return CrimeEntity(
         id = this.id,
@@ -62,7 +68,8 @@ fun Crime.toEntity(characterId: String): CrimeEntity {
         description = this.description,
         riskTier = this.riskTier.name,
         notorietyRequired = this.notorietyRequired,
-        baseSuccessChance = this.baseSuccessChance,
+        // domain Int -> entity Double
+        baseSuccessChance = this.baseSuccessChance.toDouble(),
         payoutMin = this.payoutMin,
         payoutMax = this.payoutMax,
         jailMin = this.jailMin,
@@ -70,11 +77,13 @@ fun Crime.toEntity(characterId: String): CrimeEntity {
         notorietyGain = this.notorietyGain,
         notorietyLoss = this.notorietyLoss,
         iconDescription = this.iconDescription,
-        scenario = this.scenario,
+        // entity expects non-null string
+        scenario = this.scenario ?: "",
         success = this.success,
         caught = this.caught,
         moneyGained = this.moneyGained,
         actualJailTime = this.actualJailTime,
-        timestamp = this.timestamp
+        // entity expects non-null timestamp
+        timestamp = this.timestamp ?: System.currentTimeMillis()
     )
 }

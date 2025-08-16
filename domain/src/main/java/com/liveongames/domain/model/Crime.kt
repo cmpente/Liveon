@@ -1,38 +1,42 @@
-// domain/src/main/java/com/liveongames/domain/model/Crime.kt
 package com.liveongames.domain.model
 
+/**
+ * Domain model for a crime definition (and, optionally, a last-run snapshot).
+ *
+ * NOTE: Some fields (success/caught/moneyGained/actualJailTime/timestamp)
+ * are nullable to support mappers that attach the *last outcome* when
+ * projecting from storage. If you only use static definitions, leave them null.
+ */
 data class Crime(
+    // Definition
     val id: String,
     val name: String,
     val description: String,
     val riskTier: RiskTier,
-    val notorietyRequired: Int,
-    val baseSuccessChance: Double,
-    val payoutMin: Int,
-    val payoutMax: Int,
-    val jailMin: Int,
-    val jailMax: Int,
-    val notorietyGain: Int,
-    val notorietyLoss: Int,
-    val iconDescription: String,
-    val scenario: String,
+    val notorietyRequired: Int = 0,
+    /** Base success chance as a percentage (0..100). */
+    val baseSuccessChance: Int = 50,
+
+    /** Payout range if successful (inclusive). */
+    val payoutMin: Int = 0,
+    val payoutMax: Int = 0,
+
+    /** Jail time range if caught (inclusive), in days (or your chosen unit). */
+    val jailMin: Int = 0,
+    val jailMax: Int = 0,
+
+    /** Notoriety deltas used by your caps logic. */
+    val notorietyGain: Int = 0,
+    val notorietyLoss: Int = 0,
+
+    /** Optional icon/content hints. */
+    val iconDescription: String = "",
+    val scenario: String? = null,
+
+    // Optional last-run snapshot (nullable; safe defaults)
     val success: Boolean? = null,
     val caught: Boolean? = null,
     val moneyGained: Int? = null,
     val actualJailTime: Int? = null,
-    val timestamp: Long = System.currentTimeMillis()
+    val timestamp: Long? = null
 )
-
-enum class RiskTier(
-    val displayName: String,
-    val color: String,
-    val notorietyRequired: Int,
-    val successChanceRange: ClosedFloatingPointRange<Double>,
-    val notorietyGain: Int,
-    val notorietyLoss: Int
-) {
-    LOW_RISK("Low Risk", "Green", 0, 0.6..0.8, 2, -3),
-    MEDIUM_RISK("Medium Risk", "Yellow", 20, 0.5..0.65, 4, -6),
-    HIGH_RISK("High Risk", "Orange", 50, 0.35..0.5, 7, -10),
-    EXTREME_RISK("Extreme Risk", "Red", 80, 0.15..0.4, 10, -15)
-}

@@ -1,0 +1,42 @@
+{
+  "$schema": "liveon/traits.v1",
+  "limits": { "maxSelected": 3, "minSelected": 0 },
+  "traits": [
+    {
+      "id": "t_bookworm",
+      "name": "Bookworm",
+      "desc": "Loves reading; learns faster from study.",
+      "effects": [{ "type": "stat_boost", "key": "intelligence", "amount": 3 }],
+      "excludes": ["t_party_animal"],
+      "tags": ["education"]
+    },
+    {
+      "id": "t_charming",
+      "name": "Charming",
+      "desc": "Turns strangers into friends.",
+      "effects": [{ "type": "stat_boost", "key": "social", "amount": 4 }],
+      "tags": ["social"]
+    },
+    {
+      "id": "t_resilient",
+      "name": "Resilient",
+      "desc": "Bounces back from setbacks.",
+      "effects": [
+        { "type": "stat_boost", "key": "health", "amount": 3 },
+        { "type": "stat_boost", "key": "happiness", "amount": 2 }
+      ],
+      "tags": ["health"]
+    },
+    {
+      "id": "t_party_animal",
+      "name": "Party Animal",
+      "desc": "Life of the party, sometimes at a cost.",
+      "effects": [
+        { "type": "stat_boost", "key": "happiness", "amount": 4 },
+        { "type": "stat_boost", "key": "social", "amount": 2 }
+      ],
+      "excludes": ["t_bookworm"],
+      "tags": ["fun"]
+    }
+  ]
+}

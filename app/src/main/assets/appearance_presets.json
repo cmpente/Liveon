@@ -1,0 +1,12 @@
+{
+  "$schema": "liveon/appearance_presets.v1",
+  "palettes": { "skinTones": ["#F4D1C3","#E4B199","#C5866B","#93573D","#5A3A2A"] },
+  "hairStyles": [
+    { "id": "short_01", "name": "Short Crop" },
+    { "id": "curl_02", "name": "Curly Top" },
+    { "id": "long_03", "name": "Long Waves" }
+  ],
+  "eyeColors": ["Brown","Blue","Green","Hazel"],
+  "hairColors": ["Black","Brown","Blonde","Auburn"],
+  "bodyTypes": ["Average","Athletic","Slim","Stocky"]
+}

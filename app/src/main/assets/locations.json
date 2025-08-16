@@ -1,0 +1,10 @@
+{
+  "$schema": "liveon/locations.v1",
+  "countries": [
+    { "code": "US", "name": "United States", "cities": [
+      { "id": "us_chicago", "name": "Chicago, IL" },
+      { "id": "us_houston", "name": "Houston, TX" },
+      { "id": "us_boise", "name": "Boise, ID" }
+    ] }
+  ]
+}

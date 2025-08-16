@@ -11,6 +11,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.liveongames.liveon.character.PlayerProfile
+import com.liveongames.liveon.character.PlayerStats
+import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class GameViewModel @Inject constructor(
@@ -115,6 +118,60 @@ class GameViewModel @Inject constructor(
                 error = e.message,
                 isLoading = false
             )
+        }
+    }
+
+    fun startNewLife(profile: PlayerProfile, stats: PlayerStats) {
+        viewModelScope.launch {
+            try {
+                // Create a fresh domain Character with the chosen name & stats
+                val character = com.liveongames.domain.model.Character(
+                    id = CHARACTER_ID,
+                    name = "${profile.firstName} ${profile.lastName}",
+                    age = stats.age,
+                    health = stats.health,
+                    happiness = stats.happiness,
+                    money = stats.money,
+                    intelligence = stats.intelligence,
+                    fitness = 10,                 // keep default or derive if you track it
+                    social = stats.social,
+                    education = 0,
+                    career = null,
+                    relationships = emptyList(),
+                    achievements = emptyList(),
+                    events = emptyList(),
+                    jailTime = 0,
+                    notoriety = 0
+                )
+
+                // Overwrite the active character in the repository
+                playerRepository.createCharacter(CHARACTER_ID, character)
+
+                // Hydrate UI immediately
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = null,
+                        playerStats = com.liveongames.domain.model.CharacterStats(
+                            health = stats.health,
+                            happiness = stats.happiness,
+                            intelligence = stats.intelligence,
+                            money = stats.money,
+                            social = stats.social,
+                            age = stats.age
+                        ),
+                        showEventDialog = false,
+                        activeEvents = emptyList()
+                    )
+                }
+
+                // Optionally re-sync from DB (uncomment if you want to verify)
+                // refreshPlayerStats()
+
+            } catch (e: Exception) {
+                Log.e(TAG, "startNewLife error", e)
+                _uiState.update { it.copy(error = e.message) }
+            }
         }
     }
 

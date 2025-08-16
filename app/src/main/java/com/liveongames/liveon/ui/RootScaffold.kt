@@ -11,7 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.liveongames.liveon.ui.screens.CrimeScreen
 import com.liveongames.liveon.ui.screens.education.EducationSheet
-import com.liveongames.liveon.ui.screens.home.LiveonGameScreen
+import com.liveongames.liveon.ui.LiveonGameScreen
 import com.liveongames.liveon.viewmodel.GameViewModel
 
 @Composable
