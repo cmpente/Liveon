@@ -38,9 +38,9 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -86,11 +86,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.drawText
-import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
@@ -112,6 +111,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import kotlin.math.min
+import androidx.compose.material3.ButtonDefaults
 
 /* ---------- file-local types & savers ---------- */
 
@@ -199,7 +199,7 @@ fun CrimeScreen(
                 contentPadding = PaddingValues(bottom = 18.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                items(items = catalog, key = { it.title }) { cat ->
+                itemsIndexed(items = catalog, key = { _, it -> it.title }) { _, cat ->
                     val expanded = expandedCategory == cat.title
                     Accordion(
                         title = cat.title,
@@ -277,7 +277,7 @@ private fun CriminalHeaderCard(
     val streak: Int = remember(records) { computeSuccessStreak(records) }
 
     Surface(
-        color = t.surfaceElevated,
+        color = LocalLiveonTheme.current.surfaceElevated,
         shape = RoundedCornerShape(18.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -291,10 +291,10 @@ private fun CriminalHeaderCard(
             Box(
                 Modifier
                     .size(48.dp)
-                    .background(t.primary.copy(alpha = 0.18f), CircleShape),
+                    .background(LocalLiveonTheme.current.primary.copy(alpha = 0.18f), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(painter = painterResource(R.drawable.ic_person), contentDescription = null, tint = t.primary)
+                Icon(painter = painterResource(R.drawable.ic_person), contentDescription = null, tint = LocalLiveonTheme.current.primary)
             }
 
             Spacer(Modifier.width(12.dp))
@@ -303,7 +303,7 @@ private fun CriminalHeaderCard(
                 if (alias.unlocked) {
                     Text(
                         text = alias.label,
-                        color = t.text,
+                        color = LocalLiveonTheme.current.text,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
                         maxLines = 1,
@@ -312,7 +312,7 @@ private fun CriminalHeaderCard(
                     Spacer(Modifier.height(2.dp))
                     Text(
                         text = rankLabel,
-                        color = t.text.copy(alpha = 0.75f),
+                        color = LocalLiveonTheme.current.text.copy(alpha = 0.75f),
                         style = MaterialTheme.typography.labelMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -320,7 +320,7 @@ private fun CriminalHeaderCard(
                 } else {
                     Text(
                         text = rankLabel,
-                        color = t.text,
+                        color = LocalLiveonTheme.current.text,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
                         maxLines = 1,
@@ -330,24 +330,38 @@ private fun CriminalHeaderCard(
                     LinearProgressIndicator(
                         progress = alias.progress,
                         modifier = Modifier.fillMaxWidth().height(6.dp),
-                        trackColor = t.text.copy(alpha = 0.10f),
-                        color = t.primary
+                        trackColor = LocalLiveonTheme.current.text.copy(alpha = 0.10f),
+                        color = LocalLiveonTheme.current.primary
                     )
                     Spacer(Modifier.height(2.dp))
-                    Text("Alias: locked", color = t.text.copy(alpha = 0.70f), style = MaterialTheme.typography.labelMedium)
+                    Text("Alias: locked", color = LocalLiveonTheme.current.text.copy(alpha = 0.70f), style = MaterialTheme.typography.labelMedium)
                 }
 
                 Spacer(Modifier.height(8.dp))
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    MetaChip(if (specialty != "—") "Specialty $specialty" else "Specialty —")
-                    Spacer(Modifier.width(8.dp))
-                    MetaChip("Streak x$streak")
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    StatBadge(
+                        label = "Specialty",
+                        value = if (specialty != "—") specialty else "—",
+                        modifier = Modifier.weight(1f)
+                    )
+                    StatBadge(
+                        label = "Streak",
+                        value = "x$streak",
+                        modifier = Modifier.widthIn(min = 72.dp)
+                    )
+                    StatBadge(
+                        label = "Heat",
+                        value = if (cdActive) "${cdSecs}s" else "Low",
+                        emphasize = cdActive,
+                        modifier = Modifier.widthIn(min = 64.dp)
+                    )
                 }
             }
-
-            if (cdActive) MetaPill(text = "Heat: ${cdSecs}s", emphasis = true)
-            else MetaPill(text = "Heat: Low", emphasis = false)
         }
     }
 }
@@ -380,19 +394,44 @@ private fun aliasForNotoriety(n: Int): AliasInfo {
     return AliasInfo(false, "", p)
 }
 
-@Composable private fun MetaChip(text: String) {
+@Composable private fun StatBadge(
+    label: String,
+    value: String,
+    emphasize: Boolean = false,
+    modifier: Modifier = Modifier
+) {
     val t = LocalLiveonTheme.current
-    Surface(color = t.surface.copy(alpha = 0.65f), shape = RoundedCornerShape(8.dp), tonalElevation = 1.dp) {
-        Text(text, color = t.text.copy(alpha = 0.85f), style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+    val bg = if (emphasize) Color(0xFFFF7043).copy(alpha = 0.16f) else t.surface.copy(alpha = 0.65f)
+
+    Surface(
+        color = bg,
+        shape = RoundedCornerShape(10.dp),
+        tonalElevation = 1.dp,
+        modifier = modifier.heightIn(min = 32.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = label,
+                color = t.text.copy(alpha = 0.70f),
+                style = MaterialTheme.typography.labelSmall,
+                maxLines = 1
+            )
+            Text(
+                text = value,
+                color = t.text,
+                style = MaterialTheme.typography.labelLarge,
+                fontFamily = FontFamily.Monospace,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
 }
 
-@Composable private fun MetaPill(text: String, emphasis: Boolean) {
-    val t = LocalLiveonTheme.current
-    Surface(color = if (emphasis) Color(0xFFFF7043).copy(alpha = 0.18f) else t.surface.copy(alpha = 0.65f), shape = RoundedCornerShape(99.dp), tonalElevation = 1.dp) {
-        Text(text, color = t.text, style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp))
-    }
-}
 
 /* ============================== Accordion ============================== */
 @Composable
@@ -497,6 +536,11 @@ private fun CrimeListItem(
     val title = getCrimeName(type)
     val subtitle = getCrimeDescShort(getCrimeDesc(type))
 
+    // NEW: local state to gate "initiate" confirmation UI
+    var awaitingConfirm by rememberSaveable(type) { mutableStateOf(false) }
+
+    val rowIsIdle = runState == null && outcome == null
+
     Column {
         CrimeRow(
             iconRes = getCrimeIconRes(type),
@@ -505,59 +549,118 @@ private fun CrimeListItem(
             enabled = enabled,
             textColor = textColor,
             accent = accent
-        ) { if (runState == null && outcome == null) onStart() }
+        ) {
+            if (enabled && rowIsIdle) {
+                // Toggle the confirm panel instead of instantly starting
+                awaitingConfirm = !awaitingConfirm
+            }
+        }
 
         AnimatedVisibility(
-            visible = runState != null || outcome != null,
+            visible = (awaitingConfirm && rowIsIdle) || runState != null || outcome != null,
             enter = fadeIn() + expandVertically(),
             exit = fadeOut() + shrinkVertically()
         ) {
             Column(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp)) {
                 when {
-                    runState != null -> {
-                        val runKey = runState.startedAtMs
+                    // 1) Awaiting confirmation (idle)
+                    awaitingConfirm && rowIsIdle -> {
+                        // A compact confirm card, matching your theme
+                        ElevatedCard(
+                            colors = CardDefaults.elevatedCardColors(
+                                containerColor = textColor.copy(alpha = 0.06f)
+                            )
+                        ) {
+                            Column(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(14.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    "Initiate ${title}?",
+                                    color = textColor,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.SemiBold,
+                                    textAlign = TextAlign.Center
+                                )
+                                Spacer(Modifier.height(6.dp))
+                                Text(
+                                    getCrimeDesc(type),
+                                    color = textColor.copy(alpha = 0.8f),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    textAlign = TextAlign.Center
+                                )
+                                Spacer(Modifier.height(10.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    TextButton(
+                                        onClick = { awaitingConfirm = false },
+                                        modifier = Modifier.weight(1f)
+                                    ) { Text("Close") }
+                                    Button(
+                                        onClick = {
+                                            awaitingConfirm = false
+                                            onStart() // ← beginCrime(type)
+                                        },
+                                        modifier = Modifier.weight(1f),
+                                        shape = RoundedCornerShape(10.dp),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = accent,
+                                            contentColor = Color.Black.copy(alpha = 0.88f)
+                                        )
+                                    ) { Text("Initiate") }
+                                }
+                            }
+                        }
+                    }
 
+                    // 2) Active run
+                    runState != null -> {
+                        // existing in-run UI (marquee, ambient, progress, Back Out)
                         NarrativeMarquee(
-                            runKey = runKey,
+                            runKey = runState.startedAtMs,
                             progress = runState.progress,
                             script = runState.scriptAll,
                             isClimax = runState.phase == CrimeViewModel.Phase.CLIMAX,
                             textColor = textColor
                         )
-
                         Spacer(Modifier.height(6.dp))
-
                         AmbientTicker(
-                            runKey = runKey,
+                            runKey = runState.startedAtMs,
                             ambient = runState.ambientLines,
                             totalDurationMs = runState.durationMs,
                             textColor = textColor
                         )
-
                         Spacer(Modifier.height(6.dp))
-
                         SmoothProgressBar(
                             startedAt = runState.startedAtMs,
                             durationMs = runState.durationMs,
                             track = textColor.copy(alpha = 0.15f),
                             bar = accent
                         )
-
                         Spacer(Modifier.height(10.dp))
-
-                        val showCancel = runState.phase != CrimeViewModel.Phase.SETUP
-                        AnimatedVisibility(visible = showCancel, enter = fadeIn(tween(180)), exit = fadeOut(tween(140))) {
+                        val showBackOut = runState.phase != CrimeViewModel.Phase.SETUP
+                        AnimatedVisibility(visible = showBackOut) {
                             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                                 Spacer(Modifier.weight(1f))
-                                HoldToCancelButton(label = "Cancel", onConfirmed = onCancel, textColor = textColor)
+                                HoldToBackOutButton(
+                                    label = "Back Out",
+                                    onConfirmed = onCancel,
+                                    textColor = textColor
+                                )
                             }
                         }
                     }
+
+                    // 3) Outcome
                     outcome != null -> {
                         OutcomeReveal(
                             outcome = outcome,
                             onClose = onDismissOutcome,
-                            onRetry = onStart,
                             textColor = textColor
                         )
                     }
@@ -577,7 +680,7 @@ private fun NarrativeMarquee(
     textColor: Color
 ) {
     val style = MaterialTheme.typography.bodyMedium
-    val measurer = rememberTextMeasurer()
+    val measurer = androidx.compose.ui.text.rememberTextMeasurer()
     val lineHeight = with(LocalDensity.current) { style.lineHeight.toDp() }
     val reservedHeight = lineHeight * 1.2f
 
@@ -728,7 +831,6 @@ private fun SmoothProgressBar(startedAt: Long, durationMs: Long, track: Color, b
 private fun OutcomeReveal(
     outcome: com.liveongames.liveon.viewmodel.CrimeViewModel.OutcomeEvent,
     onClose: () -> Unit,
-    onRetry: () -> Unit,
     textColor: Color
 ) {
     val wash = outcomeColor(outcome).copy(alpha = 0.10f)
@@ -740,11 +842,39 @@ private fun OutcomeReveal(
     )
     LaunchedEffect(Unit) { start = false }
 
-    ElevatedCard(colors = CardDefaults.elevatedCardColors(containerColor = textColor.copy(alpha = 0.06f))) {
-        Box(Modifier.background(wash).graphicsLayer { translationY = transY }) {
+    ElevatedCard(
+        colors = CardDefaults.elevatedCardColors(containerColor = textColor.copy(alpha = 0.06f)),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Box(
+            Modifier
+                .background(wash)
+                .graphicsLayer { translationY = transY }
+                .heightIn(min = 140.dp) // enough height to center content nicely
+                .fillMaxWidth()
+        ) {
+            // Close icon (corner)
+            IconButton(
+                onClick = onClose,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(4.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_close),
+                    contentDescription = "Close",
+                    tint = outcomeColor(outcome)
+                )
+            }
+
+            // Centered content
             Column(
-                modifier = Modifier.padding(14.dp).fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 14.dp, vertical = 16.dp)
+                    .align(Alignment.Center),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
                 val resultLabel = when {
                     outcome.wasCaught -> "Caught"
@@ -752,18 +882,24 @@ private fun OutcomeReveal(
                     outcome.success -> "Partial Success"
                     else -> "Failed"
                 }
-                Text(resultLabel, fontWeight = FontWeight.SemiBold, color = outcomeColor(outcome), textAlign = TextAlign.Center)
+                Text(
+                    resultLabel,
+                    fontWeight = FontWeight.SemiBold,
+                    color = outcomeColor(outcome),
+                    textAlign = TextAlign.Center
+                )
                 Spacer(Modifier.height(6.dp))
-                Text(outcome.climaxLine.ifBlank { "It’s done." }, color = textColor, style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center)
+                Text(
+                    outcome.climaxLine.ifBlank { "It’s done." },
+                    color = textColor,
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center
+                )
                 Spacer(Modifier.height(8.dp))
-                if (outcome.moneyGained > 0) Text("Payout: \$${outcome.moneyGained}", color = textColor.copy(alpha = 0.9f), textAlign = TextAlign.Center)
-                if (outcome.jailDays > 0) Text("Jail time: ${outcome.jailDays} day(s)", color = textColor.copy(alpha = 0.9f), textAlign = TextAlign.Center)
-                Spacer(Modifier.height(10.dp))
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                    TextButton(onClick = onClose) { Text("Close") }
-                    Spacer(Modifier.width(8.dp))
-                    Button(onClick = onRetry) { Text("Try again") }
-                }
+                if (outcome.moneyGained > 0)
+                    Text("Payout: \$${outcome.moneyGained}", color = textColor.copy(alpha = 0.9f), textAlign = TextAlign.Center)
+                if (outcome.jailDays > 0)
+                    Text("Jail time: ${outcome.jailDays} day(s)", color = textColor.copy(alpha = 0.9f), textAlign = TextAlign.Center)
             }
         }
     }
@@ -777,27 +913,41 @@ private fun outcomeColor(outcome: com.liveongames.liveon.viewmodel.CrimeViewMode
         else -> Color(0xFFFFC107)
     }
 
-/* ============================== Hold-to-cancel ============================== */
+/* ============================== Hold-to-back-out ============================== */
 @Composable
-private fun HoldToCancelButton(label: String, onConfirmed: () -> Unit, textColor: Color, holdMillis: Long = 800L) {
+private fun HoldToBackOutButton(label: String, onConfirmed: () -> Unit, textColor: Color, holdMillis: Long = 800L) {
     var show by remember { mutableStateOf(false) }
     TextButton(onClick = { show = true }) { Text(label) }
     if (show) {
-        HoldToConfirmDialog(onDismiss = { show = false }, onConfirmed = { show = false; onConfirmed() }, textColor = textColor, holdMillis = holdMillis)
+        HoldToConfirmDialog(
+            title = "Hold to back out",
+            message = "Press and hold to back out of this crime.",
+            onDismiss = { show = false },
+            onConfirmed = { show = false; onConfirmed() },
+            textColor = textColor,
+            holdMillis = holdMillis
+        )
     }
 }
 
 @Composable
-private fun HoldToConfirmDialog(onDismiss: () -> Unit, onConfirmed: () -> Unit, textColor: Color, holdMillis: Long) {
+private fun HoldToConfirmDialog(
+    title: String,
+    message: String,
+    onDismiss: () -> Unit,
+    onConfirmed: () -> Unit,
+    textColor: Color,
+    holdMillis: Long
+) {
     var progress by remember { mutableStateOf(0f) }
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {},
         dismissButton = { TextButton(onClick = onDismiss) { Text("Back") } },
-        title = { Text("Hold to cancel", color = textColor) },
+        title = { Text(title, color = textColor) },
         text = {
             Column {
-                Text("Press and hold to abort this crime.", color = textColor.copy(alpha = 0.8f), style = MaterialTheme.typography.bodyMedium)
+                Text(message, color = textColor.copy(alpha = 0.8f), style = MaterialTheme.typography.bodyMedium)
                 Spacer(Modifier.height(12.dp))
                 HoldBar(progress = progress, onProgress = { progress = it }, onComplete = { progress = 0f; onConfirmed() }, textColor = textColor, holdMillis = holdMillis)
             }
