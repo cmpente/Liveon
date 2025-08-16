@@ -1,8 +1,10 @@
 // app/src/main/java/com/liveongames/liveon/ui/screens/CrimeScreen.kt
+
 package com.liveongames.liveon.ui.screens
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.Spring
@@ -14,6 +16,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -30,19 +33,26 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -70,18 +80,19 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.drawText
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -94,12 +105,18 @@ import com.liveongames.liveon.util.getCrimeDesc
 import com.liveongames.liveon.util.getCrimeDescShort
 import com.liveongames.liveon.util.getCrimeIconRes
 import com.liveongames.liveon.util.getCrimeName
-import com.liveongames.liveon.util.rankForNotoriety
 import com.liveongames.liveon.viewmodel.CrimeViewModel
 import com.liveongames.liveon.viewmodel.CrimeViewModel.CrimeType
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import kotlin.math.min
 
-/* kept for future per-phase weighting if you want it later */
+/* ---------- file-local types & savers ---------- */
+
+private enum class RecordFilter { ALL, SUCCESS, FAIL, CAUGHT }
+
 private data class RevealPlan(val setupEnd: Float, val execEnd: Float, val climaxEnd: Float)
 private val RevealPlanSaver: Saver<RevealPlan, FloatArray> = Saver(
     save = { floatArrayOf(it.setupEnd, it.execEnd, it.climaxEnd) },
@@ -167,23 +184,12 @@ fun CrimeScreen(
             }
             Spacer(Modifier.height(6.dp))
 
-            // 1) Criminal Card (no notoriety here)
-            Surface(color = t.surfaceElevated, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
-                Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Box(Modifier.size(44.dp).background(t.primary.copy(alpha = 0.18f), CircleShape), contentAlignment = Alignment.Center) {
-                        Icon(painter = painterResource(R.drawable.ic_person), contentDescription = null, tint = t.primary)
-                    }
-                    Spacer(Modifier.width(10.dp))
-                    Column(Modifier.weight(1f)) {
-                        Text(rankForNotoriety(notoriety), color = t.text, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        Text("Criminal Profile", color = t.text.copy(alpha = 0.6f), style = MaterialTheme.typography.labelMedium)
-                    }
-                    if (isGlobalLock) {
-                        val secs = ((((cooldownUntil ?: 0L) - System.currentTimeMillis()) / 1000).toInt()).coerceAtLeast(0)
-                        Text("Locked ${secs}s", color = t.text.copy(alpha = 0.75f), style = MaterialTheme.typography.labelMedium)
-                    }
-                }
-            }
+            // 1) Criminal Card
+            CriminalHeaderCard(
+                notoriety = notoriety,
+                cooldownUntil = cooldownUntil,
+                records = records
+            )
 
             Spacer(Modifier.height(10.dp))
 
@@ -231,10 +237,16 @@ fun CrimeScreen(
                     }
                 }
 
-                // 5) Criminal Record
-                item { Spacer(Modifier.height(6.dp)); SectionHeader("Criminal Record", t.text) }
-                items(items = sortedRecords, key = { it.id }) { rec -> CrimeRecordRow(rec) }
-                item { Spacer(Modifier.height(12.dp)) }
+                // 5) Rap-Sheet (contained card)
+                item {
+                    Spacer(Modifier.height(12.dp))
+                    CriminalRecordSection(
+                        records = sortedRecords,
+                        deltaFor = { rec -> viewModel.effectiveNotorietyForRecord(rec) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(Modifier.height(16.dp))
+                }
             }
         }
 
@@ -243,6 +255,142 @@ fun CrimeScreen(
         AnimatedVisibility(visible = flashOverlay, enter = fadeIn(tween(60)), exit = fadeOut(tween(60))) {
             Box(Modifier.fillMaxSize().background(flashColor.copy(alpha = 0.25f)))
         }
+    }
+}
+
+/* ============================== Top Card ============================== */
+
+@Composable
+private fun CriminalHeaderCard(
+    notoriety: Int,
+    cooldownUntil: Long?,
+    records: List<CrimeRecordEntry>
+) {
+    val t = LocalLiveonTheme.current
+    val now = System.currentTimeMillis()
+    val cdActive = (cooldownUntil ?: 0L) > now
+    val cdSecs = if (cdActive) (((cooldownUntil ?: 0L) - now) / 1000).coerceAtLeast(0) else 0
+
+    val alias = remember(notoriety) { aliasForNotoriety(notoriety) }
+    val rankLabel = remember(notoriety) { topCardRankFor(notoriety) } // "Lookout" first tier
+    val specialty: String = remember(records) { deriveSpecialty(records) }
+    val streak: Int = remember(records) { computeSuccessStreak(records) }
+
+    Surface(
+        color = t.surfaceElevated,
+        shape = RoundedCornerShape(18.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Avatar
+            Box(
+                Modifier
+                    .size(48.dp)
+                    .background(t.primary.copy(alpha = 0.18f), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(painter = painterResource(R.drawable.ic_person), contentDescription = null, tint = t.primary)
+            }
+
+            Spacer(Modifier.width(12.dp))
+
+            Column(Modifier.weight(1f)) {
+                if (alias.unlocked) {
+                    Text(
+                        text = alias.label,
+                        color = t.text,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        text = rankLabel,
+                        color = t.text.copy(alpha = 0.75f),
+                        style = MaterialTheme.typography.labelMedium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                } else {
+                    Text(
+                        text = rankLabel,
+                        color = t.text,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    LinearProgressIndicator(
+                        progress = alias.progress,
+                        modifier = Modifier.fillMaxWidth().height(6.dp),
+                        trackColor = t.text.copy(alpha = 0.10f),
+                        color = t.primary
+                    )
+                    Spacer(Modifier.height(2.dp))
+                    Text("Alias: locked", color = t.text.copy(alpha = 0.70f), style = MaterialTheme.typography.labelMedium)
+                }
+
+                Spacer(Modifier.height(8.dp))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    MetaChip(if (specialty != "—") "Specialty $specialty" else "Specialty —")
+                    Spacer(Modifier.width(8.dp))
+                    MetaChip("Streak x$streak")
+                }
+            }
+
+            if (cdActive) MetaPill(text = "Heat: ${cdSecs}s", emphasis = true)
+            else MetaPill(text = "Heat: Low", emphasis = false)
+        }
+    }
+}
+
+private fun topCardRankFor(n: Int): String = when {
+    n < 5   -> "Lookout"        // changed from "Greenhorn"
+    n < 12  -> "Pickpocket"
+    n < 25  -> "Hustler"
+    n < 40  -> "Enforcer"
+    n < 55  -> "Fixer"
+    n < 72  -> "Shot Caller"
+    n < 90  -> "Capo"
+    else    -> "Kingpin"
+}
+
+private data class AliasInfo(val unlocked: Boolean, val label: String, val progress: Float)
+private fun aliasForNotoriety(n: Int): AliasInfo {
+    val tiers = listOf(
+        10 to "The Red Viper",
+        25 to "The Ghost",
+        40 to "Iron Jackal",
+        60 to "Night Magistrate",
+        80 to "Kingmaker",
+        100 to "The Untouchable"
+    )
+    val unlocked = tiers.lastOrNull { n >= it.first }?.second
+    if (unlocked != null) return AliasInfo(true, unlocked, 1f)
+    val next = tiers.first().first
+    val p = (n.toFloat() / next.toFloat()).coerceIn(0f, 1f)
+    return AliasInfo(false, "", p)
+}
+
+@Composable private fun MetaChip(text: String) {
+    val t = LocalLiveonTheme.current
+    Surface(color = t.surface.copy(alpha = 0.65f), shape = RoundedCornerShape(8.dp), tonalElevation = 1.dp) {
+        Text(text, color = t.text.copy(alpha = 0.85f), style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+    }
+}
+
+@Composable private fun MetaPill(text: String, emphasis: Boolean) {
+    val t = LocalLiveonTheme.current
+    Surface(color = if (emphasis) Color(0xFFFF7043).copy(alpha = 0.18f) else t.surface.copy(alpha = 0.65f), shape = RoundedCornerShape(99.dp), tonalElevation = 1.dp) {
+        Text(text, color = t.text, style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp))
     }
 }
 
@@ -278,10 +426,7 @@ private fun Accordion(
                         Text(subTitle, color = textColor.copy(alpha = 0.70f), fontSize = 13.sp)
                     }
                 }
-                Icon(
-                    painter = painterResource(id = if (expanded) R.drawable.ic_expand_less else R.drawable.ic_expand_more),
-                    contentDescription = null, tint = textColor
-                )
+                Icon(painter = painterResource(id = if (expanded) R.drawable.ic_expand_less else R.drawable.ic_expand_more), contentDescription = null, tint = textColor)
             }
             AnimatedVisibility(
                 visible = expanded,
@@ -372,7 +517,6 @@ private fun CrimeListItem(
                     runState != null -> {
                         val runKey = runState.startedAtMs
 
-                        // Main narrative: mask-reveal + smooth right-edge scroll tied to overall progress
                         NarrativeMarquee(
                             runKey = runKey,
                             progress = runState.progress,
@@ -383,7 +527,6 @@ private fun CrimeListItem(
 
                         Spacer(Modifier.height(6.dp))
 
-                        // Ambient (italic, forward-only, reserved height)
                         AmbientTicker(
                             runKey = runKey,
                             ambient = runState.ambientLines,
@@ -393,7 +536,6 @@ private fun CrimeListItem(
 
                         Spacer(Modifier.height(6.dp))
 
-                        // Progress bar only (no phase labels)
                         SmoothProgressBar(
                             startedAt = runState.startedAtMs,
                             durationMs = runState.durationMs,
@@ -403,7 +545,6 @@ private fun CrimeListItem(
 
                         Spacer(Modifier.height(10.dp))
 
-                        // Cancel: fades in once execution begins (no phase text)
                         val showCancel = runState.phase != CrimeViewModel.Phase.SETUP
                         AnimatedVisibility(visible = showCancel, enter = fadeIn(tween(180)), exit = fadeOut(tween(140))) {
                             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -426,12 +567,12 @@ private fun CrimeListItem(
     }
 }
 
-/* ============== Narrative: mask reveal + smooth scroll (no typewriter) ============== */
+/* ============== Narrative: ghost-write + smooth scroll (no typewriter) ============== */
 @Composable
 private fun NarrativeMarquee(
     runKey: Long,
-    progress: Float,          // total crime progress 0..1
-    script: String,           // frozen paragraph (setup+execution)
+    progress: Float,
+    script: String,
     isClimax: Boolean,
     textColor: Color
 ) {
@@ -440,7 +581,6 @@ private fun NarrativeMarquee(
     val lineHeight = with(LocalDensity.current) { style.lineHeight.toDp() }
     val reservedHeight = lineHeight * 1.2f
 
-    // Measure FULL paragraph once per change
     val layout = remember(runKey, script) {
         measurer.measure(
             AnnotatedString(script),
@@ -450,7 +590,6 @@ private fun NarrativeMarquee(
     }
     val textWidthPx = layout.size.width.toFloat()
 
-    // Reveal width grows linearly with progress; never less than a hair once progress > 0
     val revealPxRaw = textWidthPx * progress.coerceIn(0f, 1f)
     val revealPx = if (progress > 0f) maxOf(revealPxRaw, 2f) else 0f
 
@@ -460,8 +599,6 @@ private fun NarrativeMarquee(
             .height(reservedHeight)
     ) {
         val viewport = with(LocalDensity.current) { maxWidth.toPx() }
-
-        // Scroll keeps RIGHT edge of the reveal in view
         val targetScroll = (revealPx - viewport).coerceAtLeast(0f)
         val scroll by animateFloatAsState(
             targetValue = targetScroll,
@@ -469,7 +606,7 @@ private fun NarrativeMarquee(
             label = "narrative-scroll"
         )
 
-        // BACK layer (dim, full paragraph — readability)
+        // Back (dim, full paragraph)
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -482,7 +619,7 @@ private fun NarrativeMarquee(
                 }
         )
 
-        // FRONT layer (mask-revealed up to 'revealPx')
+        // Front (revealed portion)
         val leftFade = with(LocalDensity.current) { 16.dp.toPx() }
         val rightFade = with(LocalDensity.current) { 24.dp.toPx() }
         Box(
@@ -490,19 +627,12 @@ private fun NarrativeMarquee(
                 .fillMaxSize()
                 .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
                 .drawWithContent {
-                    // Clip to the reveal boundary in viewport space
                     val clipRight = min(viewport, (revealPx - scroll).coerceAtLeast(0f))
                     if (clipRight > 0f) {
                         clipRect(left = 0f, top = 0f, right = clipRight, bottom = size.height) {
-                            drawText(
-                                textLayoutResult = layout,
-                                topLeft = Offset(-scroll, 0f),
-                                color = textColor
-                            )
+                            drawText(textLayoutResult = layout, topLeft = Offset(-scroll, 0f), color = textColor)
                         }
                     }
-
-                    // Edge fades (older text vanishes left, new text ghosts right)
                     // Left fade
                     drawRect(
                         brush = Brush.horizontalGradient(
@@ -527,7 +657,6 @@ private fun NarrativeMarquee(
                 }
         )
 
-        // Climax tension indicator at far right (tightening ellipsis)
         if (isClimax) {
             val ls = (lerp(6f, 0f, progress.coerceIn(0f, 1f))).sp
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
@@ -539,7 +668,7 @@ private fun NarrativeMarquee(
 
 private fun lerp(a: Float, b: Float, t: Float): Float = a + (b - a) * t
 
-/* ======================= Ambient (italic, forward-only) ======================= */
+/* ======================= Ambient (italic, forward-only, no repeats) ======================= */
 @Composable
 private fun AmbientTicker(
     runKey: Long,
@@ -555,7 +684,6 @@ private fun AmbientTicker(
     val clean = remember(ambient) { ambient.filter { it.isNotBlank() }.distinct() }
     if (clean.isEmpty()) { Box(Modifier.fillMaxWidth().height(boxHeight)); return }
 
-    // Show each ambient line once; cadence clamped to ~2–3s per line
     val stepMs = if (clean.size > 1) {
         (totalDurationMs.toFloat() / clean.size.toFloat()).coerceIn(2000f, 3000f).toLong()
     } else totalDurationMs
@@ -618,7 +746,6 @@ private fun OutcomeReveal(
                 modifier = Modifier.padding(14.dp).fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // outcome label (centered)
                 val resultLabel = when {
                     outcome.wasCaught -> "Caught"
                     outcome.success && outcome.moneyGained > 0 -> "Success"
@@ -632,10 +759,7 @@ private fun OutcomeReveal(
                 if (outcome.moneyGained > 0) Text("Payout: \$${outcome.moneyGained}", color = textColor.copy(alpha = 0.9f), textAlign = TextAlign.Center)
                 if (outcome.jailDays > 0) Text("Jail time: ${outcome.jailDays} day(s)", color = textColor.copy(alpha = 0.9f), textAlign = TextAlign.Center)
                 Spacer(Modifier.height(10.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                     TextButton(onClick = onClose) { Text("Close") }
                     Spacer(Modifier.width(8.dp))
                     Button(onClick = onRetry) { Text("Try again") }
@@ -715,38 +839,282 @@ private fun HoldBar(progress: Float, onProgress: (Float) -> Unit, onComplete: ()
     }
 }
 
-/* ============================== Records & Header ============================== */
-@Composable
-private fun CrimeRecordRow(rec: CrimeRecordEntry) {
-    val t = LocalLiveonTheme.current
-    val type = parseCrimeType(rec.typeKey)
-    val name = type?.let { getCrimeName(it) } ?: rec.typeKey
-    val category = type?.let { categoryLabelFor(it) } ?: "—"
-    val outcome = when { rec.caught -> "Caught"; rec.success -> "Success"; else -> "Failed" }
+/* ============================== Records: Rap-Sheet Section ============================== */
 
-    Surface(color = t.surfaceElevated, shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
-        Column(Modifier.padding(12.dp)) {
-            Text("$name • $outcome", color = t.text, style = MaterialTheme.typography.bodyMedium)
-            Spacer(Modifier.height(2.dp))
-            Text("Category: $category", color = t.text.copy(alpha = 0.75f), style = MaterialTheme.typography.labelMedium)
-            Spacer(Modifier.height(6.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (rec.money > 0) Text("+$${rec.money}", color = t.text.copy(alpha = 0.85f), style = MaterialTheme.typography.labelMedium)
-                if (rec.jailDays > 0) { if (rec.money > 0) Spacer(Modifier.width(12.dp)); Text("Jail: ${rec.jailDays}d", color = t.text.copy(alpha = 0.85f), style = MaterialTheme.typography.labelMedium) }
+@Composable
+private fun CriminalRecordSection(
+    records: List<CrimeRecordEntry>,
+    deltaFor: (CrimeRecordEntry) -> Int?,
+    modifier: Modifier = Modifier
+) {
+    val t = LocalLiveonTheme.current
+
+    var filter by rememberSaveable { mutableStateOf(RecordFilter.ALL) }
+
+    val filtered = remember(records, filter) {
+        records.filter { r ->
+            when (filter) {
+                RecordFilter.ALL -> true
+                RecordFilter.SUCCESS -> r.success && !r.caught
+                RecordFilter.FAIL -> !r.success && !r.caught
+                RecordFilter.CAUGHT -> r.caught
             }
+        }.sortedByDescending { it.timestamp }
+    }
+
+    var visible by rememberSaveable { mutableStateOf(12) }
+    val show = filtered.take(visible)
+    val hasMore = filtered.size > show.size
+
+    ElevatedCard(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.elevatedCardColors(containerColor = t.surfaceElevated)
+    ) {
+        Row(
+            Modifier.fillMaxWidth().padding(start = 14.dp, top = 12.dp, end = 8.dp, bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Criminal Record", color = t.text, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                RecordFilterChip("All", filter == RecordFilter.ALL) { filter = RecordFilter.ALL }
+                RecordFilterChip("Success", filter == RecordFilter.SUCCESS) { filter = RecordFilter.SUCCESS }
+                RecordFilterChip("Fail", filter == RecordFilter.FAIL) { filter = RecordFilter.FAIL }
+                RecordFilterChip("Caught", filter == RecordFilter.CAUGHT) { filter = RecordFilter.CAUGHT }
+            }
+        }
+        Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+
+        val listState = rememberLazyListState()
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .heightIn(min = 220.dp, max = 280.dp)
+        ) {
+            if (show.isEmpty()) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No entries yet", color = t.text.copy(alpha = 0.6f), style = MaterialTheme.typography.bodyMedium)
+                }
+            } else {
+                LazyColumn(state = listState, contentPadding = PaddingValues(vertical = 6.dp)) {
+                    val byYear: Map<Int, List<CrimeRecordEntry>> = show.groupBy { yearOf(it.timestamp) }
+                    val years: List<Int> = byYear.keys.sortedDescending()
+
+                    for (year in years) {
+                        val yearList: List<CrimeRecordEntry> = byYear[year] ?: emptyList()
+                        stickyHeaderCompat {
+                            YearHeader(year = year, surfaceColor = t.surfaceElevated, textColor = t.text)
+                        }
+                        itemsIndexed(
+                            items = yearList,
+                            key = { _, rec -> rec.id }
+                        ) { _, rec ->
+                            RapSheetRow(rec = rec, deltaFor = deltaFor)
+                            Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
+                        }
+                    }
+
+                    if (hasMore) {
+                        item {
+                            TextButton(onClick = { visible += 12 }, modifier = Modifier.fillMaxWidth().padding(6.dp)) {
+                                Text("Show older…", color = t.text)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        Spacer(Modifier.height(8.dp))
+    }
+}
+
+// Compose 1.6.8 fallback: renders a normal item; swap to stickyHeader when available.
+private fun LazyListScope.stickyHeaderCompat(
+    content: @Composable () -> Unit
+) {
+    item(key = "hdr-${content.hashCode()}") { content() }
+}
+
+@Composable
+private fun YearHeader(year: Int, surfaceColor: Color, textColor: Color) {
+    Surface(
+        color = surfaceColor.copy(alpha = 0.92f),
+        tonalElevation = 2.dp,
+    ) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f))
+                .padding(horizontal = 12.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("— $year —", color = textColor.copy(alpha = 0.8f), style = MaterialTheme.typography.labelLarge, fontFamily = FontFamily.Monospace)
         }
     }
 }
 
 @Composable
-private fun SectionHeader(title: String, text: Color) {
-    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Text(title, color = text, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
-        Box(Modifier.height(2.dp).width(40.dp).background(text.copy(alpha = 0.25f), RoundedCornerShape(2.dp)))
+private fun RecordFilterChip(label: String, selected: Boolean, onClick: () -> Unit) {
+    FilterChip(
+        selected = selected,
+        onClick = onClick,
+        label = { Text(label) },
+        colors = FilterChipDefaults.filterChipColors(
+            selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f),
+            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f),
+            labelColor = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    )
+}
+
+@Composable
+private fun RapSheetRow(
+    rec: CrimeRecordEntry,
+    deltaFor: (CrimeRecordEntry) -> Int?
+) {
+    val t = LocalLiveonTheme.current
+    val type = parseCrimeType(rec.typeKey)
+    val name = type?.let { getCrimeName(it) } ?: rec.typeKey
+    val category = type?.let { categoryLabelFor(it) } ?: "—"
+
+    val sdf = remember { SimpleDateFormat("MM/dd", Locale.getDefault()) }
+    val date = remember(rec.timestamp) { sdf.format(Date(rec.timestamp)) }
+
+    val (dispositionLabel, dispColor) = when {
+        rec.caught -> "CAUGHT" to Color(0xFFE53935)
+        rec.success && rec.money > 0 -> "SUCCESS" to Color(0xFF2E7D32)
+        rec.success -> "PARTIAL" to Color(0xFF1976D2)
+        else -> "FAIL" to Color(0xFFFFA000)
+    }
+
+    val notorietyDelta = remember(rec.id) { deltaFor(rec) }
+
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Surface(
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+            shape = RoundedCornerShape(6.dp),
+            tonalElevation = 1.dp
+        ) {
+            Text(
+                text = date,
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                color = t.text.copy(alpha = 0.8f),
+                style = MaterialTheme.typography.labelMedium,
+                fontFamily = FontFamily.Monospace
+            )
+        }
+
+        Spacer(Modifier.width(10.dp))
+
+        Column(Modifier.weight(1f)) {
+            Text(
+                text = name,
+                color = t.text,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = category,
+                    color = t.text.copy(alpha = 0.65f),
+                    style = MaterialTheme.typography.labelMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
+                )
+                Crossfade(targetState = notorietyDelta, label = "noto-xfade") { nd ->
+                    Text(
+                        text = when {
+                            nd == null -> "N ±—"
+                            nd >= 0 -> "N +$nd"
+                            else -> "N $nd"
+                        },
+                        color = when {
+                            nd == null -> t.text.copy(alpha = 0.6f)
+                            nd >= 0 -> Color(0xFF2E7D32)
+                            else -> Color(0xFFE53935)
+                        },
+                        style = MaterialTheme.typography.labelMedium,
+                        fontFamily = FontFamily.Monospace
+                    )
+                }
+            }
+        }
+
+        Surface(
+            color = dispColor.copy(alpha = 0.14f),
+            border = BorderStroke(1.dp, dispColor.copy(alpha = 0.6f)),
+            shape = RoundedCornerShape(20.dp)
+        ) {
+            Text(
+                text = dispositionLabel,
+                color = dispColor,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+            )
+        }
     }
 }
 
-/* ============================== Catalog & Helpers ============================== */
+/* ---------- Pure helpers ---------- */
+
+private fun parseCrimeType(typeKey: String): CrimeType? =
+    runCatching { CrimeType.valueOf(typeKey) }.getOrNull()
+
+private fun categoryLabelFor(type: CrimeType): String = when (type) {
+    CrimeType.PICKPOCKETING, CrimeType.SHOPLIFTING, CrimeType.VANDALISM, CrimeType.PETTY_SCAM -> "Street Crimes"
+    CrimeType.MUGGING, CrimeType.BREAKING_AND_ENTERING, CrimeType.DRUG_DEALING, CrimeType.COUNTERFEIT_GOODS -> "Robbery"
+    CrimeType.BURGLARY, CrimeType.FRAUD, CrimeType.ARMS_SMUGGLING, CrimeType.DRUG_TRAFFICKING -> "Heists & Smuggling"
+    else -> "Mastermind Tier"
+}
+
+/** Returns the player’s most common category across records, as a short label. */
+private fun deriveSpecialty(records: List<CrimeRecordEntry>): String {
+    if (records.isEmpty()) return "—"
+    val counts = mutableMapOf<String, Int>()
+    for (rec in records) {
+        val type = parseCrimeType(rec.typeKey) ?: continue
+        val cat = categoryLabelFor(type)
+        val short = when (cat) {
+            "Street Crimes" -> "Street"
+            "Robbery" -> "Robbery"
+            "Heists & Smuggling" -> "Heists"
+            "Mastermind Tier" -> "Mastermind"
+            else -> cat
+        }
+        counts[short] = (counts[short] ?: 0) + 1
+    }
+    return counts.maxByOrNull { it.value }?.key ?: "—"
+}
+
+/** Counts the number of most-recent consecutive successes (not caught). */
+private fun computeSuccessStreak(records: List<CrimeRecordEntry>): Int {
+    if (records.isEmpty()) return 0
+    val sorted = records.sortedByDescending { it.timestamp }
+    var streak = 0
+    for (r in sorted) {
+        val ok = r.success && !r.caught
+        if (ok) streak++ else break
+    }
+    return streak
+}
+
+private fun yearOf(ts: Long): Int {
+    val cal = Calendar.getInstance().apply { timeInMillis = ts }
+    return cal.get(Calendar.YEAR)
+}
+
+/* ============================== Catalog & Accents ============================== */
 private data class CrimeUiItem(val type: CrimeType)
 private data class CrimeSubcat(val title: String, val items: List<CrimeUiItem>)
 private data class CrimeCat(val title: String, val subtitle: String, val subs: List<CrimeSubcat>)
@@ -754,42 +1122,41 @@ private data class CrimeCat(val title: String, val subtitle: String, val subs: L
 private fun buildCrimeCatalog(): List<CrimeCat> = listOf(
     CrimeCat("Street Crimes", "Safer, modest gains", subs = listOf(
         CrimeSubcat("", listOf(
-            CrimeUiItem(CrimeViewModel.CrimeType.PICKPOCKETING),
-            CrimeUiItem(CrimeViewModel.CrimeType.SHOPLIFTING),
-            CrimeUiItem(CrimeViewModel.CrimeType.VANDALISM),
-            CrimeUiItem(CrimeViewModel.CrimeType.PETTY_SCAM)
+            CrimeUiItem(CrimeType.PICKPOCKETING),
+            CrimeUiItem(CrimeType.SHOPLIFTING),
+            CrimeUiItem(CrimeType.VANDALISM),
+            CrimeUiItem(CrimeType.PETTY_SCAM)
         ))
     )),
     CrimeCat("Robbery", "Bigger rewards, higher danger", subs = listOf(
         CrimeSubcat("", listOf(
-            CrimeUiItem(CrimeViewModel.CrimeType.MUGGING),
-            CrimeUiItem(CrimeViewModel.CrimeType.BREAKING_AND_ENTERING),
-            CrimeUiItem(CrimeViewModel.CrimeType.DRUG_DEALING),
-            CrimeUiItem(CrimeViewModel.CrimeType.COUNTERFEIT_GOODS)
+            CrimeUiItem(CrimeType.MUGGING),
+            CrimeUiItem(CrimeType.BREAKING_AND_ENTERING),
+            CrimeUiItem(CrimeType.DRUG_DEALING),
+            CrimeUiItem(CrimeType.COUNTERFEIT_GOODS)
         ))
     )),
     CrimeCat("Heists & Smuggling", "High stakes, serious time", subs = listOf(
         CrimeSubcat("", listOf(
-            CrimeUiItem(CrimeViewModel.CrimeType.BURGLARY),
-            CrimeUiItem(CrimeViewModel.CrimeType.FRAUD),
-            CrimeUiItem(CrimeViewModel.CrimeType.ARMS_SMUGGLING),
-            CrimeUiItem(CrimeViewModel.CrimeType.DRUG_TRAFFICKING)
+            CrimeUiItem(CrimeType.BURGLARY),
+            CrimeUiItem(CrimeType.FRAUD),
+            CrimeUiItem(CrimeType.ARMS_SMUGGLING),
+            CrimeUiItem(CrimeType.DRUG_TRAFFICKING)
         ))
     )),
     CrimeCat("Mastermind Tier", "Elite jobs, massive risk", subs = listOf(
         CrimeSubcat("", listOf(
-            // existing mastermind
-            CrimeUiItem(CrimeViewModel.CrimeType.ARMED_ROBBERY),
-            CrimeUiItem(CrimeViewModel.CrimeType.EXTORTION),
-            CrimeUiItem(CrimeViewModel.CrimeType.KIDNAPPING_FOR_RANSOM),
-            CrimeUiItem(CrimeViewModel.CrimeType.PONZI_SCHEME),
-            CrimeUiItem(CrimeViewModel.CrimeType.CONTRACT_KILLING),
-            CrimeUiItem(CrimeViewModel.CrimeType.DARK_WEB_SALES),
-            CrimeUiItem(CrimeViewModel.CrimeType.ART_THEFT),
-            CrimeUiItem(CrimeViewModel.CrimeType.DIAMOND_HEIST),
-            CrimeUiItem(CrimeViewModel.CrimeType.BANK_HEIST),
-            CrimeUiItem(CrimeViewModel.CrimeType.POLITICAL_ASSASSINATION),
-            CrimeUiItem(CrimeViewModel.CrimeType.CRIME_SYNDICATE)
+            CrimeUiItem(CrimeType.ARMED_ROBBERY),
+            CrimeUiItem(CrimeType.EXTORTION),
+            CrimeUiItem(CrimeType.KIDNAPPING_FOR_RANSOM),
+            CrimeUiItem(CrimeType.PONZI_SCHEME),
+            CrimeUiItem(CrimeType.CONTRACT_KILLING),
+            CrimeUiItem(CrimeType.DARK_WEB_SALES),
+            CrimeUiItem(CrimeType.ART_THEFT),
+            CrimeUiItem(CrimeType.DIAMOND_HEIST),
+            CrimeUiItem(CrimeType.BANK_HEIST),
+            CrimeUiItem(CrimeType.POLITICAL_ASSASSINATION),
+            CrimeUiItem(CrimeType.CRIME_SYNDICATE)
         ))
     ))
 )
@@ -799,12 +1166,4 @@ private fun accentForCrime(type: CrimeType): Color = when (type) {
     CrimeType.MUGGING, CrimeType.BREAKING_AND_ENTERING, CrimeType.DRUG_DEALING, CrimeType.COUNTERFEIT_GOODS -> Color(0xFFFFC107)
     CrimeType.BURGLARY, CrimeType.FRAUD, CrimeType.ARMS_SMUGGLING, CrimeType.DRUG_TRAFFICKING -> Color(0xFFFF7043)
     else -> Color(0xFFE53935)
-}
-
-private fun parseCrimeType(typeKey: String): CrimeType? = runCatching { CrimeType.valueOf(typeKey) }.getOrNull()
-private fun categoryLabelFor(type: CrimeType): String = when (type) {
-    CrimeType.PICKPOCKETING, CrimeType.SHOPLIFTING, CrimeType.VANDALISM, CrimeType.PETTY_SCAM -> "Street Crimes"
-    CrimeType.MUGGING, CrimeType.BREAKING_AND_ENTERING, CrimeType.DRUG_DEALING, CrimeType.COUNTERFEIT_GOODS -> "Robbery"
-    CrimeType.BURGLARY, CrimeType.FRAUD, CrimeType.ARMS_SMUGGLING, CrimeType.DRUG_TRAFFICKING -> "Heists & Smuggling"
-    else -> "Mastermind Tier"
 }

@@ -1,58 +1,32 @@
 // app/src/main/java/com/liveongames/liveon/viewmodel/CrimeViewModel.kt
 package com.liveongames.liveon.viewmodel
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.liveongames.data.assets.crime.CrimeAssetLoader
-import com.liveongames.data.assets.crime.CrimeAssetLoader.CrimeAsset
-import com.liveongames.data.assets.crime.CrimeAssetLoader.NarrativePath
-import com.liveongames.data.assets.crime.CrimeAssetLoader.OutcomeType
 import com.liveongames.domain.model.CrimeRecordEntry
-import com.liveongames.domain.model.RiskTier
-import com.liveongames.domain.repository.CrimeRepository
-import com.liveongames.domain.repository.PlayerRepository
-import com.liveongames.liveon.util.getCrimeName
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
-import kotlin.math.max
-import kotlin.random.Random
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Locale
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.random.Random
 
-@HiltViewModel
-class CrimeViewModel @Inject constructor(
-    private val playerRepository: PlayerRepository,
-    private val crimeAssets: CrimeAssetLoader,
-    private val crimeRepo: CrimeRepository,
-    @ApplicationContext private val appContext: Context
+class CrimeViewModel(
+    private val loader: CrimeContentLoader = InMemoryCrimeContentLoader(),
+    private val persistence: CrimePersistencePort = InMemoryCrimePersistence()
 ) : ViewModel() {
-
-    companion object {
-        private const val CHARACTER_ID = "player_character"
-        private const val LOW_MS = 20_000L
-        private const val MED_MS = 60_000L
-        private const val HIGH_MS = 180_000L
-        private const val EXTREME_MS = 300_000L
-        private const val TICK_MS = 100L
-        private const val FAILURE_LOCKOUT_MS = 6_000L
-        private const val MAX_NOTORIETY_PER_YEAR = 15
-    }
 
     enum class CrimeType {
         PICKPOCKETING, SHOPLIFTING, VANDALISM, PETTY_SCAM,
         MUGGING, BREAKING_AND_ENTERING, DRUG_DEALING, COUNTERFEIT_GOODS,
         BURGLARY, FRAUD, ARMS_SMUGGLING, DRUG_TRAFFICKING,
-        ARMED_ROBBERY, EXTORTION, KIDNAPPING_FOR_RANSOM, PONZI_SCHEME, CONTRACT_KILLING, DARK_WEB_SALES,
-        ART_THEFT, DIAMOND_HEIST,
+        ARMED_ROBBERY, EXTORTION, KIDNAPPING_FOR_RANSOM, PONZI_SCHEME,
+        CONTRACT_KILLING, DARK_WEB_SALES, ART_THEFT, DIAMOND_HEIST,
         BANK_HEIST, POLITICAL_ASSASSINATION, CRIME_SYNDICATE
     }
 
@@ -62,16 +36,10 @@ class CrimeViewModel @Inject constructor(
         val type: CrimeType,
         val startedAtMs: Long,
         val durationMs: Long,
-        val progress: Float,            // 0..1 overall
+        val progress: Float,
         val phase: Phase,
-        val phaseStartMs: Long,
-        val phaseEndMs: Long,
-        val setupUntilMs: Long,
-        val execUntilMs: Long,
-        val phaseLines: List<String>,
-        val ambientLines: List<String>,
-        val scriptAll: String,          // frozen paragraph (setup+execution)
-        val currentMessage: String
+        val scriptAll: String,
+        val ambientLines: List<String>
     )
 
     data class OutcomeEvent(
@@ -80,372 +48,352 @@ class CrimeViewModel @Inject constructor(
         val wasCaught: Boolean,
         val moneyGained: Int,
         val jailDays: Int,
-        val notorietyDelta: Int,
         val climaxLine: String
     )
+
+    private val _playerNotoriety = MutableStateFlow(0)
+    val playerNotoriety: StateFlow<Int> = _playerNotoriety.asStateFlow()
+
+    private val _criminalRecords = MutableStateFlow<List<CrimeRecordEntry>>(emptyList())
+    val criminalRecords: StateFlow<List<CrimeRecordEntry>> = _criminalRecords.asStateFlow()
 
     private val _runState = MutableStateFlow<CrimeRunState?>(null)
     val runState: StateFlow<CrimeRunState?> = _runState.asStateFlow()
 
     private val _lastOutcome = MutableStateFlow<OutcomeEvent?>(null)
     val lastOutcome: StateFlow<OutcomeEvent?> = _lastOutcome.asStateFlow()
-    fun consumeOutcome() { _lastOutcome.value = null }
 
     private val _cooldownUntil = MutableStateFlow<Long?>(null)
     val cooldownUntil: StateFlow<Long?> = _cooldownUntil.asStateFlow()
 
-    private val _playerNotoriety = MutableStateFlow(0)
-    val playerNotoriety: StateFlow<Int> = _playerNotoriety.asStateFlow()
+    companion object {
+        private const val MAX_NOTORIETY_PER_YEAR = 100
+        private const val DEFAULT_COOLDOWN_ON_FAIL_MS = 2_500L
+        private const val DEFAULT_COOLDOWN_ON_CAUGHT_MS = 7_000L
+    }
 
-    private val _earnedThisYear = MutableStateFlow(0)
-    val earnedThisYear: StateFlow<Int> = _earnedThisYear.asStateFlow()
+    data class Baseline(val notorietyGain: Int, val notorietyLoss: Int)
 
-    val criminalRecords: StateFlow<List<CrimeRecordEntry>> =
-        crimeRepo.observeStats()
-            .map { it.records }
-            .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    fun baselineFor(type: CrimeType): Baseline = when (type) {
+        CrimeType.PICKPOCKETING,
+        CrimeType.SHOPLIFTING,
+        CrimeType.VANDALISM,
+        CrimeType.PETTY_SCAM -> Baseline(notorietyGain = 1, notorietyLoss = -1)
 
-    private var runJob: Job? = null
-    private val bank by lazy { crimeAssets.loadBank() }
+        CrimeType.MUGGING,
+        CrimeType.BREAKING_AND_ENTERING,
+        CrimeType.DRUG_DEALING,
+        CrimeType.COUNTERFEIT_GOODS -> Baseline(notorietyGain = 2, notorietyLoss = -2)
+
+        CrimeType.BURGLARY,
+        CrimeType.FRAUD,
+        CrimeType.ARMS_SMUGGLING,
+        CrimeType.DRUG_TRAFFICKING -> Baseline(notorietyGain = 4, notorietyLoss = -2)
+
+        else -> Baseline(notorietyGain = 10, notorietyLoss = -3)
+    }
+
+    private var tickerJob: Job? = null
 
     init {
         viewModelScope.launch {
-            crimeRepo.observeStats().collect { stats ->
-                _earnedThisYear.value = stats.earnedThisYear
-            }
+            val snapshot = persistence.loadSnapshot()
+            _criminalRecords.value = snapshot.records
+            _playerNotoriety.value = snapshot.notoriety
         }
-    }
-
-    fun onAgeUpResetNotorietyCap(currentYear: Int) = viewModelScope.launch {
-        crimeRepo.resetEarnedForNewYear(currentYear)
     }
 
     fun beginCrime(type: CrimeType) {
-        if (_runState.value != null || runJob != null) return
+        if (_runState.value != null) return
+        val content = loader.pickScenario(type) ?: return
 
-        val asset = bank.byKey[type.name] ?: return beginFallbackRun(type)
-        val path = crimeAssets.pickPath(asset, Random.Default)
-        val durationMs = ((asset.durationSeconds ?: (durationForTier(riskFor(type)) / 1000L).toInt()) * 1000L)
-            .coerceAtLeast(2_000L) // minimum 2s so UI has time to breathe
+        val now = System.currentTimeMillis()
+        val durationMs = (content.durationSeconds * 1_000L).coerceAtLeast(4_000L)
+        val scriptAll = (content.setup + content.execution).joinToString(" ").trim()
+        val ambientOnce = content.ambient.distinct()
 
-        val start = System.currentTimeMillis()
-        val end = start + durationMs
-        _cooldownUntil.value = end
+        _runState.value = CrimeRunState(
+            type = type,
+            startedAtMs = now,
+            durationMs = durationMs,
+            progress = 0f,
+            phase = Phase.SETUP,
+            scriptAll = scriptAll,
+            ambientLines = ambientOnce
+        )
 
-        // Use pack-level phase split if present; fallback to 25/55/20.
-        val sPct = asset.phaseSplit?.setup ?: 0.25f
-        val ePct = asset.phaseSplit?.execution ?: 0.55f
-        val setupUntil = start + (durationMs * sPct).toLong()
-        val execUntil  = start + (durationMs * (sPct + ePct)).toLong()
-
-        // Freeze paragraph (setup + execution). Climax is handled by outcome card.
-        val scriptAll: String = (path.setup + path.execution)
-            .filter { it.isNotBlank() }
-            .joinToString(" ")
-            .ifBlank {
-                listOf(
-                    path.execution.firstOrNull(),
-                    path.setup.firstOrNull(),
-                    previewScenario(type)
-                ).firstOrNull { !it.isNullOrBlank() }.orEmpty()
-            }
-
-        fun linesFor(phase: Phase) = when (phase) {
-            Phase.SETUP     -> path.setup
-            Phase.EXECUTION -> path.execution
-            Phase.CLIMAX    -> if (path.execution.isNotEmpty()) path.execution else path.setup
-        }
-
-        val ambientPool = buildAmbientPool(path.ambient, durationMs, asset.ambientCadenceMs)
-
-        runJob = viewModelScope.launch {
-            var lastPhase: Phase? = null
-            while (true) {
-                val now = System.currentTimeMillis()
-                val frac = ((now - start).coerceAtLeast(0).toFloat() / durationMs.toFloat()).coerceIn(0f, 1f)
-                val uiPhase = when {
-                    now < setupUntil -> Phase.SETUP
-                    now < execUntil  -> Phase.EXECUTION
-                    else             -> Phase.CLIMAX
+        tickerJob?.cancel()
+        tickerJob = viewModelScope.launch {
+            val setupEnd = content.setupPortion
+            val execEnd = setupEnd + content.execPortion
+            var p: Float
+            do {
+                val t = System.currentTimeMillis()
+                p = ((t - now).toFloat() / durationMs.toFloat()).coerceIn(0f, 1f)
+                val newPhase = when {
+                    p < setupEnd -> Phase.SETUP
+                    p < execEnd -> Phase.EXECUTION
+                    else -> Phase.CLIMAX
                 }
-                val pStart = when (uiPhase) { Phase.SETUP -> start; Phase.EXECUTION -> setupUntil; Phase.CLIMAX -> execUntil }
-                val pEnd   = when (uiPhase) { Phase.SETUP -> setupUntil; Phase.EXECUTION -> execUntil; Phase.CLIMAX -> end }
+                _runState.update { it?.copy(progress = p, phase = newPhase) }
+                delay(16)
+            } while (p < 1f && _runState.value != null)
 
-                val phaseLines = linesFor(uiPhase)
-                val msg = phaseLines.firstOrNull() ?: path.execution.firstOrNull() ?: path.setup.firstOrNull() ?: previewScenario(type)
-
-                if (lastPhase != uiPhase || _runState.value?.progress != frac || _runState.value?.currentMessage != msg) {
-                    _runState.value = CrimeRunState(
-                        type = type,
-                        startedAtMs = start,
-                        durationMs = durationMs,
-                        progress = frac,
-                        phase = uiPhase,
-                        phaseStartMs = pStart,
-                        phaseEndMs = pEnd,
-                        setupUntilMs = setupUntil,
-                        execUntilMs = execUntil,
-                        phaseLines = phaseLines,
-                        ambientLines = ambientPool,
-                        scriptAll = scriptAll,
-                        currentMessage = msg
-                    )
-                    lastPhase = uiPhase
-                }
-
-                if (now >= end) break
-                delay(TICK_MS)
-            }
-
-            // Outcome resolution
-            val outcomeType = crimeAssets.pickOutcome(path)
-            val base = baselineFor(type)
-            val success = outcomeType == OutcomeType.SUCCESS || outcomeType == OutcomeType.PARTIAL
-            val caught = outcomeType == OutcomeType.CAUGHT
-
-            val money = when (outcomeType) {
-                OutcomeType.SUCCESS -> Random.nextInt(base.payoutMin, base.payoutMax + 1)
-                OutcomeType.PARTIAL -> Random.nextInt(max(0, base.payoutMin / 3), max(1, base.payoutMax / 2) + 1)
-                else -> 0
-            }
-            val jail = if (caught) Random.nextInt(base.jailMin, base.jailMax + 1) else 0
-
-            val rawNotoriety = when (outcomeType) {
-                OutcomeType.SUCCESS -> base.notorietyGain
-                OutcomeType.PARTIAL -> max(1, base.notorietyGain / 2)
-                OutcomeType.FAIL, OutcomeType.CAUGHT -> base.notorietyLoss
-            }
-            val effectiveNotoriety = applyYearlyCapAndPersist(rawNotoriety)
-
-            runCatching {
-                if (money > 0) playerRepository.updateMoney(CHARACTER_ID, money)
-                if (effectiveNotoriety != 0) {
-                    playerRepository.updateNotoriety(CHARACTER_ID, effectiveNotoriety)
-                    _playerNotoriety.value = _playerNotoriety.value + effectiveNotoriety
-                }
-                if (jail > 0) playerRepository.updateJailTime(CHARACTER_ID, jail)
-            }
-
-            val climax = crimeAssets.finalLine(path, outcomeType).orEmpty()
-            _lastOutcome.value = OutcomeEvent(type, success, caught, money, jail, effectiveNotoriety, climax)
-
-            val year = currentInGameYear()
-            appendRecord(type, success, caught, money, jail, year, climax)
-
-            val cooldownMs = when {
-                caught -> asset.cooldownOnArrestMs
-                success -> null
-                else -> asset.cooldownOnFailMs
-            } ?: if (success) null else FAILURE_LOCKOUT_MS
-
-            _cooldownUntil.value = cooldownMs?.let { System.currentTimeMillis() + it }
-            _runState.value = null
-            runJob = null
+            if (_runState.value != null) resolveAndPostOutcome(type, content)
         }
     }
 
     fun cancelCrime() {
-        runJob?.cancel()
-        runJob = null
+        val rs = _runState.value ?: return
+        tickerJob?.cancel()
+        tickerJob = null
         _runState.value = null
-        _cooldownUntil.value = null
-    }
-
-    // ---- helpers ----
-
-    private fun buildAmbientPool(base: List<String>, durationMs: Long, cadenceMs: Long? = null): List<String> {
-        val src = if (base.isEmpty()) listOf("…") else base.filter { it.isNotBlank() }
-        val cadence = (cadenceMs ?: 4_000L).coerceAtLeast(1_000L)
-        val needed = ((durationMs / cadence).coerceAtLeast(1)).toInt()
-        if (src.isEmpty()) return List(needed) { "…" }
-        if (src.size >= needed) return src.take(needed)
-        return List(needed) { idx -> src[idx % src.size] }
-    }
-
-    private fun applyYearlyCapAndPersist(delta: Int): Int {
-        if (delta <= 0) return delta
-        val remaining = MAX_NOTORIETY_PER_YEAR - _earnedThisYear.value
-        val applied = remaining.coerceAtLeast(0).coerceAtMost(delta)
-        if (applied > 0) {
-            val newVal = (_earnedThisYear.value + applied).coerceAtMost(MAX_NOTORIETY_PER_YEAR)
-            _earnedThisYear.value = newVal
-            viewModelScope.launch { crimeRepo.setEarnedThisYear(newVal) }
-        }
-        return applied
-    }
-
-    private fun appendRecord(
-        type: CrimeType,
-        success: Boolean,
-        caught: Boolean,
-        money: Int,
-        jailDays: Int,
-        year: Int,
-        climax: String
-    ) = viewModelScope.launch {
-        val entry = CrimeRecordEntry(
-            id = System.currentTimeMillis().toString(),
-            typeKey = type.name,
-            success = success,
-            caught = caught,
-            money = money,
-            jailDays = jailDays,
-            year = year,
-            timestamp = System.currentTimeMillis(),
-            summary = buildSummary(type, success, caught, money, jailDays, climax)
+        val outcome = OutcomeEvent(
+            type = rs.type, success = false, wasCaught = false,
+            moneyGained = 0, jailDays = 0,
+            climaxLine = "You back off at the last second."
         )
-        crimeRepo.appendRecord(entry)
+        persistOutcomeAndCooldown(rs, outcome, cooldownMs = DEFAULT_COOLDOWN_ON_FAIL_MS)
+        _lastOutcome.value = outcome
     }
 
-    private fun buildSummary(
-        type: CrimeType, success: Boolean, caught: Boolean, money: Int, jailDays: Int, climax: String
-    ): String {
-        val name = getCrimeName(type)
-        val res = when {
-            caught -> "Caught ($jailDays days)"
-            success && money > 0 -> "Success +$$money"
-            success -> "Partial success"
-            else -> "Failed"
+    fun consumeOutcome() { _lastOutcome.value = null }
+
+    fun effectiveNotorietyForRecord(rec: CrimeRecordEntry): Int? {
+        val list = _criminalRecords.value.filter { it.year == rec.year }.sortedBy { it.timestamp }
+        var earned = 0
+        for (r in list) {
+            val type = runCatching { CrimeType.valueOf(r.typeKey) }.getOrNull() ?: continue
+            val base = baselineFor(type)
+            val baseDelta = when {
+                r.caught -> base.notorietyLoss
+                r.success && r.money > 0 -> base.notorietyGain
+                r.success -> max(1, base.notorietyGain / 2)
+                else -> base.notorietyLoss
+            }
+            val applied = if (baseDelta > 0) {
+                val remaining = MAX_NOTORIETY_PER_YEAR - earned
+                val appliedPos = remaining.coerceAtLeast(0).coerceAtMost(baseDelta)
+                earned += appliedPos
+                appliedPos
+            } else baseDelta
+            if (r.id == rec.id) return applied
         }
-        val tail = if (climax.isBlank()) "" else " – ${climax.take(60)}"
-        return "$name: $res$tail"
+        return null
     }
 
-    private fun currentInGameYear(): Int = _playerNotoriety.value.let { 2000 + (it % 60) }
-
-    private fun durationForTier(t: RiskTier) = when (t) {
-        RiskTier.LOW_RISK     -> LOW_MS
-        RiskTier.MEDIUM_RISK  -> MED_MS
-        RiskTier.HIGH_RISK    -> HIGH_MS
-        RiskTier.EXTREME_RISK -> EXTREME_MS
-    }
-
-    fun riskFor(type: CrimeType): RiskTier = when (type) {
-        CrimeType.PICKPOCKETING, CrimeType.SHOPLIFTING, CrimeType.VANDALISM, CrimeType.PETTY_SCAM -> RiskTier.LOW_RISK
-        CrimeType.MUGGING, CrimeType.BREAKING_AND_ENTERING, CrimeType.DRUG_DEALING, CrimeType.COUNTERFEIT_GOODS -> RiskTier.MEDIUM_RISK
-        CrimeType.BURGLARY, CrimeType.FRAUD, CrimeType.ARMS_SMUGGLING, CrimeType.DRUG_TRAFFICKING -> RiskTier.HIGH_RISK
-        else -> RiskTier.EXTREME_RISK
-    }
-
-    private data class CrimeBase(
-        val riskTier: RiskTier,
-        val payoutMin: Int, val payoutMax: Int,
-        val jailMin: Int, val jailMax: Int,
-        val notorietyGain: Int, val notorietyLoss: Int
-    )
-
-    private fun baselineFor(type: CrimeType): CrimeBase {
-        fun base(tier: RiskTier, a: Int, b: Int, jm: Int, jx: Int, ng: Int, nl: Int) = CrimeBase(tier, a, b, jm, jx, ng, nl)
-        return when (type) {
-            // LOW
-            CrimeType.PICKPOCKETING -> base(RiskTier.LOW_RISK, 20, 180, 1, 3, 1, -1)
-            CrimeType.SHOPLIFTING -> base(RiskTier.LOW_RISK, 30, 220, 1, 3, 1, -1)
-            CrimeType.VANDALISM -> base(RiskTier.LOW_RISK, 0, 80, 1, 2, 1, -1)
-            CrimeType.PETTY_SCAM -> base(RiskTier.LOW_RISK, 60, 320, 1, 3, 1, -1)
-            // MED
-            CrimeType.MUGGING -> base(RiskTier.MEDIUM_RISK, 120, 600, 3, 14, 2, -2)
-            CrimeType.BREAKING_AND_ENTERING -> base(RiskTier.MEDIUM_RISK, 80, 400, 3, 21, 2, -2)
-            CrimeType.DRUG_DEALING -> base(RiskTier.MEDIUM_RISK, 200, 1600, 3, 21, 2, -2)
-            CrimeType.COUNTERFEIT_GOODS -> base(RiskTier.MEDIUM_RISK, 200, 900, 3, 21, 2, -2)
-            // HIGH
-            CrimeType.BURGLARY -> base(RiskTier.HIGH_RISK, 600, 3600, 30, 180, 4, -2)
-            CrimeType.FRAUD -> base(RiskTier.HIGH_RISK, 900, 4800, 60, 365, 4, -2)
-            CrimeType.ARMS_SMUGGLING -> base(RiskTier.HIGH_RISK, 2000, 12000, 365, 1095, 4, -2)
-            CrimeType.DRUG_TRAFFICKING -> base(RiskTier.HIGH_RISK, 5000, 45000, 365, 1095, 5, -2)
-            // EXTREME
-            CrimeType.ARMED_ROBBERY -> base(RiskTier.EXTREME_RISK, 20000, 120000, 1460, 4380, 10, -3)
-            CrimeType.EXTORTION -> base(RiskTier.EXTREME_RISK, 5000, 40000, 730, 2190, 10, -3)
-            CrimeType.KIDNAPPING_FOR_RANSOM -> base(RiskTier.EXTREME_RISK, 50000, 400000, 2190, 5475, 10, -3)
-            CrimeType.PONZI_SCHEME -> base(RiskTier.EXTREME_RISK, 150000, 900000, 1460, 4380, 10, -3)
-            CrimeType.CONTRACT_KILLING -> base(RiskTier.EXTREME_RISK, 100000, 450000, 2190, 5475, 10, -3)
-            CrimeType.DARK_WEB_SALES -> base(RiskTier.EXTREME_RISK, 15000, 220000, 365, 1460, 8, -3)
-            CrimeType.ART_THEFT -> base(RiskTier.EXTREME_RISK, 250000, 4_800_000, 2920, 7300, 10, -3)
-            CrimeType.DIAMOND_HEIST -> base(RiskTier.EXTREME_RISK, 1_500_000, 9_500_000, 2920, 7300, 10, -3)
-            // NEW Mastermind examples — tune as desired
-            CrimeType.BANK_HEIST -> base(RiskTier.EXTREME_RISK, 500_000, 5_000_000, 2920, 7300, 10, -3)
-            CrimeType.POLITICAL_ASSASSINATION -> base(RiskTier.EXTREME_RISK, 0, 0, 3650, 10950, 12, -4)
-            CrimeType.CRIME_SYNDICATE -> base(RiskTier.EXTREME_RISK, 1_000_000, 10_000_000, 3650, 10950, 10, -3)
+    private fun resolveAndPostOutcome(type: CrimeType, content: CrimeScenario) {
+        val roll = rollWeighted(content.outcomes)
+        val (success, caught) = when (roll.kind) {
+            OutcomeKind.SUCCESS -> true to false
+            OutcomeKind.PARTIAL -> true to false
+            OutcomeKind.FAIL -> false to false
+            OutcomeKind.CAUGHT -> false to true
         }
+
+        val money = if (success) content.payout(successFull = (roll.kind == OutcomeKind.SUCCESS)) else 0
+        val jail = if (caught) content.jailDays() else 0
+        val climaxLine = content.climaxFor(
+            success = (roll.kind == OutcomeKind.SUCCESS),
+            partial = (roll.kind == OutcomeKind.PARTIAL),
+            fail = (roll.kind == OutcomeKind.FAIL),
+            caught = (roll.kind == OutcomeKind.CAUGHT)
+        )
+
+        val outcome = OutcomeEvent(
+            type = type, success = success, wasCaught = caught,
+            moneyGained = money, jailDays = jail, climaxLine = climaxLine
+        )
+
+        val rs = _runState.value!!
+        _runState.value = null
+        tickerJob?.cancel(); tickerJob = null
+
+        val cooldown = when {
+            caught -> DEFAULT_COOLDOWN_ON_CAUGHT_MS
+            success -> 0L
+            else -> DEFAULT_COOLDOWN_ON_FAIL_MS
+        }
+        persistOutcomeAndCooldown(rs, outcome, cooldown)
+        _lastOutcome.value = outcome
     }
 
-    fun previewScenario(type: CrimeType): String = when (type) {
-        CrimeType.PICKPOCKETING -> listOf("You brush past a tourist, fingers light as air.", "You time your move as train doors chime.").random()
-        CrimeType.SHOPLIFTING -> listOf("A camera blind spot opens for a heartbeat.", "The fitting rooms are unattended.").random()
-        CrimeType.VANDALISM -> listOf("Fresh paint hisses as your tag blooms.", "You stencil a quick message and vanish.").random()
-        CrimeType.PETTY_SCAM -> listOf("You work the shell game with practiced ease.", "A forged receipt buys you a door.").random()
-        CrimeType.MUGGING -> listOf("An alley throat clears. Footsteps quicken.", "You pick a mark near a broken light.").random()
-        CrimeType.BREAKING_AND_ENTERING -> listOf("A latch gives under a practiced twist.", "Window. Crowbar. Quiet.").random()
-        CrimeType.DRUG_DEALING -> listOf("A handshake lasts a second too long.", "The meetup ping hits your burner.").random()
-        CrimeType.COUNTERFEIT_GOODS -> listOf("Designer fakes spill from a trunk.", "Stamps, seals, and a nervous smile.").random()
-        CrimeType.BURGLARY -> listOf("You listen to the house breathe, then move.", "Glass whispers. Gloves glide.").random()
-        CrimeType.FRAUD -> listOf("An inbox quivers with too-good promises.", "Numbers dance; the balance tips.").random()
-        CrimeType.ARMS_SMUGGLING -> listOf("Crates vanish into a midnight van.", "A handshake at a lonely checkpoint.").random()
-        CrimeType.DRUG_TRAFFICKING -> listOf("A fishing boat rides low in the water.", "Produce crates hide more than citrus.").random()
-        CrimeType.ARMED_ROBBERY -> listOf("Masks up. Heart drums. Doors in.", "You count steps, not seconds.").random()
-        CrimeType.EXTORTION -> listOf("One message. Ten meanings. All sharp.", "The club’s back office goes quiet.").random()
-        CrimeType.KIDNAPPING_FOR_RANSOM -> listOf("A van idles like a held breath.", "The route maps glow on your screen.").random()
-        CrimeType.PONZI_SCHEME -> listOf("Charts ascend; truth descends.", "Meetings stack; promises echo.").random()
-        CrimeType.CONTRACT_KILLING -> listOf("A silencer coughs once; the night holds its breath.", "A window opens, a future closes.").random()
-        CrimeType.DARK_WEB_SALES -> listOf("A wallet drains behind seven proxies.", "A new identity clears across oceans.").random()
-        CrimeType.ART_THEFT -> listOf("A replica smiles at a laser grid.", "A curator’s keycard sings.").random()
-        CrimeType.DIAMOND_HEIST -> listOf("A vault listens; you answer in beeps.", "A transport slows at just the wrong light.").random()
-        CrimeType.BANK_HEIST -> listOf("Masks, timers, a city that blinks too slow.", "A vault ticks louder than your pulse.").random()
-        CrimeType.POLITICAL_ASSASSINATION -> listOf("A crowd roars; your world narrows to glass and breath.", "History holds still for one impossible second.").random()
-        CrimeType.CRIME_SYNDICATE -> listOf("A warehouse of whispers signs a new order.", "Maps, favors, and futures get divided by your finger.").random()
+    private fun prettyTypeLabel(type: CrimeType): String {
+        val raw = type.name.replace('_', ' ').lowercase(Locale.getDefault())
+        return raw.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
     }
 
-    // -------- Fallback path if asset missing --------
-    private fun beginFallbackRun(type: CrimeType) {
-        val durationMs = durationForTier(riskFor(type))
-        val start = System.currentTimeMillis()
-        val end = start + durationMs
-        _cooldownUntil.value = end
+    private fun summaryForRecord(type: CrimeType, outcome: OutcomeEvent): String {
+        val disposition = when {
+            outcome.wasCaught -> "Caught"
+            outcome.success && outcome.moneyGained > 0 -> "Success"
+            outcome.success -> "Partial"
+            else -> "Fail"
+        }
+        val parts = buildList {
+            add("$disposition — ${prettyTypeLabel(type)}")
+            if (outcome.moneyGained > 0) add("$${outcome.moneyGained}")
+            if (outcome.jailDays > 0) add("Jail ${outcome.jailDays}d")
+        }
+        return parts.joinToString(" • ")
+    }
 
-        val setupUntil = start + (durationMs * 0.25f).toLong()
-        val execUntil  = start + (durationMs * 0.80f).toLong()
+    private fun persistOutcomeAndCooldown(rs: CrimeRunState, outcome: OutcomeEvent, cooldownMs: Long) {
+        val now = System.currentTimeMillis()
+        val year = persistence.currentYear()
+        val base = baselineFor(rs.type)
+        val baseDelta = when {
+            outcome.wasCaught -> base.notorietyLoss
+            outcome.success && outcome.moneyGained > 0 -> base.notorietyGain
+            outcome.success -> max(1, base.notorietyGain / 2)
+            else -> base.notorietyLoss
+        }
 
-        runJob = viewModelScope.launch {
-            var last: Phase? = null
-            val lines = listOf(previewScenario(type))
-            val scriptAll = lines.joinToString(" ")
-            while (true) {
-                val now = System.currentTimeMillis()
-                val frac = ((now - start).coerceAtLeast(0).toFloat() / durationMs.toFloat()).coerceIn(0f, 1f)
-                val phase = when {
-                    now < setupUntil -> Phase.SETUP
-                    now < execUntil  -> Phase.EXECUTION
-                    else             -> Phase.CLIMAX
-                }
-                val pStart = when (phase) { Phase.SETUP -> start; Phase.EXECUTION -> setupUntil; Phase.CLIMAX -> execUntil }
-                val pEnd   = when (phase) { Phase.SETUP -> setupUntil; Phase.EXECUTION -> execUntil; Phase.CLIMAX -> end }
+        val earnedSoFar = persistence.earnedThisYear()
+        val applied = if (baseDelta > 0) {
+            val remaining = MAX_NOTORIETY_PER_YEAR - earnedSoFar
+            min(remaining.coerceAtLeast(0), baseDelta)
+        } else baseDelta
 
-                if (last != phase || _runState.value?.progress != frac) {
-                    _runState.value = CrimeRunState(
-                        type = type,
-                        startedAtMs = start,
-                        durationMs = durationMs,
-                        progress = frac,
-                        phase = phase,
-                        phaseStartMs = pStart,
-                        phaseEndMs = pEnd,
-                        setupUntilMs = setupUntil,
-                        execUntilMs = execUntil,
-                        phaseLines = lines,
-                        ambientLines = listOf("…"),
-                        scriptAll = scriptAll,
-                        currentMessage = lines.first()
-                    )
-                    last = phase
-                }
-                if (now >= end) break
-                delay(TICK_MS)
+        val rec = CrimeRecordEntry(
+            id = persistence.newId(),
+            timestamp = now,
+            typeKey = rs.type.name,
+            success = outcome.success,
+            caught = outcome.wasCaught,
+            money = outcome.moneyGained,
+            jailDays = outcome.jailDays,
+            year = year,
+            summary = summaryForRecord(rs.type, outcome)
+        )
+        persistence.appendRecord(rec)
+        if (applied > 0) persistence.addEarnedThisYear(applied)
+        _criminalRecords.update { list -> (list + rec).sortedByDescending { it.timestamp } }
+        _playerNotoriety.update { it + applied }
+
+        _cooldownUntil.value = if (cooldownMs > 0) now + cooldownMs else null
+    }
+
+    private fun rollWeighted(weights: List<OutcomeWeight>): OutcomeWeight {
+        val total = weights.sumOf { it.weight.coerceAtLeast(0) }.coerceAtLeast(1)
+        var r = Random.nextInt(total)
+        for (w in weights) {
+            val slice = w.weight.coerceAtLeast(0)
+            if (r < slice) return w
+            r -= slice
+        }
+        return weights.last()
+    }
+
+    interface CrimeContentLoader { fun pickScenario(type: CrimeType): CrimeScenario? }
+
+    data class CrimeScenario(
+        val durationSeconds: Int,
+        val setup: List<String>,
+        val execution: List<String>,
+        val ambient: List<String>,
+        val outcomes: List<OutcomeWeight>,
+        val climax: Climax
+    ) {
+        val setupPortion: Float = 0.18f.coerceIn(0.15f, 0.25f)
+        val execPortion: Float = 0.58f.coerceIn(0.50f, 0.70f)
+
+        fun climaxFor(success: Boolean, partial: Boolean, fail: Boolean, caught: Boolean): String =
+            when {
+                success -> (climax.success ?: climax.generic ?: "It goes your way.")
+                partial -> (climax.partial ?: climax.generic ?: "Barely enough to call it a win.")
+                fail -> (climax.fail ?: climax.generic ?: "It slips through your fingers.")
+                caught -> (climax.caught ?: climax.generic ?: "Hands behind your head.")
+                else -> climax.generic ?: "It’s done."
             }
 
-            val base = baselineFor(type)
-            _lastOutcome.value = OutcomeEvent(type, success = false, wasCaught = false, moneyGained = 0, jailDays = 0, notorietyDelta = base.notorietyLoss, climaxLine = "")
-            _cooldownUntil.value = System.currentTimeMillis() + FAILURE_LOCKOUT_MS
-            _runState.value = null
-            runJob = null
+        fun payout(successFull: Boolean): Int = if (successFull) Random.nextInt(120, 500) else 0
+        fun jailDays(): Int = Random.nextInt(2, 20)
+    }
+
+    data class OutcomeWeight(val kind: OutcomeKind, val weight: Int)
+    enum class OutcomeKind { SUCCESS, PARTIAL, FAIL, CAUGHT }
+
+    data class Climax(
+        val success: String? = null,
+        val partial: String? = null,
+        val fail: String? = null,
+        val caught: String? = null,
+        val generic: String? = null
+    )
+
+    interface CrimePersistencePort {
+        fun loadSnapshot(): Snapshot
+        fun appendRecord(entry: CrimeRecordEntry)
+        fun currentYear(): Int
+        fun newId(): String
+        fun earnedThisYear(): Int
+        fun addEarnedThisYear(delta: Int)
+        data class Snapshot(val notoriety: Int, val records: List<CrimeRecordEntry>)
+    }
+
+    private class InMemoryCrimeContentLoader : CrimeContentLoader {
+        override fun pickScenario(type: CrimeType): CrimeScenario {
+            val dur = when (type) {
+                CrimeType.PICKPOCKETING, CrimeType.SHOPLIFTING -> 22
+                CrimeType.DARK_WEB_SALES -> 90
+                CrimeType.ART_THEFT -> 220
+                else -> 45
+            }
+            val setup = listOf(
+                "You drift into position, eyes scanning for patterns.",
+                "The target’s routine plays back in your head."
+            )
+            val exec = listOf(
+                "Hands steady, timing tighter than a snare drum.",
+                "One breath, one motion—then you move."
+            )
+            val ambient = listOf(
+                "Distant siren fades under a truck’s downshift.",
+                "Neon hum vibrates through the window glass.",
+                "Keys jangle; a door latch whispers shut."
+            )
+            val climax = when (type) {
+                CrimeType.ART_THEFT -> Climax(
+                    success = "A courier’s engine hum carries you away. The city never knew you were there.",
+                    partial = "The frame swaps, but the schedule slips. You ghost out empty-handed.",
+                    fail = "A sensor hiccups into a siren. Calm learns to run.",
+                    caught = "A docent’s radio says your description aloud."
+                )
+                else -> Climax(generic = "You fade back into the city.")
+            }
+            val weights = listOf(
+                OutcomeWeight(OutcomeKind.SUCCESS, 55),
+                OutcomeWeight(OutcomeKind.PARTIAL, 15),
+                OutcomeWeight(OutcomeKind.FAIL, 20),
+                OutcomeWeight(OutcomeKind.CAUGHT, 10)
+            )
+            return CrimeScenario(
+                durationSeconds = dur,
+                setup = setup,
+                execution = exec,
+                ambient = ambient,
+                outcomes = weights,
+                climax = climax
+            )
+        }
+    }
+
+    private class InMemoryCrimePersistence : CrimePersistencePort {
+        private var notoriety = 0
+        private var earnedThisYear = 0
+        private val entries = mutableListOf<CrimeRecordEntry>()
+
+        override fun loadSnapshot(): CrimePersistencePort.Snapshot =
+            CrimePersistencePort.Snapshot(notoriety = notoriety, records = entries.toList())
+
+        override fun appendRecord(entry: CrimeRecordEntry) { entries.add(entry) }
+        override fun currentYear(): Int = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
+        override fun newId(): String = java.util.UUID.randomUUID().toString()
+        override fun earnedThisYear(): Int = earnedThisYear
+        override fun addEarnedThisYear(delta: Int) {
+            notoriety += delta
+            earnedThisYear += max(0, delta)
         }
     }
 }
